@@ -1,0 +1,25 @@
+Entorno Virtual:
+python -m env venv
+env\Scripts\activate
+
+Instalaciones:
+pip install django
+pip install djangorestframework
+
+pip install -r requirements.txt
+
+Crear Proyecto Django:
+django-admin startproject inventario_project
+
+Agregar App:
+python manage.py startapp inventario
+
+Migraciones:
+python manage.py makemigrations
+python manage.py migrate
+
+Correr Servidor:
+python manage.py runserver
+
+Script DB
+Get-Content .\scripts\make_procedures.py | & python manage.py shell
