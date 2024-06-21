@@ -1,0 +1,9 @@
+django
+psycopg2-binary
+djangorestframework
+markdown
+django-filter
+pillow
+django-environ
+djangorestframework-simplejwt
+django-extensions
