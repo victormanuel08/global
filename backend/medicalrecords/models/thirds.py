@@ -30,6 +30,45 @@ BLOOD_CHOICES = (
     ('O+', 'O+'),
     ('O-', 'O-'),
 )
+
+MATERNITY_PREGNANCY_CHOICES = (
+    ('NI', 'Ninguno'),
+    ('PT', 'Primer Trimestre'),
+    ('ST', 'Segundo Trimestre'),
+    ('TT', 'Tercer Trimestre'),
+    ('PU', 'Puérperio')
+)    
+
+MATERNITY_BREASFEEDING_CHOICES = (
+    ('0', 'Ninguno'),
+    ('1', 'Menos de 1 mes'),
+    ('2', '1 a 3 meses'),
+    ('3', '3 a 6 meses'),
+    ('4', 'Mas de 6 meses'),
+    ('5', 'Mas de 1 año')
+)
+
+MATERNITY_BREASFEEDING_EXTEND_CHOICES = (
+    ('0', 'Nunca'),
+    ('1', 'Menos de 1 Mes'),
+    ('2', '1 a 3 meses'),
+    ('3', '3 a 6 meses')
+)
+
+MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES = (
+    ('0', 'Nunca'),
+    ('1', 'Menos de 1 Mes'),
+    ('2', '1 a 3 meses'),
+    ('3', '3 a 6 meses')
+)
+
+MATERNITY_VIOLANCE_CHOICES = (
+    ('N', 'Ninguno'),
+    ('M', 'Mina ANtipersona'),
+    ('D', 'Desmovilizado'),
+    ('R', 'Reinsertado'),
+    ('I', 'Intrafamiliar')
+)
     
 # Create your models here.
 class Thirds(models.Model):
@@ -50,11 +89,11 @@ class Thirds(models.Model):
     speciality=models.ForeignKey('Specialties', on_delete=models.PROTECT)
     city = models.CharField(max_length=100)
     city_birth = models.CharField(max_length=100)
-    maternity_pregnancy = models.CharField(max_length=100)
-    maternity_breasfeeding = models.CharField(max_length=100)
-    maternity_breasfeeding_extend = models.CharField(max_length=100)
-    maternity_complementary = models.CharField(max_length=100)
-    maternity_violence = models.CharField(max_length=100)
+    maternity_pregnancy = models.CharField(max_length=2, choices=MATERNITY_PREGNANCY_CHOICES)
+    maternity_breasfeeding = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_CHOICES)
+    maternity_breasfeeding_extend = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_EXTEND_CHOICES)
+    maternity_breasfeeding_complementary = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES)
+    maternity_violence = models.CharField(max_length=1, choices=MATERNITY_VIOLANCE_CHOICES)
     ethnicity = models.CharField(max_length=1, choices=ETNIAS_CHOICES)
     blood_type= models.CharField(max_length=2, choices=BLOOD_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
