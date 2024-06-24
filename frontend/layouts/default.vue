@@ -1,5 +1,6 @@
 <template lang="pug">
-div Layout
+div 
+slot
 </template>
 
 <script setup lang="ts">
