@@ -1,6 +1,8 @@
-<template lang="pug">
-div.h-screen.bg-gradient-to-r.from-violet-600.to-indigo-500
-    slot
+<template >
+<div class="h-screen bg-gradient-to-r from-green-400 to-indigo-400">
+    <slot></slot>
+</div>
+
 </template>
 
 <script setup lang="ts">

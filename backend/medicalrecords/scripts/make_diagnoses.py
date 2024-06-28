@@ -1,4 +1,5 @@
-from models.diagnoses import *
+
+from medicalrecords.models import Diagnoses
 #from django.contrib.auth.models import User
 
 diagnoses_to_create = [    
@@ -12639,13 +12640,12 @@ diagnoses_to_create = [
       
 ]
 
-for diagnoses_to_create in diagnoses_to_create:
-   diagnoses = Diagnoses.objects.create(**diagnoses_to_create)
-   print("Created Diagnoses:", diagnoses)
+for diagnoses_data in diagnoses_to_create:
+    try:
+        diagnoses = Diagnoses.objects.create(**diagnoses_data)
+        print("Created Diagnoses:", diagnoses)
+    except Exception as e:
+        print("Error creating Diagnoses:", e)
+
+
    
-
-
-
-
-
-

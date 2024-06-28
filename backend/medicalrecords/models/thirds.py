@@ -1,4 +1,6 @@
 from django.db import models
+from .specialities import Specialities
+
 
 ETNIAS_CHOICES = (
     ('N', 'Ninguno'),
@@ -86,7 +88,7 @@ class Thirds(models.Model):
     address = models.CharField(max_length=100)
     zone= models.CharField(max_length=100)
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    speciality=models.ForeignKey('Specialties', on_delete=models.PROTECT)
+    speciality=models.ForeignKey(Specialities, on_delete=models.PROTECT)
     city = models.CharField(max_length=100)
     city_birth = models.CharField(max_length=100)
     maternity_pregnancy = models.CharField(max_length=2, choices=MATERNITY_PREGNANCY_CHOICES)
@@ -95,7 +97,7 @@ class Thirds(models.Model):
     maternity_breasfeeding_complementary = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES)
     maternity_violence = models.CharField(max_length=1, choices=MATERNITY_VIOLANCE_CHOICES)
     ethnicity = models.CharField(max_length=1, choices=ETNIAS_CHOICES)
-    blood_type= models.CharField(max_length=2, choices=BLOOD_CHOICES)
+    blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

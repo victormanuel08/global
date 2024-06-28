@@ -10,7 +10,6 @@ class Cities(models.Model):
     departament= models.CharField(max_length=100)
     
     class Meta:
-        db_table = 'city'
         verbose_name = 'city'
         verbose_name_plural = 'city'
         

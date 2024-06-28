@@ -6,10 +6,9 @@ class Specialities(models.Model):
     description = models.TextField(max_length=300)    
     
     class Meta:
-        db_table = 'speciality'
         verbose_name = 'speciality'
         verbose_name_plural = 'speciality'
         
     def __str__(self):
-        return self.name
+        return self.description
     
