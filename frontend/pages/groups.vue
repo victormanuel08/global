@@ -7,7 +7,13 @@
               <UButton variant="soft" @click="showModal">{{ buttonPermisos }}</UButton>
           </div>
         </template>
-        <table class="table-auto w-full permission-table">
+        <div class="flex justify-center items-center">
+          <h3 v-if="groups.length === 0">No hay grupos</h3>
+        </div>
+        <div  class="flex justify-center items-center" v-if="showPermissionsModal">
+          <h3>Seleccione los permisos de cada Grupo. Recuerde dar click en Guardar en cada Grupo  que haya editado.</h3>
+        </div>
+        <table class="table-auto w-full permission-table" v-if="!showPermissionsModal">
           <thead>
             <tr>
               <th :class="ui.th">Nombre</th>
@@ -43,15 +49,15 @@
           </tbody>
         </table>
       </UCard>
-      <div v-if="showPermissionsModal" >      
-        <permisos ></permisos>
+      <div v-if="showPermissionsModal" >   
+        <permisos></permisos>        
       </div>    
     </div>
   </template>
 
 
 <script setup lang="ts">
-import { permisos } from './permisos.vue';
+import  permisos  from './permisos.vue';
 
 const permissionsByEntity = ref({} as Record<string, any>)
 const allPermisions = ref([] as any[])
@@ -60,11 +66,11 @@ const groups = ref([] as any[])
 const editing = ref(false)
 const newGroupName = ref('')
 const showPermissionsModal = ref(false)
-const buttonPermisos = ref( 'Ocultar Permisos' as 'Ocultar Permisos' | 'Ver Permisos');
-
+const buttonPermisos = ref('');
 
 const showModal = () => {
   showPermissionsModal.value = !showPermissionsModal.value;
+  buttonPermisos.value = showPermissionsModal.value ? 'Ocultar Permisos' : 'Ver Permisos';
 };
 
 const deleteGroup = async (id: number) => {
