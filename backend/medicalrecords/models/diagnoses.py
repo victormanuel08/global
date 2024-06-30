@@ -10,8 +10,8 @@ class Diagnoses(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = 'diagnoses'
-        verbose_name_plural = 'diagnoses'
+        verbose_name = 'Diagnóstico'
+        verbose_name_plural = 'Diagnósticos'
 
     def __str__(self):
         return self.name

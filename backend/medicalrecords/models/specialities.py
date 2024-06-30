@@ -6,8 +6,8 @@ class Specialities(models.Model):
     description = models.TextField(max_length=300)    
     
     class Meta:
-        verbose_name = 'speciality'
-        verbose_name_plural = 'speciality'
+        verbose_name = 'Especialidad'
+        verbose_name_plural = 'Especialidades'
         
     def __str__(self):
         return self.description

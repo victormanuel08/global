@@ -10,8 +10,8 @@ class Cities(models.Model):
     departament= models.CharField(max_length=100)
     
     class Meta:
-        verbose_name = 'city'
-        verbose_name_plural = 'city'
+        verbose_name = 'Ciudad'
+        verbose_name_plural = 'Ciudades'
         
     def __str__(self):
         return self.name

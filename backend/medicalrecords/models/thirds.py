@@ -7,8 +7,7 @@ ETNIAS_CHOICES = (
     ('I', 'Indigena'),
     ('A', 'AfroColombiano'),
     ('G', 'ROM - Gitano'),
-    ('R', 'Raizal'),   
-    # Agrega más opciones según tus necesidades
+    ('R', 'Raizal'),       
 )
 
 SEX_CHOICES = (
@@ -101,10 +100,9 @@ class Thirds(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = 'thirds'
-        verbose_name = 'thirds'
-        verbose_name_plural = 'thirds'
+    class Meta:       
+        verbose_name = 'Tercero'
+        verbose_name_plural = 'Terceros'
 
     def __str__(self):
         return self.name
