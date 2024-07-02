@@ -1,9 +1,8 @@
 <template>
     <div class="max-w-5xl mx-auto ">
-
         <UCard v-for="group in groups" :key="group.id" class="my-2">
             <template #header>
-                <h2 class="font-bold">Grupo {{ group.name }}</h2>
+                <h2 class="font-bold">Grupo {{ group?.name }}</h2>
             </template>
             <table class="table-auto w-full permission-table">
                 <thead>

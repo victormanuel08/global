@@ -10,6 +10,7 @@ class Diagnoses(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Diagnóstico'
         verbose_name_plural = 'Diagnósticos'
 

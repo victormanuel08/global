@@ -6,6 +6,7 @@ class Specialities(models.Model):
     description = models.TextField(max_length=300)    
     
     class Meta:
+        ordering = ['description']
         verbose_name = 'Especialidad'
         verbose_name_plural = 'Especialidades'
         

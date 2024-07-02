@@ -1,6 +1,6 @@
 
 from .models import *
-from .models import Cities, Diagnoses, Records, Specialities, Thirds
+from .models import Cities, Diagnoses, Records, Specialities, Thirds, Scheduled
 from django.contrib import admin
 
 # Register your models here.
@@ -23,6 +23,10 @@ class SpecialitiesAdmin(admin.ModelAdmin):
 
 @admin.register(Thirds)
 class ThirdsAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Scheduled)
+class ScheduledAdmin(admin.ModelAdmin):
     pass
 
 

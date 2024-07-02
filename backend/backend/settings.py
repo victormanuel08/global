@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'medicalrecords',    
     'django_filters',
+    'rest_framework_simplejwt', # La dependencia que usaremos para la autenticación JWT.
 ]
 
 MIDDLEWARE = [
@@ -139,4 +140,14 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter"
     ],
     "DEFAULT_PAGINATION_CLASS": "utils.pagination.DefaultPagination",
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication', # Para poder usar el navegador y autenticarnos (compartir la autenticación con el admin)
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # Para autenticarnos desde el front que es otra app.
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated', # Vamos a poner barrera para que SOLO autenticados puedan acceder
+    ],
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 10,
+    
 }

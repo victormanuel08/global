@@ -7,6 +7,7 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Cities
         fields = '__all__'
+        
 
     
 class DiagnosisSerializer(serializers.ModelSerializer):
@@ -28,4 +29,20 @@ class ThirdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thirds
         fields = '__all__'
+        
+class GeneralExamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeneralExam
+        fields = '__all__'
+        
+class SystemsReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemsReview
+        fields = '__all__'
+        
+class ScheduledSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scheduled
+        fields = '__all__'
+        
         

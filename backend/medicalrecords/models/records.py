@@ -6,6 +6,7 @@ class SystemsReview(models.Model):
     name = models.CharField(max_length=100)
     
     class Meta:
+        ordering = ['name']
         verbose_name = 'Revision de Sistemas'
         verbose_name_plural = 'Revision de Sistemas'
         
@@ -17,6 +18,7 @@ class GeneralExam(models.Model):
     name = models.CharField(max_length=100)
     
     class Meta:
+        ordering = ['name']
         verbose_name = 'Examen General'
         verbose_name_plural = 'Examen General'
     
@@ -26,7 +28,7 @@ class GeneralExam(models.Model):
 class Records(models.Model):
     id = models.AutoField(primary_key=True)
     third_patient = models.ForeignKey(
-        "Thirds",
+        Thirds,
         on_delete=models.PROTECT,
         verbose_name="Paciente",
         related_name="thirds_patient",
@@ -42,7 +44,7 @@ class Records(models.Model):
     types_general_exam = models.ManyToManyField(GeneralExam)  
     allergies = models.BooleanField()    
     third_medic = models.ForeignKey(
-        "Thirds",
+        Thirds,
         on_delete=models.PROTECT,
         verbose_name="Medico",
         related_name="thirds_medic",
@@ -53,7 +55,7 @@ class Records(models.Model):
     date_time = models.DateTimeField(auto_now_add=True)   
     diagnosis = models.ForeignKey(
         "Diagnoses",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Diagnostico",
         related_name="diagnosis",
         limit_choices_to={"diagnoses__name": "Diagnostico"},
@@ -62,7 +64,7 @@ class Records(models.Model):
     )
     diagnosis_1 = models.ForeignKey(
         "Diagnoses",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Primer Diagnostico",
         related_name="diagnosis_1",
         limit_choices_to={"diagnoses__name": "Diagnostico"},
@@ -91,6 +93,7 @@ class Records(models.Model):
     
     
     class Meta:
+        ordering = ['date_time']
         verbose_name = 'Registro'
         verbose_name_plural = 'Registros'
         

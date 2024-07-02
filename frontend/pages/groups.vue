@@ -66,7 +66,7 @@ const groups = ref([] as any[])
 const editing = ref(false)
 const newGroupName = ref('')
 const showPermissionsModal = ref(false)
-const buttonPermisos = ref('');
+const buttonPermisos = ref('Ver Permisos');
 
 const showModal = () => {
   showPermissionsModal.value = !showPermissionsModal.value;

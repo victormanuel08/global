@@ -2,6 +2,7 @@ from django.db import models
 from .specialities import Specialities
 
 
+
 ETNIAS_CHOICES = (
     ('N', 'Ninguno'),
     ('I', 'Indigena'),
@@ -101,6 +102,7 @@ class Thirds(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:       
+        ordering = ['nit']
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
 
