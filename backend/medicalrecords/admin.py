@@ -1,7 +1,8 @@
 
 from .models import *
-from .models import Cities, Diagnoses, Records, Specialities, Thirds, Scheduled
+from .models import Cities, Diagnoses, Records, Specialities, Thirds, Scheduled, SEX_CHOICES,TYPE_CHOICES, BLOOD_CHOICES, MATERNITY_PREGNANCY_CHOICES, MATERNITY_BREASFEEDING_CHOICES, MATERNITY_BREASFEEDING_EXTEND_CHOICES, MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES, MATERNITY_VIOLANCE_CHOICES
 from django.contrib import admin
+
 
 # Register your models here.
 
@@ -29,6 +30,11 @@ class ThirdsAdmin(admin.ModelAdmin):
 class ScheduledAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(GeneralExam)
+class GeneralExamAdmin(admin.ModelAdmin):
+    pass
 
-
+@admin.register(SystemsReview)
+class SystemsReviewAdmin(admin.ModelAdmin):
+    pass
 

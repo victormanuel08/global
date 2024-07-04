@@ -1,7 +1,6 @@
 from django.db import models
 from .specialities import Specialities
-
-
+from datetime import datetime
 
 ETNIAS_CHOICES = (
     ('N', 'Ninguno'),
@@ -80,31 +79,42 @@ class Thirds(models.Model):
     second_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     second_last_name = models.CharField(max_length=100)
-    date_birth= models.DateField()
-    year_old= models.IntegerField()
-    sex= models.CharField(max_length=1, choices=TYPE_CHOICES)
-    email = models.EmailField(max_length=100)
-    phone = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
-    zone= models.CharField(max_length=100)
+    date_birth= models.DateField(null=True, blank=True)
+    year_old= models.IntegerField(null=True, blank=True)
+    sex= models.CharField(max_length=1, choices=SEX_CHOICES)
+    email = models.EmailField(max_length=100, null=True, blank=True)
+    phone = models.CharField(max_length=100, null=True, blank=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    zone= models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
-    speciality=models.ForeignKey(Specialities, on_delete=models.PROTECT)
-    city = models.CharField(max_length=100)
-    city_birth = models.CharField(max_length=100)
-    maternity_pregnancy = models.CharField(max_length=2, choices=MATERNITY_PREGNANCY_CHOICES)
-    maternity_breasfeeding = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_CHOICES)
-    maternity_breasfeeding_extend = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_EXTEND_CHOICES)
-    maternity_breasfeeding_complementary = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES)
-    maternity_violence = models.CharField(max_length=1, choices=MATERNITY_VIOLANCE_CHOICES)
-    ethnicity = models.CharField(max_length=1, choices=ETNIAS_CHOICES)
-    blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES)
+    speciality=models.ForeignKey(Specialities, on_delete=models.PROTECT, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    city_birth = models.CharField(max_length=100, null=True, blank=True)
+    maternity_pregnancy = models.CharField(max_length=2, choices=MATERNITY_PREGNANCY_CHOICES, null=True, blank=True)
+    maternity_breasfeeding = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_CHOICES, null=True, blank=True)
+    maternity_breasfeeding_extend = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_EXTEND_CHOICES, null=True, blank=True)
+    maternity_breasfeeding_complementary = models.CharField(max_length=1, choices=MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES, null=True, blank=True)
+    maternity_violence = models.CharField(max_length=1, choices=MATERNITY_VIOLANCE_CHOICES, null=True, blank=True)
+    ethnicity = models.CharField(max_length=1, choices=ETNIAS_CHOICES, null=True, blank=True)
+    blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def save(self, *args, **kwargs):
+        today = datetime.now().date()
+        birth_date = self.date_birth
 
+        if birth_date:            
+            age = today.year - birth_date.year - int((today.month, today.day) < (birth_date.month, birth_date.day))
+            self.year_old = age
+        else:            
+            self.year_old = None  
+        super(Thirds, self).save(*args, **kwargs)
+    
     class Meta:       
         ordering = ['nit']
         verbose_name = 'Tercero'
         verbose_name_plural = 'Terceros'
 
     def __str__(self):
-        return self.name
+        return self.nit

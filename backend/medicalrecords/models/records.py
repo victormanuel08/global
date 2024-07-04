@@ -1,5 +1,5 @@
 from django.db import models
-from .thirds import Thirds
+
 
 class SystemsReview(models.Model):
     code = models.CharField(max_length=2, unique=True)
@@ -28,27 +28,27 @@ class GeneralExam(models.Model):
 class Records(models.Model):
     id = models.AutoField(primary_key=True)
     third_patient = models.ForeignKey(
-        Thirds,
+        'Thirds',
         on_delete=models.PROTECT,
         verbose_name="Paciente",
         related_name="thirds_patient",
-        limit_choices_to={"thirds__name": "Paciente"},
+        #limit_choices_to={"thirds__name": "Paciente"},
         null=True,
         blank=True,
     )  
-    reason_consultation = models.CharField(max_length=100)
-    history = models.CharField(max_length=100)    
-    systems_review = models.CharField(max_length=100)    
-    general_exam = models.CharField(max_length=100)         
+    reason_consultation = models.CharField(max_length=100,null=True, blank=True)
+    history = models.CharField(max_length=100,null=True, blank=True)    
+    systems_review = models.CharField(max_length=100,null=True, blank=True)    
+    general_exam = models.CharField(max_length=100,null=True, blank=True)         
     types_systems_review = models.ManyToManyField(SystemsReview)
     types_general_exam = models.ManyToManyField(GeneralExam)  
-    allergies = models.BooleanField()    
+    allergies = models.BooleanField(null=True, blank=True)    
     third_medic = models.ForeignKey(
-        Thirds,
+        'Thirds',
         on_delete=models.PROTECT,
         verbose_name="Medico",
         related_name="thirds_medic",
-        limit_choices_to={"thirds__name": "Medico"},
+        #limit_choices_to={"thirds__name": "Medico"},
         null=True,
         blank=True,
     )     
@@ -58,7 +58,7 @@ class Records(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Diagnostico",
         related_name="diagnosis",
-        limit_choices_to={"diagnoses__name": "Diagnostico"},
+        #limit_choices_to={"diagnoses__name": "Diagnostico"},
         null=True,
         blank=True,
     )
@@ -67,7 +67,7 @@ class Records(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Primer Diagnostico",
         related_name="diagnosis_1",
-        limit_choices_to={"diagnoses__name": "Diagnostico"},
+        #limit_choices_to={"diagnoses__name": "Diagnostico"},
         null=True,
         blank=True,
     )
@@ -76,7 +76,7 @@ class Records(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Segundo Diagnostico",
         related_name="diagnosis_2",
-        limit_choices_to={"diagnoses__name": "Diagnostico"},
+        #limit_choices_to={"diagnoses__name": "Diagnostico"},
         null=True,
         blank=True,
     )
@@ -85,7 +85,7 @@ class Records(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Tercer Diagnostico",
         related_name="diagnosis_3",
-        limit_choices_to={"diagnoses__name": "Diagnostico"},
+        #limit_choices_to={"diagnoses__name": "Diagnostico"},
         null=True,
         blank=True,
     )
@@ -98,5 +98,5 @@ class Records(models.Model):
         verbose_name_plural = 'Registros'
         
     def __str__(self):
-        return self.reason_consultation
+        return self.diagnosis.name
     

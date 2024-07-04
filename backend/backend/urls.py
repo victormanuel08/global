@@ -14,6 +14,7 @@ router.register('diagnoses', DiagnosisViewSet)
 router.register('records', RecordViewSet)
 router.register('specialities', SpecialityViewSet)
 router.register('thirds', ThirdViewSet)
+router.register('scheduleds', ScheduledViewSet)
 router.register('auth/groups', GroupViewSet)
 router.register('auth/users', UserViewSet)
 router.register('general_exam', GeneralExamViewSet)
@@ -27,6 +28,7 @@ urlpatterns = [
     path('auth/permissions/', PermissionListView.as_view()), # Esto no es una viewset, es una vista solo de leer, no se registra en el router
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
     path('', include(router.urls)),
 ]
 

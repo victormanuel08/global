@@ -1,116 +1,194 @@
 <template>
-  <div class="max-w-5xl mx-auto">
-    <UCard class="my-2">
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h2 class="font-bold">Terceros</h2>          
+    <div class="max-w-5xl mx-auto">
+      <UCard class="my-2">
+        <template #header>
+          <div class="flex justify-between items-center">
+            <h2 class="font-bold">Terceros</h2>
+            <div class="flex gap-3 my-3">
+                <UInput v-model="search" placeholder="Buscar" />
+                <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
+            </div>
+          </div>
+        </template>
+        <div class="flex justify-center items-center">
+          <h3 v-if="thirds.length === 0">No hay Tecreros</h3>
         </div>
-      </template>
-      <div class="flex justify-center items-center">
-        <h3 v-if="thirds.length === 0">No hay Terceros</h3>
-      </div>
-      <div class="flex justify-center items-center" v-if="showPermissionsModal">
-        <h3>Texto Disponible.</h3>
-      </div>
-      <table class="table-auto w-full permission-table" v-if="!showPermissionsModal">
-        <thead>
-          <tr>            
-            <th :class="ui.th">Identificacion</th>
-            <th :class="ui.th">Nombre</th>
-            <th :class="ui.th">Apellido</th>
-            <th :class="ui.th">Tipo</th>
-            <th :class="ui.th">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(third, index) in thirds" :key="index">            
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="third.nit" @blur="saveItem(index,'identification',third.identification)" 
-                  class="border rounded p-1 w-20" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="third.name" @blur="saveItem(index, 'name', third.name)" 
-                  class="border rounded p-1 w-20" />
-                <input v-model="third.second_name" @blur="saveItem(index, 'second_name', third.second_name)"
-                  class="border rounded p-1 w-20" />              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="third.last_name" @blur="saveItem(index, 'last_name', third.last_name)"
-                  class="border rounded p-1 w-20" />
-                <input v-model="third.second_last_name"
-                  @blur="saveItem(index, 'second_last_name', third.second_last_name)" class="border rounded p-1" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="third.nit" @blur="saveItem(index,'identification',third.identification)" 
-                  class="border rounded p-1 w-20" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <span @click="" :class="ui.span">✏️</span>
-                <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
-              </div>
-            </td>
+        <div>
+          
+        </div>        
+        <table class="table-auto w-full permission-table">
+          <thead>
+            <tr>
+              <th :class="ui.th">Identificacion</th>
+              <th :class="ui.th">Nombre</th>
+              <th :class="ui.th">Apellidos</th>
+              <th :class="ui.th">varios</th>
+              <th :class="ui.th">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>            
+            
+            <tr v-for="(third, index) in thirds" :key="index">
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <input v-model="third.nit" @blur="saveItem(index,'nit',third.name)" class="border rounded p-1 w-20" /></div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <input v-model="third.name" @blur="saveItem(index,'name',third.name)" class="border rounded p-1 w-20" />
+                  <input v-model="third.second_name" @blur="saveItem(index,'second_name',third.second_name)" class="border rounded p-1 w-20" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <input v-model="third.last_name" @blur="saveItem(index,'last_name',third.last_name)" class="border rounded p-1 w-20" />
+                  <input v-model="third.second_last_name" @blur="saveItem(index,'second_name',third.second_last_name)" class="border rounded p-1 w-20" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <select v-model="third.sex" @change="saveItem(index, 'sex', third.sex)" class="border rounded p-1 w-24">
+                    <option v-for="option in sex_list" :key="option[0]" :value="option[0]">
+                      {{ option[1] }}
+                    </option>
+                  </select>
+                  <select v-model="third.type" @change="saveItem(index, 'type', third.type)" class="border rounded p-1 w-24">
+                    <option v-for="option in type_list" :key="option[0]" :value="option[0]">
+                      {{ option[1] }}
+                    </option>
+                  </select>
+                  <select v-model="third.blood_type" @change="saveItem(index, 'blood_type', third.blood_type)" class="border rounded p-1 w-14">
+                    <option v-for="option in blood_list" :key="option[0]" :value="option[0]">
+                      {{ option[1] }}
+                    </option>
+                  </select>
+                </div>
 
-          </tr>
-          <tr>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="newGroupName" placeholder="Nuevo grupo" class="border rounded p-1" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="newGroupName" placeholder="Nuevo grupo" class="border rounded p-1" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="newGroupName" placeholder="Nuevo grupo" class="border rounded p-1" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <input v-model="newGroupName" placeholder="Nuevo grupo" class="border rounded p-1" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">                
-                <span @click="createGroup" :class="ui.span">💾</span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </UCard>
-
-  </div>
-</template>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <span @click="showModalThird(third.id)" :class="ui.span">🖊️</span>
+                  <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
+                </div>
+              </td>
+            </tr> 
+           
+            <tr>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <input v-model="newThirdNit" placeholder="Identificacion" class="border rounded p-1 w-20" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <input v-model="newThirdName" placeholder="Nombre" class="border rounded p-1 w-20"/>
+                  <input v-model="newThirdSecondName" placeholder="Segundo Nombre" class="border rounded p-1 w-20" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <input v-model="newThirdLastName" placeholder="Apellido" class="border rounded p-1 w-20" />
+                  <input v-model="newThirdSecondLastName" placeholder="Segundo Apellido" class="border rounded p-1 w-20" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <select v-model="newThirdSex" placeholder="Sexo" class="border rounded p-1 w-24">
+                    <option v-for="option in sex_list" :key="option[0]" :value="option[0]">
+                      {{ option[1] }}
+                    </option>
+                  </select>
+                  <select v-model="newThirdType" placeholder="Etnia" class="border rounded p-1 w-24">
+                    <option v-for="option in type_list" :key="option[0]" :value="option[0]">
+                      {{ option[1] }}
+                    </option>
+                  </select>
+                  <select v-model="newThirdBlood" placeholder="Rh" class="border rounded p-1 w-14">
+                    <option v-for="option in blood_list" :key="option[0]" :value="option[0]">
+                      {{ option[1] }}
+                    </option>
+                  </select>
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <span @click="createThird" :class="ui.span">💾</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </UCard>   
+    </div>
+  </template>
 
 
 <script setup lang="ts">
 
-const buttonPermisos = ref('');
+//const cities = ref([] as any[])
+const newThirdNit = ref('')
+const newThirdName = ref('')
+const newThirdSecondName = ref('')
+const newThirdLastName = ref('')
+const newThirdSecondLastName = ref('')
+const newThirdType = ref('')
+const newThirdSex = ref('')
+const newThirdBlood = ref('')
+const blood_list = ref({})
+const etnias_list = ref({})
+const sex_list = ref({})
+const maternity_breasfeeding_list = ref({})
+const maternity_breastfeeding_complementary_list = ref({})
+const maternity_breastfeeding_extend_list = ref({})
+const maternity_pregnancy_list = ref({})
+const maternity_violence_list = ref({})
+const type_list = ref({})
 
-const thirds = ref([] as any[])
+//const search = ref('')
 
-const showModal = () => {
-  buttonPermisos.value = 'Ocultar'
+
+
+const {
+    data: thirds ,
+    pagination,
+    search ,
+    pending,
+} = usePaginatedFetch<any>("/api/thirds/");
+
+const fetchThirds = async () => {
+  const {
+    data: thirds ,
+    pagination,
+    search ,
+    pending,
+  } = usePaginatedFetch<any>("/api/thirds/");
+
+  console .log('fetchThirds',thirds.value)
+  
 }
 
-const showPermissionsModal = ref(false)
+const fetchChoices = async () => {
+  const response = await $fetch<any>('api/api/choices/')
+  blood_list.value = response.BLOOD_CHOICES
+  etnias_list.value = response.ETNIAS_CHOICES
+  maternity_breasfeeding_list.value = response.MATERNITY_BREASTFEEDING_CHOICES
+  maternity_breastfeeding_complementary_list.value = response.MATERNITY_BREASTFEEDING_COMPLEMENTARY_CHOICES
+  maternity_breastfeeding_extend_list.value = response.MATERNITY_BREASTFEEDING_EXTEND_CHOICES
+  maternity_pregnancy_list.value = response.MATERNITY_PREGNANCY_CHOICES
+  maternity_violence_list.value = response.MATERNITY_VIOLENCE_CHOICES
+  type_list.value = response.TYPE_CHOICES
+  sex_list.value = response.SEX_CHOICES
+  console.log('fetchChoices',response)
+}
 
 const deleteThird = async (id: number) => {
-  await $fetch(`api/auth/thirds/${id}`, {
-    method: 'DELETE'
-  })
-  fetchThirds()
+    const message = confirm('¿Estás seguro de eliminar este Tercero?')
+    if (message) {
+        const response = await $fetch(`api/thirds/${id}/`, {
+            method: 'DELETE'
+        })
+        fetchThirds()
+    }
 }
 
 
@@ -118,30 +196,70 @@ const deleteThird = async (id: number) => {
 const saveItem = async (index: number, field: string, value: string) => {
   const third = thirds.value[index];
   third[field] = value;
-  await $fetch(`api/thirds/${third.id}`, {
+  const response = await $fetch(`api/thirds/${third.id}`, {
     method: 'PATCH',
     body: JSON.stringify({
       [field]: value,
     }),
   });
+    fetchThirds();
 };
 
+const createThird = async () => {
+    const message = confirm('¿Estás seguro de crear este Tercero?')
 
-const fetchThirds = async () => {
-  const response = await $fetch<any>('api/thirds?page_size=1000')
-  thirds.value = response.results
+    if (!message){
+        newThirdNit.value = ''
+        newThirdName.value = ''
+        newThirdSecondName.value = ''
+        newThirdLastName.value = ''
+        newThirdSecondLastName.value = ''
+        newThirdType.value = ''
+        newThirdSex.value = ''
+        newThirdBlood.value = ''
+        fetchThirds()
+        return
+    }
+    
+    const response = await $fetch('api/thirds/', {
+        method: 'POST',
+        body: {
+          nit: newThirdNit.value,
+          name: newThirdName.value,
+          second_name: newThirdSecondName.value,
+          last_name: newThirdLastName.value,
+          second_last_name: newThirdSecondLastName.value,
+          type: newThirdType.value,
+          blood_type: newThirdBlood.value, 
+          sex: newThirdSex.value
+
+        },
+    })
+    fetchThirds()
+    newThirdNit.value = ''
+    newThirdName.value = ''
+    newThirdSecondName.value = ''
+    newThirdLastName.value = ''
+    newThirdSecondLastName.value = ''
+    newThirdType.value = ''    
+    newThirdSex.value = ''
+    newThirdBlood.value = ''
+}
+
+const showModalThird = async (id: number) => {
+    showModalThird.value = id
 }
 
 onMounted(() => {
-  fetchThirds()
-  console.log('thirds', thirds)
+   fetchThirds()
+   fetchChoices()
 })
 
 const ui = {
-  td: 'p-1 border',
-  th: 'p-2 border',
-  check: 'align-center justify-center',
-  span: 'cursor-pointer'
+    td: 'p-1 border',
+    th: 'p-2 border',
+    check: 'align-center justify-center',
+    span: 'cursor-pointer'
 }
 
 </script>

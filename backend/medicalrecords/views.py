@@ -2,6 +2,9 @@ from .models import *
 from .serializers import *
 from .models import Cities, Diagnoses, Records, Specialities, Thirds, GeneralExam, SystemsReview, Scheduled
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
     
 class CityViewSet(viewsets.ModelViewSet):
@@ -27,7 +30,9 @@ class SpecialityViewSet(viewsets.ModelViewSet):
 class ThirdViewSet(viewsets.ModelViewSet):
     queryset = Thirds.objects.all()
     serializer_class = ThirdSerializer
-    search_fields = ['name','last_name','second_name','second_last_name' 'nit', 'email', 'phone', 'address', 'city', 'speciality_id']
+    search_fields = ['name','last_name','second_name','second_last_name' 'nit', 'email', 'phone', 'address', 'city', 'speciality_id','type']
+    filterset_fields = ['type','speciality'] # Aqui no hace falta poner citi_id, es obvio que si le pones city le vas a pasar el id
+
     
 class GeneralExamViewSet(viewsets.ModelViewSet):
     queryset = GeneralExam.objects.all()
@@ -42,7 +47,22 @@ class SystemsReviewViewSet(viewsets.ModelViewSet):
 class ScheduledViewSet(viewsets.ModelViewSet):
     queryset = Scheduled.objects.all()
     serializer_class = ScheduledSerializer
-    search_fields = ['date', 'time', 'reason', 'record_id', 'third_id', 'speciality_id', 'city_id']
+    search_fields = ['date', 'time', 'third_patient_id', 'third_medic_id']
 
+class ChoicesAPIView(APIView):
     
-
+    def get(self, request):
+        choices_data = {
+            "TYPE_CHOICES": TYPE_CHOICES,
+            "BLOOD_CHOICES": BLOOD_CHOICES,
+            "MATERNITY_PREGNANCY_CHOICES": MATERNITY_PREGNANCY_CHOICES,
+            "MATERNITY_BREASFEEDING_CHOICES": MATERNITY_BREASFEEDING_CHOICES,
+            "MATERNITY_BREASFEEDING_EXTEND_CHOICES": MATERNITY_BREASFEEDING_EXTEND_CHOICES,
+            "MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES": MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES,
+            "MATERNITY_VIOLANCE_CHOICES": MATERNITY_VIOLANCE_CHOICES,
+            "ETNIAS_CHOICES": ETNIAS_CHOICES,
+            "SEX_CHOICES": SEX_CHOICES,
+            "TYPE_CHOICES": TYPE_CHOICES,
+        }
+        return Response(choices_data, status=status.HTTP_200_OK)
+        
