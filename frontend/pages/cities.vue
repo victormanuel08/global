@@ -27,21 +27,20 @@
             <tr v-for="(citie, index) in cities" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="citie.name" @blur="saveItem(index,'name',citie.name)" class="border rounded p-1 " />
-
-                  <input v-model="citie.municipality_dane_code" @blur="saveItem(index,'municipality_dane_code',citie.municipality_dane_code)" class="border rounded p-1 w-14" />
+                  <UInput v-model="citie.name" @blur="saveItem(index,'name',citie.name)" class="border rounded p-1 " />
+                  <UInput v-model="citie.municipality_dane_code" @blur="saveItem(index,'municipality_dane_code',citie.municipality_dane_code)" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="citie.departament" @blur="saveItem(index,'departament',citie.departament)" class="border rounded p-1" />
+                  <UInput v-model="citie.departament" @blur="saveItem(index,'departament',citie.departament)" class="border rounded p-1" />
 
-                  <input v-model="citie.departament_dane_code" @blur="saveItem(index,'departament_dane_code',citie.departament_dane_code)" class="border rounded p-1 w-10" />
+                  <UInput v-model="citie.departament_dane_code" @blur="saveItem(index,'departament_dane_code',citie.departament_dane_code)" class="border rounded p-1 w-10" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="citie.region" @blur="saveItem(index,'region',citie.region)" class="border rounded p-1 w-auto" />
+                  <UInput v-model="citie.region" @blur="saveItem(index,'region',citie.region)" class="border rounded p-1 w-auto" />
                 </div>
 
               </td>
@@ -55,17 +54,17 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newCitieName" placeholder="Ciudad" class="border rounded p-1" />
+                  <UInput v-model="newCitieName" placeholder="Ciudad" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newCitieDepartament" placeholder="Departamento" class="border rounded p-1" />
+                  <UInput v-model="newCitieDepartament" placeholder="Departamento" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newCitieRegion" placeholder="Region" class="border rounded p-1" />
+                  <UInput v-model="newCitieRegion" placeholder="Region" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">

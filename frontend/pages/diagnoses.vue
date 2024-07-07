@@ -27,18 +27,18 @@
             <tr v-for="(diagnose, index) in diagnoses" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="diagnose.code" @blur="saveItem(index,'code',diagnose.code)" class="border rounded p-1 w-14" />
-                  <input v-model="diagnose.name" @blur="saveItem(index,'name',diagnose.name)" class="border rounded p-1 " />
+                  <UInput v-model="diagnose.code" @blur="saveItem(index,'code',diagnose.code)" class="border rounded p-1 w-14" />
+                  <UInput v-model="diagnose.name" @blur="saveItem(index,'name',diagnose.name)" class="border rounded p-1 " />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="diagnose.description" @blur="saveItem(index,'description',diagnose.description)" class="border rounded p-1" />
+                  <UInput v-model="diagnose.description" @blur="saveItem(index,'description',diagnose.description)" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="diagnose.extra" @blur="saveItem(index,'extra',diagnose.extra)" class="border rounded p-1 w-auto" />
+                  <UInput v-model="diagnose.extra" @blur="saveItem(index,'extra',diagnose.extra)" class="border rounded p-1 w-auto" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -51,18 +51,18 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newDiagnoseCode" placeholder="Codigo" class="border rounded p-1 w-14" />
-                  <input v-model="newDiagnoseName" placeholder="Nombre" class="border rounded p-1" />
+                  <UInput v-model="newDiagnoseCode" placeholder="Codigo" class="border rounded p-1 w-14" />
+                  <UInput v-model="newDiagnoseName" placeholder="Nombre" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newDiagnoseDescription" placeholder="Descripcion" class="border rounded p-1" />
+                  <UInput v-model="newDiagnoseDescription" placeholder="Descripcion" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newDiagnoseExtra" placeholder="Extra" class="border rounded p-1" />
+                  <UInput v-model="newDiagnoseExtra" placeholder="Extra" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">

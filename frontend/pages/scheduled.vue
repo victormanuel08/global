@@ -22,8 +22,7 @@
             <th :class="ui.th">Fecha</th>
             <th :class="ui.th">Especialidad</th>
             <th :class="ui.th">Medico</th>
-            <th :class="ui.th">Paciente</th>
-            <th :class="ui.th">Confirmado</th>
+            <th :class="ui.th">Paciente</th>            
             <th :class="ui.th">Acciones</th>
           </tr>
         </thead>
@@ -31,6 +30,10 @@
           <tr v-for="(scheduled, index) in scheduleds" :key="index">
             <td :class="ui.td">
               <div class="flex items-center justify-center">
+                <span  :class="ui.span">
+                  <template v-if="scheduled.confirmed">✅</template>
+                  <template v-else>❌</template>
+                </span>
                 <UInput type="date" v-model="scheduled.date" @blur="saveItem(index, 'date', scheduled.date)"
                   class="border rounded p-1 w-30" />
                 <UInput type="time" v-model="scheduled.time" @blur="saveItem(index, 'time', scheduled.time)"
@@ -39,44 +42,47 @@
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <SelectSpecialities v-model="scheduled.speciality_full" class="border rounded p-1 w-60" />
+                <SelectSpecialities 
+                  v-model="scheduled.speciality_full" 
+                  class="border rounded p-1 w-60" 
+                  @change = "showAlert"/>
               </div>
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <SelectThird :third-type="'M'" class="border rounded p-1 w-30" v-model="scheduled.third_medic_full">
+                <SelectThird 
+                  :third-type="'M'" 
+                  class="border rounded p-1 w-28"  
+                  v-model="scheduled.third_medic_full" 
+                  :specialities="scheduled.speciality_full" 
+                  @change="saveItem(index, 'third_medic', scheduled.third_medic_full.id)">
                 </SelectThird>
+                <span  :class="ui.span" :title="scheduled.third_medic_full?.name + ' ' + scheduled.third_medic_full?.second_name + ' ' + scheduled.third_medic_full?.last_name + ' ' + scheduled.third_medic_full?.second_last_name">ℹ️</span>
               </div>
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <SelectThird :third-type="'P'" class="border rounded p-1 w-30" v-model="scheduled.third_patient_full">
+                <SelectThird :third-type="'P'" class="border rounded p-1 w-28"  v-model="scheduled.third_patient_full">
                 </SelectThird>
+                <span  :class="ui.span" :title="scheduled.third_patient_full?.name + ' ' + scheduled.third_patient_full?.second_name + ' ' + scheduled.third_patient_full?.last_name + ' ' + scheduled.third_patient_full?.second_last_name">ℹ️</span>
               </div>
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <UCheckbox :class="ui.check" v-model="scheduled.confirmed" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <span @click="confirmScheduled(scheduled.id, scheduled.confirmed)" :class="ui.span">
-                  <template v-if="scheduled.confirmed">✅</template>
-                  <template v-else>❌</template>
+                <span @click="confirmScheduled(scheduled.id, scheduled.confirmed)" :class="ui.span" title="Confirmar o desconfirmar">
+                  <template v-if="scheduled.confirmed">❌</template>
+                  <template v-else>✅</template>
                 </span>
-                <span @click="addHistory(scheduled.id)" :class="ui.span">📝</span>
-                <span @click="deleteScheduled(scheduled.id)" :class="ui.span">🗑️</span>
+                <span @click="addHistory(scheduled.id)" :class="ui.span" title="Agregar Historia Medica">📝</span>
+                <span @click="deleteScheduled(scheduled.id)" :class="ui.span" title="Eliminar">🗑️</span>
               </div>
             </td>
           </tr>
           <tr>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <UInput type="date" v-model="newScheduledDate" class="border rounded p-1 w-30"
-                  :value="getCurrentDate()" />
-                <UInput type="time" v-model="newScheduledTime" class="border rounded p-1 w-30"
-                  :value="getCurrentTime()" />
+                <UInput type="date" v-model="newScheduledDate" class="border rounded p-1 w-30" />
+                <UInput type="time" v-model="newScheduledTime" class="border rounded p-1 w-30" />
               </div>
             </td>
             <td :class="ui.td">
@@ -86,7 +92,7 @@
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities="newScheduledSpeciality"
+                <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities ="newScheduledSpeciality"
                   v-model="newScheduledMedic">
                 </SelectThird>
               </div>
@@ -95,11 +101,6 @@
               <div class="flex items-center justify-center">
                 <SelectThird :third-type="'P'" class="border rounded p-1 w-28" v-model="newScheduledPatient">
                 </SelectThird>
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-
               </div>
             </td>
             <td :class="ui.td">
@@ -118,11 +119,12 @@
 <script setup lang="ts">
 
 //const cities = ref([] as any[])
-const newScheduledDate = ref('')
-const newScheduledTime = ref('')
+const newScheduledDate = ref(getCurrentDate())
+const newScheduledTime = ref(getCurrentTime())
 const newScheduledSpeciality = ref({})
 const newScheduledPatient = ref({})
 const newScheduledMedic = ref({})
+const specialities = ref({})
 
 const toast = useToast()
 
@@ -144,6 +146,10 @@ const fetchScheduleds = async () => {
   console.log('fetchRecords', scheduleds.value)
 }
 
+const showAlert = () => {
+  alert('Se ha cambiado la especialidad, por favor seleccione un médico par poder guardar los cambios');
+}
+
 const deleteScheduled = async (id: number) => {
   const message = confirm('¿Estás seguro de eliminar esta Cita?')
   if (message) {
@@ -157,21 +163,34 @@ const deleteScheduled = async (id: number) => {
 const saveItem = async (index: number, field: string, value: string) => {
   const scheduled = scheduleds.value[index];
   scheduled[field] = value;
-  const response = await $fetch(`api/scheduleds/${scheduled.id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      [field]: value,
-    }),
-  });
+  try {
+    const apiUrl = `api/scheduleds/${scheduled.id}`;
+    const response = await $fetch(apiUrl, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        [field]: value,
+        ...(field === 'third_medic' ? { speciality: scheduled.speciality_full.id } : {}),
+      }), 
+    });
+
+    fetchScheduleds();
+    
+  } catch (error) {
+    console.error('Error al actualizar el elemento:', error);
+  }
   fetchScheduleds();
 };
 
+
 const createScheduled = async () => {
   const message = confirm('¿Estás seguro de crear esta Cita?');
+  console.log('newScheduledDate', newScheduledDate.value)
+  console.log('newScheduledTime', newScheduledTime.value)
 
   if (!message) {
-    newScheduledDate.value = '';
-    newScheduledTime.value = '';
+    newScheduledDate.value = getCurrentDate();
+    newScheduledTime.value = getCurrentTime();
+    newScheduledSpeciality.value = '';
     newScheduledPatient.value = '';
     newScheduledMedic.value = '';
     fetchScheduleds();
@@ -184,20 +203,21 @@ const createScheduled = async () => {
       body: {
         date: newScheduledDate.value,
         time: newScheduledTime.value,
-        third_patient: newScheduledPatient.value,
-        third_medic: newScheduledMedic.value,
+        speciality: newScheduledSpeciality.value.id,
+        third_patient: newScheduledPatient.value.id,
+        third_medic: newScheduledMedic.value.id,
+        confirmed: false
       },
     });
     fetchScheduleds();
-    newScheduledDate.value = '';
-    newScheduledTime.value = '';
+    newScheduledDate.value = getCurrentDate();
+    newScheduledTime.value = getCurrentTime();
+    newScheduledSpeciality.value = '';
     newScheduledPatient.value = '';
     newScheduledMedic.value = '';
-    // Mostrar un mensaje de éxito (toast)
     toast.add({ title: 'Cita creada con éxito!' })
     
   } catch (error) {
-    // Mostrar un mensaje de error (toast)
     toast.add({ title: 'Error al crear la cita' })
     console.error('Error al crear la cita:', error);
   }

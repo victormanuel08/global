@@ -31,37 +31,61 @@
             <tr v-for="(third, index) in thirds" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="third.nit" @blur="saveItem(index,'nit',third.name)" class="border rounded p-1 w-20" /></div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <input v-model="third.name" @blur="saveItem(index,'name',third.name)" class="border rounded p-1 w-20" />
-                  <input v-model="third.second_name" @blur="saveItem(index,'second_name',third.second_name)" class="border rounded p-1 w-20" />
+                  <UInput 
+                    v-model="third.nit" 
+                    @blur="saveItem(index,'nit',third.nit)" 
+                    class="border rounded p-1 w-20" 
+                  />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="third.last_name" @blur="saveItem(index,'last_name',third.last_name)" class="border rounded p-1 w-20" />
-                  <input v-model="third.second_last_name" @blur="saveItem(index,'second_name',third.second_last_name)" class="border rounded p-1 w-20" />
+                  <UInput 
+                    v-model="third.name"
+                    @blur="saveItem(index,'name',third.name)" 
+                    class="border rounded p-1 w-20" 
+                  />
+                  <UInput v-model="third.second_name" 
+                    @blur="saveItem(index,'second_name',third.second_name)" 
+                    class="border rounded p-1 w-20" 
+                  />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <select v-model="third.sex" @change="saveItem(index, 'sex', third.sex)" class="border rounded p-1 w-24">
-                    <option v-for="option in sex_list" :key="option[0]" :value="option[0]">
+                  <UInput 
+                    v-model="third.last_name" 
+                    @blur="saveItem(index,'last_name',third.last_name)" 
+                    class="border rounded p-1 w-20" 
+                  />
+                  <UInput 
+                    v-model="third.second_last_name" 
+                    @blur="saveItem(index,'second_last_name',third.second_last_name)" 
+                    class="border rounded p-1 w-20"
+                  />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  
+                  <Select v-model="third.sex" @change="saveItem(index, 'sex', third.sex)" class="border rounded p-1 w-24">
+                    <option v-for="option in sex_list" :key="option[0]" :value="third.sex">
                       {{ option[1] }}
                     </option>
-                  </select>
-                  <select v-model="third.type" @change="saveItem(index, 'type', third.type)" class="border rounded p-1 w-24">
-                    <option v-for="option in type_list" :key="option[0]" :value="option[0]">
+                  </Select>
+                  <USelect v-model="third.type" @change="saveItem(index, 'type', third.type)" class="border rounded p-1 w-24">
+                    <option v-for="option in type_list" :key="option[0]" :value="third.type">
                       {{ option[1] }}
                     </option>
-                  </select>
-                  <select v-model="third.blood_type" @change="saveItem(index, 'blood_type', third.blood_type)" class="border rounded p-1 w-14">
-                    <option v-for="option in blood_list" :key="option[0]" :value="option[0]">
-                      {{ option[1] }}
-                    </option>
-                  </select>
+                  </USelect>
+                  <USelect 
+                    v-model="third.blood_type" 
+                    :option-attribute = [0]
+                    @change="saveItem(index, 'blood_type', third.blood_type)" 
+                    class="border rounded p-1 w-14"
+                    :options="blood_list"
+                  >
+                  </USelect>
                 </div>
 
               </td>
@@ -76,38 +100,38 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newThirdNit" placeholder="Identificacion" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdNit" placeholder="Identificacion" class="border rounded p-1 w-20" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newThirdName" placeholder="Nombre" class="border rounded p-1 w-20"/>
-                  <input v-model="newThirdSecondName" placeholder="Segundo Nombre" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdName" placeholder="Nombre" class="border rounded p-1 w-20"/>
+                  <UInput v-model="newThirdSecondName" placeholder="Segundo Nombre" class="border rounded p-1 w-20" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newThirdLastName" placeholder="Apellido" class="border rounded p-1 w-20" />
-                  <input v-model="newThirdSecondLastName" placeholder="Segundo Apellido" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdLastName" placeholder="Apellido" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdSecondLastName" placeholder="Segundo Apellido" class="border rounded p-1 w-20" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <select v-model="newThirdSex" placeholder="Sexo" class="border rounded p-1 w-24">
+                  <Select v-model="newThirdSex" placeholder="Sexo" class="border rounded p-1 w-24">
                     <option v-for="option in sex_list" :key="option[0]" :value="option[0]">
                       {{ option[1] }}
                     </option>
-                  </select>
-                  <select v-model="newThirdType" placeholder="Etnia" class="border rounded p-1 w-24">
+                  </Select>
+                  <Select v-model="newThirdType" placeholder="Etnia" class="border rounded p-1 w-24">
                     <option v-for="option in type_list" :key="option[0]" :value="option[0]">
                       {{ option[1] }}
                     </option>
-                  </select>
-                  <select v-model="newThirdBlood" placeholder="Rh" class="border rounded p-1 w-14">
+                  </Select>
+                  <Select v-model="newThirdBlood" placeholder="Rh" class="border rounded p-1 w-14">
                     <option v-for="option in blood_list" :key="option[0]" :value="option[0]">
                       {{ option[1] }}
                     </option>
-                  </select>
+                  </Select>
                 </div>
               </td>
               <td :class="ui.td">
@@ -202,6 +226,7 @@ const saveItem = async (index: number, field: string, value: string) => {
       [field]: value,
     }),
   });
+  console.log('saveItem',response)
     fetchThirds();
 };
 

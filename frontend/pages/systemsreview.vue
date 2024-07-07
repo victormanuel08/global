@@ -26,12 +26,12 @@
             <tr v-for="(systemsreview, index) in systemsreviews" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="systemsreview.code" @blur="saveItem(index,'code',systemsreview.code)" class="border rounded p-1 w-14" />
+                  <UInput v-model="systemsreview.code" @blur="saveItem(index,'code',systemsreview.code)" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="systemsreview.name" @blur="saveItem(index,'name',systemsreview.name)" class="border rounded p-1" />
+                  <UInput v-model="systemsreview.name" @blur="saveItem(index,'name',systemsreview.name)" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -44,12 +44,12 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newSystemsReviewCode" placeholder="Codigo" class="border rounded p-1 w-14" />
+                  <UInput v-model="newSystemsReviewCode" placeholder="Codigo" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newSystemsReviewName" placeholder="Nombre" class="border rounded p-1" />
+                  <UInput v-model="newSystemsReviewName" placeholder="Nombre" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">

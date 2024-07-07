@@ -22,14 +22,14 @@ export const usePaginatedFetch = <T>(url: string | Ref<string>, filters=ref({}) 
 
   const { page, pageSize, resultsCount } = toRefs(pagination);
 
-  //const sanitizedFilters = computed(() => usePickBy(filters.value, (value: any) => Boolean(value)));
-
+  const sanitizedFilters = computed(() => (filters.value, (value: any) => Boolean(value)));
+  // const sanitizedFilters = computed(() => usePickBy(filters.value, (value: any) => Boolean(value)));
   const query = computed(() => {
     return {
       page: page.value,
       page_size: pageSize.value,
       search: search.value,
-      //...sanitizedFilters.value
+      ...sanitizedFilters.value
     };
   })
 

@@ -24,7 +24,7 @@
             <tr v-for="(group, index) in groups" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="group.name" @blur="saveName(index)" class="border rounded p-1" />
+                  <UInput v-model="group.name" @blur="saveName(index)" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -37,7 +37,7 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newGroupName" placeholder="Nuevo grupo" class="border rounded p-1" />
+                  <UInput v-model="newGroupName" placeholder="Nuevo grupo" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -105,7 +105,6 @@ const saveName = async (index: number) => {
   const group = groups.value[index];
   const isNewGroup = group.id === 0; 
   const userConfirmed = confirm('¿Deseas guardar los cambios en el nombre del grupo?');
-
   if (userConfirmed) {
     try {
       if (isNewGroup) {
@@ -123,16 +122,18 @@ const saveName = async (index: number) => {
           },
         });
       }
-      fetchGroups();
+      
       editing.value = false;
     } catch (error) {
       console.error('Error al guardar los cambios:', error);      
     }
   } else {    
     editing.value = false;
-    fetchGroups();
   }
+  fetchGroups();
+  return;
 };
+
 
 const fetchPermissions = async () => {
     const response = await $fetch<any>('api/auth/permissions?page_size=1000')

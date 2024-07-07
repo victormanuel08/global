@@ -16,6 +16,8 @@ class Scheduled(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Tercero Medico",
         related_name="scheduled_medics",
+        null=True,
+        blank=True,
     )
     speciality = models.ForeignKey(
         "Specialities",

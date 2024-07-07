@@ -29,10 +29,8 @@
           <tbody>            
             
             <tr v-for="(record, index) in records" :key="index">
-
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-
                   <SelectThird :third-type="'M'"
                     v-model="record.third_medic_full">
                   </SelectThird>
@@ -41,7 +39,8 @@
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <SelectThird :third-type="'P'"
-                    v-model="record.third_patient_full">
+                    v-model="record.third_patient_full"
+                    disabled >
                   </SelectThird>
                 </div>
               </td>
@@ -61,34 +60,6 @@
                 </div>
               </td>
             </tr> 
-           
-            <tr>
-
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'M'"
-                    v-model="newRecordMedic">
-                  </SelectThird>
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'P'"
-                    v-model="newRecordPatient">
-                  </SelectThird>
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">                  
-                  <SelectDiagnoses v-model="newRecordDiagnose" class=" w-72"></SelectDiagnoses>                  
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <span @click="createRecord" :class="ui.span">💾</span>
-                </div>
-              </td>
-            </tr>
           </tbody>
         </table>
       </UCard>   

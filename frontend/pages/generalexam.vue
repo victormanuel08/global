@@ -26,12 +26,12 @@
             <tr v-for="(generalexam, index) in generalexams" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="generalexam.code" @blur="saveItem(index,'code',generalexam.code)" class="border rounded p-1 w-14" />
+                  <UInput v-model="generalexam.code" @blur="saveItem(index,'code',generalexam.code)" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="generalexam.name" @blur="saveItem(index,'name',generalexam.name)" class="border rounded p-1" />
+                  <UInput v-model="generalexam.name" @blur="saveItem(index,'name',generalexam.name)" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -44,12 +44,12 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newGeneralExamCode" placeholder="Codigo" class="border rounded p-1 w-14" />
+                  <UInput v-model="newGeneralExamCode" placeholder="Codigo" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newGeneralExamName" placeholder="Nombre" class="border rounded p-1" />
+                  <UInput v-model="newGeneralExamName" placeholder="Nombre" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">

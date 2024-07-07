@@ -26,12 +26,12 @@
             <tr v-for="(speciality, index) in specialities" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="speciality.code" @blur="saveItem(index,'code',speciality.code)" class="border rounded p-1 w-14" />
+                  <UInput v-model="speciality.code" @blur="saveItem(index,'code',speciality.code)" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="speciality.description" @blur="saveItem(index,'description',speciality.description)" class="border rounded p-1" />
+                  <UInput v-model="speciality.description" @blur="saveItem(index,'description',speciality.description)" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -44,12 +44,12 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newSpecialityCode" placeholder="Codigo" class="border rounded p-1 w-14" />
+                  <UInput v-model="newSpecialityCode" placeholder="Codigo" class="border rounded p-1 w-14" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <input v-model="newSpecialityDescription" placeholder="Nombre" class="border rounded p-1" />
+                  <UInput v-model="newSpecialityDescription" placeholder="Nombre" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
