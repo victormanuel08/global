@@ -73,11 +73,11 @@
                       {{ option[1] }}
                     </option>
                   </Select>
-                  <USelect v-model="third.type" @change="saveItem(index, 'type', third.type)" class="border rounded p-1 w-24">
+                  <Select v-model="third.type" @change="saveItem(index, 'type', third.type)" class="border rounded p-1 w-24">
                     <option v-for="option in type_list" :key="option[0]" :value="third.type">
                       {{ option[1] }}
                     </option>
-                  </USelect>
+                  </Select>
                   <USelect 
                     v-model="third.blood_type" 
                     :option-attribute = [0]
@@ -95,8 +95,7 @@
                   <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
                 </div>
               </td>
-            </tr> 
-           
+            </tr>            
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
@@ -149,7 +148,6 @@
 
 <script setup lang="ts">
 
-//const cities = ref([] as any[])
 const newThirdNit = ref('')
 const newThirdName = ref('')
 const newThirdSecondName = ref('')
@@ -167,10 +165,6 @@ const maternity_breastfeeding_extend_list = ref({})
 const maternity_pregnancy_list = ref({})
 const maternity_violence_list = ref({})
 const type_list = ref({})
-
-//const search = ref('')
-
-
 
 const {
     data: thirds ,
@@ -214,8 +208,6 @@ const deleteThird = async (id: number) => {
         fetchThirds()
     }
 }
-
-
 
 const saveItem = async (index: number, field: string, value: string) => {
   const third = thirds.value[index];
@@ -269,10 +261,6 @@ const createThird = async () => {
     newThirdType.value = ''    
     newThirdSex.value = ''
     newThirdBlood.value = ''
-}
-
-const showModalThird = async (id: number) => {
-    showModalThird.value = id
 }
 
 onMounted(() => {

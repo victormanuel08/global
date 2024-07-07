@@ -4,30 +4,49 @@
     </div>
 </template>
 <script setup>
+
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-onMounted(async () => {
-    await getSchedules();
-})
-
+const originalScheduleds = ref([])
 
 const getSchedules = async () => {
-    const response = await $fetch('/api/scheduleds/');
-    console.log('Original Schedules', response.results);
-    const calendarOptions = {
-        plugins: [dayGridPlugin, interactionPlugin],
-        initialView: "dayGridMonth",
-        events: response.results.map((scheduled) => ({
-            id: scheduled.id,
-            title: scheduled.third_patient_full.name,
-            date: scheduled.date,
-            
-        })),
-    };
-console.log('Calendar Options', calendarOptions);
+    const response = await $fetch('/api/scheduleds/')
+    console.log("Response", response.results)
+    originalScheduleds.value = response.results
+    calendarOptions.events = response.results.map((item) => ({       
+        id: item.id,
+        title: item.third_patient,
+        date: item.date,
+        display: 'block',
+        backgroundColor: item.confirmed === '0' ? 'red' : 'green'
+    }))
+    console.log("Scheduleds", calendarOptions.events)    
 }
 
+const calendarOptions = {
+    plugins: [dayGridPlugin, interactionPlugin],
+    initialView: "dayGridMonth",
+    events: [{ id: 1, title: "event 1", date: "2024-07-01"}],
+    editable: true,
+    eventClick: (info) => {
+        console.log("Event Calendar", info.event.id)
+    },
+    eventDidMount: async (info) => {
+        //await getSchedules(),
+        console.log("EventDidMount", info)
+    },
+    eventDrop: (info) => {
+        console.log("EventDrop", info)
+    },
+    eventChange: (info) => {
+        console.log("EventChange", info.dateStr)
+    }
+}
+
+onMounted(async () => {
+    await getSchedules()
+})
 
 </script>

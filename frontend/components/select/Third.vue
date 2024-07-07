@@ -34,7 +34,7 @@ const retrieveFromApi = async () => {
     }
 
     if (props.specialities) {
-        queryParams.speciality = props.specialities.id;
+        queryParams.speciality = props.specialities?.id;
     }
 
     const response = await $fetch<any>("api/thirds", {
