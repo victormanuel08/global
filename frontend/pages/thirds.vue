@@ -22,7 +22,7 @@
               <th :class="ui.th">Identificacion</th>
               <th :class="ui.th">Nombre</th>
               <th :class="ui.th">Apellidos</th>
-              <th :class="ui.th">varios</th>
+              <th :class="ui.th">Usuario</th>
               <th :class="ui.th">Acciones</th>
             </tr>
           </thead>
@@ -67,25 +67,8 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  
-                  <Select v-model="third.sex" @change="saveItem(index, 'sex', third.sex)" class="border rounded p-1 w-24">
-                    <option v-for="option in sex_list" :key="option[0]" :value="third.sex">
-                      {{ option[1] }}
-                    </option>
-                  </Select>
-                  <Select v-model="third.type" @change="saveItem(index, 'type', third.type)" class="border rounded p-1 w-24">
-                    <option v-for="option in type_list" :key="option[0]" :value="third.type">
-                      {{ option[1] }}
-                    </option>
-                  </Select>
-                  <USelect 
-                    v-model="third.blood_type" 
-                    :option-attribute = [0]
-                    @change="saveItem(index, 'blood_type', third.blood_type)" 
-                    class="border rounded p-1 w-14"
-                    :options="blood_list"
-                  >
-                  </USelect>
+                  <SelectUsers  class="border rounded p-1 w-28"  v-model="third.user_full">
+                  </SelectUsers>
                 </div>
 
               </td>
@@ -116,21 +99,8 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <Select v-model="newThirdSex" placeholder="Sexo" class="border rounded p-1 w-24">
-                    <option v-for="option in sex_list" :key="option[0]" :value="option[0]">
-                      {{ option[1] }}
-                    </option>
-                  </Select>
-                  <Select v-model="newThirdType" placeholder="Etnia" class="border rounded p-1 w-24">
-                    <option v-for="option in type_list" :key="option[0]" :value="option[0]">
-                      {{ option[1] }}
-                    </option>
-                  </Select>
-                  <Select v-model="newThirdBlood" placeholder="Rh" class="border rounded p-1 w-14">
-                    <option v-for="option in blood_list" :key="option[0]" :value="option[0]">
-                      {{ option[1] }}
-                    </option>
-                  </Select>
+                  <SelectUsers  class="border rounded p-1 w-28" v-model="newThirdUser">
+                  </SelectUsers>
                 </div>
               </td>
               <td :class="ui.td">
@@ -159,6 +129,7 @@ const newThirdBlood = ref('')
 const blood_list = ref({})
 const etnias_list = ref({})
 const sex_list = ref({})
+const newThirdUser = ref({})
 const maternity_breasfeeding_list = ref({})
 const maternity_breastfeeding_complementary_list = ref({})
 const maternity_breastfeeding_extend_list = ref({})

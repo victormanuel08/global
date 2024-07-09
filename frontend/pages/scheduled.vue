@@ -54,7 +54,7 @@
                   :third-type="'M'" 
                   class="border rounded p-1 w-28"  
                   v-model="scheduled.third_medic_full" 
-                  :specialities="scheduled.speciality_full" 
+                  :specialities="scheduled.speciality_full.id" 
                   @change="saveItem(index, 'third_medic', scheduled.third_medic_full.id)">
                 </SelectThird>
                 <span  :class="ui.span" :title="scheduled.third_medic_full?.name + ' ' + scheduled.third_medic_full?.second_name + ' ' + scheduled.third_medic_full?.last_name + ' ' + scheduled.third_medic_full?.second_last_name">ℹ️</span>

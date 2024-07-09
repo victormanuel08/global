@@ -2,6 +2,8 @@ from rest_framework import serializers
 from medicalrecords.models import *
 from medicalrecords.serializers import *
 from .models import Thirds
+from datetime import datetime
+
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Cities
@@ -48,5 +50,16 @@ class ScheduledSerializer(serializers.ModelSerializer):
     class Meta:
         model = Scheduled
         fields = '__all__'
+        
+class AvailabilitySerializer(serializers.ModelSerializer):
+    third_medic_full = ThirdSerializer(source = 'third', read_only=True)
+    day = serializers.SerializerMethodField() # aca deberia salir el dia Lunes Martes etc correspondiente a esa fecha a date 
+    class Meta:
+        model = Availability
+        fields = '__all__'
+        
+    def get_day(self, obj):        
+        day_of_week = obj.date.strftime('%A')
+        return day_of_week
         
         

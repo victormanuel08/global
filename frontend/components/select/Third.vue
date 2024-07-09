@@ -45,9 +45,9 @@ const retrieveFromApi = async () => {
 }
 
 
-watch([query, () => props.thirdType, () => props.specialities],
-    async ([newQuery, newThirdType, newSpeciality],
-        [oldQuery, oldThirdType, oldSpeciality]) => {
+watch([query, () => props.specialities],
+    async ([newQuery,  newSpeciality],
+        [oldQuery,oldSpeciality]) => {
         if (oldSpeciality !== newSpeciality) {
             modelValue.value = {} // Si la ciudad cambió entonces borramos el tercero que teníamos seleccionado
         }

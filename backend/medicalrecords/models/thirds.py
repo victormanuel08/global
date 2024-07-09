@@ -97,6 +97,7 @@ class Thirds(models.Model):
     maternity_violence = models.CharField(max_length=1, choices=MATERNITY_VIOLANCE_CHOICES, null=True, blank=True)
     ethnicity = models.CharField(max_length=1, choices=ETNIAS_CHOICES, null=True, blank=True)
     blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES, null=True, blank=True)
+    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -118,3 +119,24 @@ class Thirds(models.Model):
 
     def __str__(self):
         return self.nit
+    
+
+class Availability(models.Model):
+    id = models.AutoField(primary_key=True)
+    third = models.ForeignKey(Thirds, on_delete=models.PROTECT)
+    time = models.IntegerField()
+    quota = models.IntegerField()
+    date = models.DateField()
+    overflow = models.BooleanField(default=False)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:       
+        ordering = ['third','date']
+        verbose_name = 'Disponibilidad'
+        verbose_name_plural = 'Disponibilidades'
+
+    def __str__(self):
+        return self.third.name

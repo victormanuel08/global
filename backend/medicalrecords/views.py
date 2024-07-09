@@ -65,4 +65,16 @@ class ChoicesAPIView(APIView):
             "TYPE_CHOICES": TYPE_CHOICES,
         }
         return Response(choices_data, status=status.HTTP_200_OK)
+    
+class AvailabilityViewSet(viewsets.ModelViewSet):
+    queryset = Availability.objects.all()
+    serializer_class = AvailabilitySerializer
+    search_fields = ['third__nit','third__name','third__second_name','third__last_name','third__second_last_name','time','quota','date','start_time','end_time','overflow']
+    
+    def get_queryset(self):
+        queryset = Availability.objects.all()
+        third = self.request.query_params.get('third', None)
+        if third is not None:
+            queryset = queryset.filter(third__id=third)
+        return queryset
         

@@ -19,6 +19,7 @@ router.register('auth/groups', GroupViewSet)
 router.register('auth/users', UserViewSet)
 router.register('general_exam', GeneralExamViewSet)
 router.register('systems_review', SystemsReviewViewSet)
+router.register('availabilities', AvailabilityViewSet)
 
 
 
