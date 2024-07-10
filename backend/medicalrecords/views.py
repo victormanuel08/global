@@ -49,8 +49,7 @@ class ScheduledViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduledSerializer
     search_fields = ['date', 'time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','speciality__description']
 
-class ChoicesAPIView(APIView):
-    
+class ChoicesAPIView(APIView):    
     def get(self, request):
         choices_data = {
             "TYPE_CHOICES": TYPE_CHOICES,
@@ -69,7 +68,7 @@ class ChoicesAPIView(APIView):
 class AvailabilityViewSet(viewsets.ModelViewSet):
     queryset = Availability.objects.all()
     serializer_class = AvailabilitySerializer
-    search_fields = ['third__nit','third__name','third__second_name','third__last_name','third__second_last_name','time','quota','date','start_time','end_time','overflow']
+    search_fields = ['date','third__nit','third__name','third__second_name','third__last_name','third__second_last_name','time','quota','start_time','end_time','overflow']
     
     def get_queryset(self):
         queryset = Availability.objects.all()
@@ -77,4 +76,6 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
         if third is not None:
             queryset = queryset.filter(third__id=third)
         return queryset
+    
+
         

@@ -33,12 +33,11 @@
                 <div class="flex items-center justify-center">
                   Dr. {{ availability.third_medic_full.name }}  {{ availability.third_medic_full.last_name }}
                   <SelectThird 
-                  :third-type="'M'" 
-                  class="border rounded p-1 w-32"  
-                  v-model="availability.third_medic_full"                   
-                  @change="saveItem(index, 'third_medic', availability.third_medic_full.id)">
-                </SelectThird>  
-
+                    :third-type="'M'" 
+                    class="border rounded p-1 w-32"  
+                    v-model="availability.third_medic_full"                   
+                    @change="saveItem(index, 'third_medic', availability.third_medic_full.id)">
+                  </SelectThird>  
                 </div>
               </td>
               <td :class="ui.td">

@@ -58,8 +58,19 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = Availability
         fields = '__all__'
         
-    def get_day(self, obj):        
+    def get_day(self, obj):
+        # Mapeo de nombres de días en español
+        dias = {
+            'Monday': 'Lunes',
+            'Tuesday': 'Martes',
+            'Wednesday': 'Miércoles',
+            'Thursday': 'Jueves',
+            'Friday': 'Viernes',
+            'Saturday': 'Sábado',
+            'Sunday': 'Domingo',
+        }
+        
         day_of_week = obj.date.strftime('%A')
-        return day_of_week
+        return dias.get(day_of_week, day_of_week)
         
         

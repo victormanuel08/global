@@ -16,16 +16,14 @@ type Props = {
     specialities?: string | number
 }
 
-const clickHandler = () => {
-    retrieveFromApi()
-}
-
 const props = withDefaults(defineProps<Props>(), {
     thirdType: '',
     specialities: ''
 })
 
-
+const clickHandler = () => {
+    retrieveFromApi()
+}
 
 const retrieveFromApi = async () => {
     const queryParams = {
@@ -45,14 +43,17 @@ const retrieveFromApi = async () => {
 }
 
 
-watch([query, () => props.specialities],
-    async ([newQuery,  newSpeciality],
-        [oldQuery,oldSpeciality]) => {
-        if (oldSpeciality !== newSpeciality) {
-            modelValue.value = {} // Si la ciudad cambió entonces borramos el tercero que teníamos seleccionado
-        }
-        retrieveFromApi()
+watch(
+  [query, () => props.specialities],
+  async ([newQuery, newSpeciality], [oldQuery, oldSpeciality]) => {
+    if (oldSpeciality !== newSpeciality) {
+      // Si la especialidad cambió, borramos el tercero que teníamos seleccionado
+      modelValue.value = {};
     }
-)
+    // Llama a retrieveFromApi() aquí o realiza otras acciones necesarias
+    retrieveFromApi();
+  }
+);
+
 </script>
 

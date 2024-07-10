@@ -80,9 +80,18 @@
           </tr>
           <tr>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UInput type="date" v-model="newScheduledDate" class="border rounded p-1 w-30" />
-                <UInput type="time" v-model="newScheduledTime" class="border rounded p-1 w-30" />
+              <div class="flex items-center justify-center">                   
+                <SelectOptionsDate
+                  v-model="newScheduledOptions" 
+                  class="border rounded p-1 w-40"                    
+                  :third="newScheduledMedic"
+                />
+                <SelectOptionsHours
+                  v-model="newScheduledOptionsHours" 
+                  class="border rounded p-1 w-40"                    
+                  :third = "newScheduledMedic"
+                  :date = "newScheduledDate"
+                />
               </div>
             </td>
             <td :class="ui.td">
@@ -118,6 +127,7 @@
 
 <script setup lang="ts">
 
+
 //const cities = ref([] as any[])
 const newScheduledDate = ref(getCurrentDate())
 const newScheduledTime = ref(getCurrentTime())
@@ -125,6 +135,8 @@ const newScheduledSpeciality = ref({})
 const newScheduledPatient = ref({})
 const newScheduledMedic = ref({})
 const specialities = ref({})
+const newScheduledOptions = ref({})
+const newScheduledOptionsHours = ref({})
 
 const toast = useToast()
 
@@ -255,6 +267,17 @@ onMounted(() => {
   })
   fetchScheduleds()
 })
+
+watch(
+  [newScheduledMedic, newScheduledDate],
+  async ([newMedicVal, newDateVal], [oldMedicVal, oldDateVal]) => {
+
+    const availabilities =
+    rangehours = rangeHours(newMedicVal.id, newDateVal)
+    console.log('RangeHours', rangehours)
+  }
+);
+
 
 const ui = {
   td: 'p-1 border',

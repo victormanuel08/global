@@ -27,6 +27,50 @@ export const formatDateYYYYMMDD = (date: string): string => {
   return `${year}-${month}-${day}`;
 };
 
+export const formatDateTime = (datetime: string) => {
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short',
+  };
+
+  const formattedDateTime = new Date(datetime).toLocaleString('es-CO', options);
+  return formattedDateTime;
+};
+
+
+
+export const rangeHours = (time: number, quota: number, start: string, end:string) => {
+  // Validar la entrada validateInput(time, quota, start, end);  
+  const hours = [];
+  let currentHour = start; // Inicializar con la hora de inicio
+
+  for (let i = 0; i < time; i++) {
+    // Agregar la hora actual al arreglo
+    hours.push({
+      id: i + 1, // Usar índice + 1 como ID
+      name: currentHour,
+    });
+
+    // Calcular la siguiente hora
+    const [hour, minutes] = currentHour.split(':');
+    const nextHour = parseInt(hour, 10) + 1;
+    currentHour = `${nextHour}:${minutes}`;
+
+    // Si llegamos a la hora de finalización, detener el bucle
+    if (currentHour === end) {
+      break;
+    }
+  }
+
+  return hours;
+};
+
+
 export const listDaysOptions = (date: any, enddate: any) => {
   const options = [];
   console.log('fechas', date, enddate)
@@ -80,5 +124,3 @@ const getWeekdayDatesInRange = (startDate: any, endDate: any, weekdayIndex: any)
   }
   return dates;
 };
-
-  

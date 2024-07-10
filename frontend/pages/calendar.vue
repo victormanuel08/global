@@ -2,7 +2,7 @@
     <div class = "m-4">
         <FullCalendar :options="calendarOptions" />
     </div>
-
+    <ModalCreateSchedule v-model="modalOpen.createSchedule" @update:schedule="updateScheduleHandler" @update:modelValue="modalClosedHandler" />
 
 </template>
 <script setup>
@@ -10,7 +10,6 @@
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import esLocale from '@fullcalendar/core/locales/es';
 
 
 const originalScheduleds = ref([])
@@ -47,21 +46,26 @@ const getSchedules = async () => {
 const calendarOptions = {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
-    locale: esLocale,
     events: [{ id: 1, title: "event 1", date: "2024-07-01", time: "10:00:00"}],
     editable: true,
     eventClick: (info) => {
         console.log("Event Calendar", info.event.id)
         modalOpen.value.editSchedule = true
     },
-    dateClick: (info) => {
-        console.log("Date Calendar", info.dateStr)
-        modalOpen.value.createSchedule = true
+    eventDidMount: async (info) => {
+        //await getSchedules(),
+        console.log("EventDidMount", info)
+    },
+    eventDrop: (info) => {
+        console.log("EventDrop", info)
+    },
+    eventChange: (info) => {
+        console.log("EventChange", info.dateStr)
     }
 }
 
 onMounted(async () => {
-    await  getSchedules()
+    await getSchedules()
 })
 
 </script>

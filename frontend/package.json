@@ -19,7 +19,11 @@
     "jwt-decode": "^4.0.0",
     "nuxt": "^3.12.2",
     "pug": "^3.0.3",
+    "signature_pad": "^5.0.2",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+   
   }
 }

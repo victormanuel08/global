@@ -3,8 +3,8 @@ from datetime import date, datetime
 
 
 class Scheduled(models.Model):
-    date = models.DateField(verbose_name="Fecha solicitada", default=date.today )
-    time = models.TimeField(verbose_name="Hora", default=datetime.now().time()) 
+    date = models.DateField(verbose_name="Fecha solicitada")
+    time = models.TimeField(verbose_name="Hora") 
     third_patient = models.ForeignKey(
         "Thirds",
         on_delete=models.PROTECT,
@@ -16,8 +16,6 @@ class Scheduled(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Tercero Medico",
         related_name="scheduled_medics",
-        null=True,
-        blank=True,
     )
     speciality = models.ForeignKey(
         "Specialities",
