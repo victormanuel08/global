@@ -34,37 +34,22 @@
                   <template v-if="scheduled.confirmed">✅</template>
                   <template v-else>❌</template>
                 </span>
-                <UInput type="date" v-model="scheduled.date" @blur="saveItem(index, 'date', scheduled.date)"
-                  class="border rounded p-1 w-30" />
-                <UInput type="time" v-model="scheduled.time" @blur="saveItem(index, 'time', scheduled.time)"
-                  class="border rounded p-1 w-30" />
+                  {{ scheduled.date }} - {{ scheduled.time }}
               </div>
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <SelectSpecialities 
-                  v-model="scheduled.speciality_full" 
-                  class="border rounded p-1 w-60" 
-                  @change = "showAlert"/>
+                  {{ scheduled.speciality_full?.description }}
+              </div>
+            </td>
+            <td :class="ui.td">
+              <div class="flex items-center justify-center">                
+                {{ scheduled.third_medic_full?.nit }} - {{ scheduled.third_medic_full?.name + ' ' + scheduled.third_medic_full?.second_name + ' ' + scheduled.third_medic_full?.last_name + ' ' + scheduled.third_medic_full?.second_last_name }}
               </div>
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <SelectThird 
-                  :third-type="'M'" 
-                  class="border rounded p-1 w-28"  
-                  v-model="scheduled.third_medic_full" 
-                  :specialities="scheduled.speciality_full.id" 
-                  @change="saveItem(index, 'third_medic', scheduled.third_medic_full.id)">
-                </SelectThird>
-                <span  :class="ui.span" :title="scheduled.third_medic_full?.name + ' ' + scheduled.third_medic_full?.second_name + ' ' + scheduled.third_medic_full?.last_name + ' ' + scheduled.third_medic_full?.second_last_name">ℹ️</span>
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <SelectThird :third-type="'P'" class="border rounded p-1 w-28"  v-model="scheduled.third_patient_full">
-                </SelectThird>
-                <span  :class="ui.span" :title="scheduled.third_patient_full?.name + ' ' + scheduled.third_patient_full?.second_name + ' ' + scheduled.third_patient_full?.last_name + ' ' + scheduled.third_patient_full?.second_last_name">ℹ️</span>
+                {{ scheduled.third_patient_full?.nit }} - {{ scheduled.third_patient_full?.name + ' ' + scheduled.third_patient_full?.second_name + ' ' + scheduled.third_patient_full?.last_name + ' ' + scheduled.third_patient_full?.second_last_name }}
               </div>
             </td>
             <td :class="ui.td">
@@ -86,11 +71,11 @@
                   class="border rounded p-1 w-40"                    
                   :third="newScheduledMedic"
                 />
-                <SelectOptionsHours
+                <USelectMenu
                   v-model="newScheduledOptionsHours" 
-                  class="border rounded p-1 w-40"                    
-                  :third = "newScheduledMedic"
-                  :date = "newScheduledDate"
+                  class="border rounded p-1 w-40"
+                  :options="rangehours"
+                  option-attribute="inter"                  
                 />
               </div>
             </td>
@@ -127,19 +112,17 @@
 
 <script setup lang="ts">
 
-
-//const cities = ref([] as any[])
-const newScheduledDate = ref(getCurrentDate())
-const newScheduledTime = ref(getCurrentTime())
 const newScheduledSpeciality = ref({})
 const newScheduledPatient = ref({})
 const newScheduledMedic = ref({})
-const specialities = ref({})
+const newScheduledDate = ref(getCurrentDate())
+const newScheduledTime = ref(getCurrentTime())
 const newScheduledOptions = ref({})
 const newScheduledOptionsHours = ref({})
+const rangehours = ref([])
+
 
 const toast = useToast()
-
 
 const {
   data: scheduleds,
@@ -158,10 +141,6 @@ const fetchScheduleds = async () => {
   console.log('fetchRecords', scheduleds.value)
 }
 
-const showAlert = () => {
-  alert('Se ha cambiado la especialidad, por favor seleccione un médico par poder guardar los cambios');
-}
-
 const deleteScheduled = async (id: number) => {
   const message = confirm('¿Estás seguro de eliminar esta Cita?')
   if (message) {
@@ -171,70 +150,6 @@ const deleteScheduled = async (id: number) => {
     fetchScheduleds()
   }
 }
-
-const saveItem = async (index: number, field: string, value: string) => {
-  const scheduled = scheduleds.value[index];
-  scheduled[field] = value;
-  try {
-    const apiUrl = `api/scheduleds/${scheduled.id}`;
-    const response = await $fetch(apiUrl, {
-      method: 'PATCH',
-      body: JSON.stringify({
-        [field]: value,
-        ...(field === 'third_medic' ? { speciality: scheduled.speciality_full.id } : {}),
-      }), 
-    });
-
-    fetchScheduleds();
-    
-  } catch (error) {
-    console.error('Error al actualizar el elemento:', error);
-  }
-  fetchScheduleds();
-};
-
-
-const createScheduled = async () => {
-  const message = confirm('¿Estás seguro de crear esta Cita?');
-  console.log('newScheduledDate', newScheduledDate.value)
-  console.log('newScheduledTime', newScheduledTime.value)
-
-  if (!message) {
-    newScheduledDate.value = getCurrentDate();
-    newScheduledTime.value = getCurrentTime();
-    newScheduledSpeciality.value = '';
-    newScheduledPatient.value = '';
-    newScheduledMedic.value = '';
-    fetchScheduleds();
-    return;
-  }
-
-  try {
-    const response = await $fetch('api/scheduleds/', {
-      method: 'POST',
-      body: {
-        date: newScheduledDate.value,
-        time: newScheduledTime.value,
-        speciality: newScheduledSpeciality.value.id,
-        third_patient: newScheduledPatient.value.id,
-        third_medic: newScheduledMedic.value.id,
-        confirmed: false
-      },
-    });
-    fetchScheduleds();
-    newScheduledDate.value = getCurrentDate();
-    newScheduledTime.value = getCurrentTime();
-    newScheduledSpeciality.value = '';
-    newScheduledPatient.value = '';
-    newScheduledMedic.value = '';
-    toast.add({ title: 'Cita creada con éxito!' })
-    
-  } catch (error) {
-    toast.add({ title: 'Error al crear la cita' })
-    console.error('Error al crear la cita:', error);
-  }
-};
-
 
 const confirmScheduled = async (id: number, confirmed: boolean) => {
   const value = !confirmed
@@ -252,31 +167,16 @@ const confirmScheduled = async (id: number, confirmed: boolean) => {
 }
 
 onMounted(() => {
-  toast.add({
-    id: 'update_downloaded',
-    title: 'Update downloaded.',
-    description: 'It will be installed on restart. Restart now?',
-    icon: 'i-octicon-desktop-download-24',
-    timeout: 0,
-    actions: [{
-      label: 'Restart',
-      click: () => {
-
-      }
-    }]
-  })
   fetchScheduleds()
 })
 
-watch(
-  [newScheduledMedic, newScheduledDate],
-  async ([newMedicVal, newDateVal], [oldMedicVal, oldDateVal]) => {
-
-    const availabilities =
-    rangehours = rangeHours(newMedicVal.id, newDateVal)
-    console.log('RangeHours', rangehours)
+watch(newScheduledOptions, async (newVal, oldVal) => {
+  if (newVal) {    
+    rangehours.value = newVal.rangetime; // Asigna rangetime a rangehours
+  } else {
+    newScheduledOptionsHours.value = {}; // Vacía el arreglo si newScheduledOptions no tiene selección
   }
-);
+});
 
 
 const ui = {
@@ -285,5 +185,45 @@ const ui = {
   check: 'align-center justify-center',
   span: 'cursor-pointer'
 }
+
+
+const createScheduled = async () => {
+  const message = confirm('¿Estás seguro de crear esta Cita?');
+  if (!message) {
+    newScheduledDate.value = getCurrentDate();
+    newScheduledTime.value = getCurrentTime();
+    newScheduledSpeciality.value = '';
+    newScheduledPatient.value = '';
+    newScheduledMedic.value = '';
+    newScheduledOptions.value = '';
+    newScheduledOptionsHours.value = '';
+    fetchScheduleds();
+    return;
+  }
+
+  try {
+    const response = await $fetch('api/scheduleds/', {
+      method: 'POST',
+      body: {
+        date: newScheduledOptions.value.date,
+        time: newScheduledOptionsHours.value.time_start,
+        speciality: newScheduledSpeciality.value.id,
+        third_patient: newScheduledPatient.value.id,
+        third_medic: newScheduledMedic.value.id,
+        confirmed: false
+      },
+    });
+    fetchScheduleds();
+    newScheduledDate.value = getCurrentDate();
+    newScheduledTime.value = getCurrentTime();
+    newScheduledSpeciality.value = '';
+    newScheduledPatient.value = '';
+    newScheduledMedic.value = ''; 
+    newScheduledOptions.value = '';
+    newScheduledOptionsHours.value = '';
+  } catch (error) {
+    console.error('Error al crear la cita:', error);
+  }
+};
 
 </script>

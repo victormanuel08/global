@@ -24,11 +24,9 @@ export default {
         const canvas = this.$refs.signatureCanvas;
         const signaturePad = new SignaturePad(canvas);
 
-        // Configura opciones adicionales si es necesario
+        
         signaturePad.penColor = 'blue';
-        // ...
-
-        // Puedes acceder a la firma como base64
+       
         const signatureData = signaturePad.toDataURL();
         console.log('Firma en base64:', signatureData);
     },
@@ -39,7 +37,7 @@ export default {
         },
         saveSignature() {
             const signatureData = this.$refs.signatureCanvas.toDataURL('image/png');
-            // Aquí puedes hacer algo con la firma guardada (por ejemplo, enviarla al servidor)
+           
             console.log('Firma guardada:', signatureData);
         },
     },
@@ -52,8 +50,8 @@ export default {
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    border: 2px double blue; /* Borde doble de color azul */
-    border-radius: 20px; /* Esquinas redondeadas */
+    border: 2px double blue; 
+    border-radius: 20px; 
 }
 
 .signature-content {

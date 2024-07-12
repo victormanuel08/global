@@ -2,7 +2,7 @@ from rest_framework import serializers
 from medicalrecords.models import *
 from medicalrecords.serializers import *
 from .models import Thirds
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,6 +54,7 @@ class ScheduledSerializer(serializers.ModelSerializer):
 class AvailabilitySerializer(serializers.ModelSerializer):
     third_medic_full = ThirdSerializer(source = 'third', read_only=True)
     day = serializers.SerializerMethodField() # aca deberia salir el dia Lunes Martes etc correspondiente a esa fecha a date 
+    rangetime = serializers.SerializerMethodField() # aca deberia salir el rango de tiempo correspondiente a esa fecha a date
     class Meta:
         model = Availability
         fields = '__all__'
@@ -71,6 +72,17 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         }
         
         day_of_week = obj.date.strftime('%A')
-        return dias.get(day_of_week, day_of_week)
-        
-        
+        return dias.get(day_of_week, day_of_week)  
+
+    def get_rangetime(self, obj):# debe buscar otras filas en esta entidad que tengan el mismo third(asi se llama el campo) y el mismo dia(date se llama el campo ) y devolver los rangos de tiempo unidos pero no repetidos de todas la sposibilidades        
+        num_intervals = obj.quota  
+        intervals = []
+        current_time = datetime.combine(datetime.today(), obj.start_time)
+        for i in range(1, num_intervals + 1):
+            time_start = current_time.strftime('%H:%M:%S')
+            current_time += timedelta(minutes=int(obj.time), seconds=int((obj.time - int(obj.time)) * 60))
+            time_end = current_time.strftime('%H:%M:%S')
+            inter = f"{time_start} - {time_end}"
+            intervals.append({"id": i, "time_start": time_start, "time_end": time_end, "inter": inter})
+
+        return intervals

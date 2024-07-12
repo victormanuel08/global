@@ -47,7 +47,29 @@ class SystemsReviewViewSet(viewsets.ModelViewSet):
 class ScheduledViewSet(viewsets.ModelViewSet):
     queryset = Scheduled.objects.all()
     serializer_class = ScheduledSerializer
-    search_fields = ['date', 'time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','speciality__description']
+    search_fields = ['date_origin','insurance','confirmed','third_medic','speciality','date', 'time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','speciality_full__description']
+
+    def get_queryset(self):
+            queryset = super().get_queryset()
+            speciality_id = self.request.query_params.get('speciality')
+            third_medic_id = self.request.query_params.get('third_medic')
+            third_patient_id = self.request.query_params.get('third_patient')
+            date = self.request.query_params.get('date')
+            date_origin = self.request.query_params.get('date_origin')
+            insurance = self.request.query_params.get('insurance')
+            if speciality_id:
+                queryset = queryset.filter(speciality=speciality_id)
+            if third_medic_id:
+                queryset = queryset.filter(third_medic=third_medic_id)    
+            if third_patient_id:
+                queryset = queryset.filter(third_patient=third_patient_id)            
+            if date:
+                queryset =  queryset.filter(date=date)  
+            if insurance:
+                queryset =  queryset.filter(insurance=insurance)  
+            if date_origin:
+                queryset =  queryset.filter(date_origin=date_origin)
+            return queryset
 
 class ChoicesAPIView(APIView):    
     def get(self, request):
@@ -73,9 +95,16 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Availability.objects.all()
         third = self.request.query_params.get('third', None)
+        date = self.request.query_params.get('date', None)
+
         if third is not None:
             queryset = queryset.filter(third__id=third)
+
+        if date is not None:
+            queryset = queryset.filter(date=date)
+
         return queryset
+
     
 
         

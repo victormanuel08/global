@@ -13,7 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
         for group in groups:
             for permission in group.permissions.all():
                 permissions.append(permission.name) # Todos los permisos de todos los grupos que tiene el usuario
-        return set(permissions)
+        return set(permissions)   
+
     
     class Meta:
         model = User

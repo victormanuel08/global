@@ -37,8 +37,10 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'M'"
-                    v-model="record.third_medic_full">
+                  <SelectThird 
+                    :third-type="'M'"
+                    v-model="record.third_medic_full"
+                  >
                   </SelectThird>
                 </div>                
               </td>
@@ -63,7 +65,7 @@
                   <button v-if="!record.signed" @click="signedRecord(record.id)">
                     🖋️
                   </button>                  
-                  <img v-else :src="record.signed" alt="Imagen Base64" />
+                  <img v-else :src="record.signed" alt="Imagen Base64" width="60%" height="auto" />
                 </div>                
                 <div class="flex items-center justify-center">
                   <strong>

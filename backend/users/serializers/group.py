@@ -3,6 +3,12 @@ from django.contrib.auth.models import Group ## Aca reposan todos los modelos de
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    users = serializers.SerializerMethodField()
+    
+    def get_users(self, obj):
+        users = obj.user_set.all()
+        return [user.id for user in users]
+    
     class Meta:
         model = Group
         fields = "__all__"

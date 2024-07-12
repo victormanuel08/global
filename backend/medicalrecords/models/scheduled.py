@@ -2,6 +2,9 @@ from django.db import models
 from datetime import date, datetime
 
 
+
+
+
 class Scheduled(models.Model):
     date = models.DateField(verbose_name="Fecha solicitada")
     time = models.TimeField(verbose_name="Hora") 
@@ -23,8 +26,9 @@ class Scheduled(models.Model):
         verbose_name="Especialidad",
         related_name="specialities",        
     )
-    confirmed=models.BooleanField()
-    
+    confirmed=models.BooleanField(null=True, blank=True)
+    insurance=models.BooleanField(null=True, blank=True)
+    date_origin = models.DateField(default="1999-01-01")
     class Meta:
         verbose_name = 'Cita'
         verbose_name_plural = 'Citas'

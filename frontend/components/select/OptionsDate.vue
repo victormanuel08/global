@@ -6,6 +6,7 @@
         :searchable="true"
         v-model:query="query" 
         :clearSearchOnClose="true" 
+        :placeholder="'Fecha'"
         @click="clickHandler">
     </USelectMenu>
 
@@ -40,24 +41,25 @@ const retrieveFromApi = async () => {
     const queryParams = {
         search: query.value,
         third: props.third.id,
-        date: currentDate.toISOString(), // Convierte la fecha a formato ISO
+        //date__gtn: formatDateYYYYMMDD(currentDate.toString()), 
     };
 
-    const response = await $fetch<any>("api/availabilities", {
+    const response = await $fetch<any>("api/availabilities?page_size=1000", {
         query: queryParams,
     });
 
-    options.value = response.results.map(option => ({
-        ...option,
-        concat: `${option.date} ${option.day}`,
+    options.value = response.results
+        .filter(option => new Date(option.date) > currentDate)
+        .map(option => ({
+            ...option,
+            concat: `${option.date} ${option.day} ( ${option.start_time} - ${option.end_time} )` ,
     }));
 };
 
 
 
 watch([ props.date, () => props.third],
-    async ([ newDate, newThird],
-        [oldDate,oldThird]) => {
+    async ([ newDate, newThird ,oldDate,oldThird]) => {
         if (oldThird !== newThird || oldDate !== newDate) {
             modelValue.value = {} 
         }

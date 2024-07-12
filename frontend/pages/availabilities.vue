@@ -101,7 +101,7 @@
                     :third-type="'M'" 
                     class="border rounded p-1 w-52"  
                     v-model="newAvailabilityThird"
-                    @change="newAvailabilityThirdName = 'Doc. ' + newAvailabilityThird.name + ' ' + newAvailabilityThird.second_name + ' ' + newAvailabilityThird.last_name + ' ' + newAvailabilityThird.second_last_name"
+                    @change="newAvailabilityThirdName = 'Doc. ' + newAvailabilityThird?.name + ' ' + newAvailabilityThird?.second_name + ' ' + newAvailabilityThird?.last_name + ' ' + newAvailabilityThird?.second_last_name"
                   >
                   </SelectThird>
                 </div>
@@ -147,6 +147,7 @@
                     type="number" 
                     v-model="newAvailabilityQuota" 
                     class="border rounded p-1 w-24"
+                    disabled
                   />    
                 </div>
               </td>
@@ -160,7 +161,7 @@
                   <UInput
                     type="time" 
                     v-model="newAvailabilityEndTime1"                     
-                    class="border rounded p-1 w-32"
+                    class="border rounded p-1 w-32"                    
                   />
                 </div>
 

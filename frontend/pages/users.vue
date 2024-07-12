@@ -31,11 +31,9 @@
                 <UInput v-model="user.username" @blur="saveItem(index,'username',user.username)" class="border rounded p-1 w-48" />
               </div>
               <div class="grid grid-cols-3 justify-center" v-if="showUserGroups && user.id === selectedUserId">
-                <div v-for="(group, groupIndex) in groups" :key="groupIndex" class="">
-                  <label>
+                <div v-for="(group, groupIndex) in groups" :key="groupIndex" class="justify-center">                  
                     {{ group.name }} {{ group.id }} {{ user.id }}
-                    <UCheckbox v-model="group.selected" @blur="saveCheck(group.id, user.id)"/>
-                  </label>
+                    <UCheckbox v-model="groupSelected" @blur="saveUserGroups(group,groupSelected)"/>                  
                 </div>
               </div>
             </td>
@@ -107,6 +105,8 @@ const newUserSuperuser = ref(0)
 const groups = ref([] as any[])
 const showUserGroups = ref(false)
 const selectedUserId = ref(null)
+const saving = ref(false)
+
 
 
 //const search = ref('')
@@ -136,7 +136,7 @@ console .log('FecthUsers',users.value)
 }
 
 const fetchGroups = async () => {
-  const response = await $fetch('api/auth/groups/')
+  const response = await $fetch<any>('api/auth/groups/')
   console.log('fetchGroups', response)
   groups.value = response.results
   console.log('fetchGroups', groups.value)  
@@ -183,9 +183,9 @@ const createUser = async () => {
 
   if (!message){
       newUserUsername.value = ''
-      newUserActive.value = ''
-      newUserStaff.value = ''
-      newUserSuperuser.value = ''
+      newUserActive.value = 0
+      newUserStaff.value = 0
+      newUserSuperuser.value = 0
       fetchUsers()
       return
   }
@@ -200,9 +200,10 @@ const createUser = async () => {
       }
   })
   fetchUsers()
-  newUserSuperuser.value = ''
-  newUserStaff.value = ''
-  newUserActive.value = ''
+  newUserSuperuser.value = 0
+  newUserStaff.value = 0
+  newUserActive.value = 0
+  newUserUsername.value = ''
 }
 
 onMounted(() => {
@@ -215,6 +216,10 @@ const ui = {
   th: 'p-2 border',
   check: 'align-center justify-center',
   span: 'cursor-pointer'
+}
+
+const saveUserGroups = async ( group: any, user: any) => {
+  console.log('saveUserGroups', group, user)
 }
 
 </script>

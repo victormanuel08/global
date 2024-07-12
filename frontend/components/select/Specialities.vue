@@ -1,5 +1,5 @@
 <template>
-    <USelectMenu v-model="modelValue" option-attribute="description" :searchable="search">
+    <USelectMenu v-model="modelValue" option-attribute="description" :searchable="search" :placeholder = "'Especialidad'">
     </USelectMenu>
 </template>
 

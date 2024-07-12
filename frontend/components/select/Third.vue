@@ -1,12 +1,13 @@
 <template>
     <USelectMenu v-model="modelValue" option-attribute="nit" :options="options" :searchable="true"
-        v-model:query="query" :clearSearchOnClose="true" @click="clickHandler">
+        v-model:query="query" :clearSearchOnClose="true" @click="clickHandler" :placeholder="props.thirdType === 'P' ? 'Paciente' : 'Médico'" >
     </USelectMenu>
 </template>
 <script setup lang="ts">
 
 
 const options = ref<any[]>([])
+const typeThird = ref('asasasa')
 const query = ref("")
 const modelValue = defineModel<any>({ default: () => ({}) }) //Esto es para que el componente pue1da ser usado con v-model
 
@@ -54,6 +55,7 @@ watch(
     retrieveFromApi();
   }
 );
+
 
 </script>
 
