@@ -127,7 +127,7 @@ class Availability(models.Model):
     time = models.IntegerField()
     quota = models.IntegerField()
     date = models.DateField()
-    overflow = models.BooleanField(default=False)
+    overflow = models.IntegerField(default=0)
     start_time = models.TimeField()
     end_time = models.TimeField()
     created_at = models.DateTimeField(auto_now_add=True)

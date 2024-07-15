@@ -36,7 +36,7 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="deleteSpeciality(speciality.id)" :class="ui.span">🗑️</span>
+                  <span @click="deleteSpeciality(speciality.id)" :class="ui.span" v-if = "speciality.code !== '012'">🗑️</span>
                 </div>
               </td>
             </tr> 
@@ -54,7 +54,12 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="createSpeciality" :class="ui.span">💾</span>
+                  <span 
+                    @click="createSpeciality" 
+                    :class="ui.span"                    
+                  >
+                    💾
+                  </span>
                 </div>
               </td>
             </tr>

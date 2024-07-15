@@ -26,9 +26,18 @@ class Scheduled(models.Model):
         verbose_name="Especialidad",
         related_name="specialities",        
     )
+    record = models.ForeignKey(
+        "Records",
+        on_delete=models.PROTECT,
+        verbose_name="Historia",
+        related_name="records",
+        blank=True,
+        null=True,        
+    )
     confirmed=models.BooleanField(null=True, blank=True)
     insurance=models.BooleanField(null=True, blank=True)
     date_origin = models.DateField(default="1999-01-01")
+    
     class Meta:
         verbose_name = 'Cita'
         verbose_name_plural = 'Citas'

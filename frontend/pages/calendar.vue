@@ -43,29 +43,32 @@
                     class="border rounded p-1 w-80"
                     :third="newScheduledMedic" 
                     @change="saveItem(selectedEventId, 'date', newScheduledOptions.date)"
-                    v-if="newScheduledMedic"
                 >
                 </SelectOptionsDate>
                 <USelectMenu 
                     v-model="newScheduledOptionsHours" 
                     class="border rounded p-1 w-40" 
+                    :class="{
+                      'border rounded p-1 w-56': newScheduledSpeciality.code === '012',
+                      'border rounded p-1 w-40': newScheduledSpeciality.code !== '012'
+                    }"
                     :options="rangehours"
                     option-attribute="inter"
                     @change="saveItem(selectedEventId, 'time', newScheduledOptionsHours.time_start)" 
                     :placeholder="'Hora'"
                     v-if = "newScheduledOptions"
                 />
-                <button v-if="isEdit" @click="clean()">
-                    🖋️
-                </button>
-                <button v-else @click="createScheduled">
+                <span v-if="isEdit" @click="clean()" class="p-4 cursor-pointer" title="Limpiar Campos">
+                    🧹
+                </span>   
+                <span v-else @click="createScheduled" class="p-4 cursor-pointer" title="Agendar Cita">
                     💾
-                </button>
+                </span>
             </div>         
             <FullCalendar :options="calendarOptions" />
         </UCard>
     </div>
-
+    <ModalEditRecord :calendarEvent="calendarEvent" v-model="isOpen"/>
 </template>
 
 <script setup lang="ts">
@@ -73,6 +76,8 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from '@fullcalendar/timegrid'
+
+
 
 const newScheduledSpeciality = ref<any>('');
 const isEdit = ref(false);
@@ -83,21 +88,21 @@ const newScheduledDate = ref<any>(getCurrentDate());
 const newScheduledTime = ref<any>(getCurrentTime());
 const newScheduledPatient = ref<any>('');
 const newScheduledInsurance = ref<any>(0);
+const newScheduledRecord = ref<any>('');
 const query = ref('');
 const rangehours = ref<any[]>([]);
 const selectedEventId = ref<number>(0);
 const originalScheduleds = ref<any[]>([]);
 const calendarEvent = ref<any>({});
-const modalOpen = ref({
-    editSchedule: false,
-    createSchedule: false,
-});
+const calendarInitialView = ref('dayGridMonth');//timeGridDay);dayGridMonth
+const isOpen = ref(false)
 const eventsToShow = ref<any[]>([
 ]);
 
 const calendarOptions = computed(() => ({
     plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
-    initialView: "dayGridMonth",
+    initialView: calendarInitialView.value,    
+    locale: 'es', 
     headerToolbar: {
         left: 'prev,next',
         center: 'title',
@@ -113,14 +118,22 @@ const calendarOptions = computed(() => ({
     },
     //location: "es-Es",
     events: eventsToShow.value,
-    eventClick: function (info: any) {
-        newScheduledMedic.value = info.event.extendedProps.medic;
-        newScheduledSpeciality.value = info.event.extendedProps.speciality;
-        newScheduledPatient.value = info.event.extendedProps.patient;
-        newScheduledDate.value = info.event.extendedProps.date;
-        newScheduledTime.value = info.event.extendedProps.time;
-        selectedEventId.value = info.event.extendedProps.scheduled;
-        isEdit.value = true;
+    eventClick: function (info: any) {     
+        if (info.event.extendedProps.record) {
+            newScheduledRecord.value = info.event.extendedProps.record;
+            calendarEvent.value = info.event.extendedProps;
+            editRecord(calendarEvent.value)
+        }else{
+            selectedEventId.value = info.event.extendedProps.scheduled;
+            newScheduledPatient.value = info.event.extendedProps.patient;
+            newScheduledSpeciality.value = info.event.extendedProps.speciality;
+            newScheduledMedic.value = info.event.extendedProps.medic;
+            newScheduledDate.value = info.event.extendedProps.date;
+            newScheduledTime.value = info.event.extendedProps.time; 
+            //modalOpen.createSchedule = true;
+            isEdit.value = true;
+            alert("Puedes editar la cita");
+        }
     },
 }));
 
@@ -138,6 +151,7 @@ type Scheduled = {
     }
     confirmed: boolean
     speciality: number
+    record: number
     third_medic_full: {
         id: number
         name: string
@@ -172,6 +186,7 @@ async function fetchScheduleds() {
             medic: scheduled.third_medic_full,
             patient: scheduled.third_patient_full,
             scheduled: scheduled.id,
+            record:scheduled.record,
             date: scheduled.date,
             time: scheduled.time,
             color: scheduled.confirmed ? 'green' : 'red',
@@ -242,16 +257,21 @@ const ui = {
 }
 
 watch(newScheduledOptions, async (newVal, oldVal) => {
-    
+    calendarInitialView.value = "timeGridDay";
     if (newVal) {
-        await fetchScheduleds();        
+        //await fetchScheduleds();  
         console.log("rangos", newVal.rangetime)
-        const timeList = eventsToShow.value.map(item => item.time);
-        console.log ('timelist', timeList)
-        newVal.rangetime = newVal.rangetime.filter(item => !timeList.includes(item.time_start));
+        calendarInitialView.value = "timeGridDay";
+        console.log("calendar", calendarOptions.value)
 
-        rangehours.value = newVal.rangetime 
-      
+        await fetchScheduleds();    
+        
+        if (newScheduledOptionsHours.value.overflow > 0) {
+            const timeList = eventsToShow.value.map(item => item.time);
+            console.log ('timelist', timeList)
+            newVal.rangetime = newVal.rangetime.filter(item => !timeList.includes(item.time_start));
+        }   
+        rangehours.value = newVal.rangetime       
     } else {
         newScheduledOptionsHours.value = {}; // Vacía el arreglo si newScheduledOptions no tiene selección
     }
@@ -263,6 +283,15 @@ watch(
         if (newSpecialityVal || newMedicVal) {
             await fetchScheduleds();
         }
+    }
+);
+
+watch(calendarInitialView,
+    async (newView, oldView) => {
+        if (newView) {
+            console.log('calendarInitialView', newView)
+            await fetchScheduleds();
+        }    
     }
 );
 
@@ -288,7 +317,10 @@ const saveItem = async (index: number, field: string, value: string) => {
     }
 };
 
-
+const editRecord = async (record: any) => {
+   // alert("Abrir modal de edición de RecordsMedic "+ record.speciality.description);
+    isOpen.value = true;
+};
 
 
 

@@ -83,6 +83,10 @@ class AvailabilitySerializer(serializers.ModelSerializer):
             current_time += timedelta(minutes=int(obj.time), seconds=int((obj.time - int(obj.time)) * 60))
             time_end = current_time.strftime('%H:%M:%S')
             inter = f"{time_start} - {time_end}"
-            intervals.append({"id": i, "time_start": time_start, "time_end": time_end, "inter": inter})
+            if obj.overflow > 0:
+                inter = f"{time_start} - {time_end} ({obj.overflow})"
+            
+            overflow = obj.overflow
+            intervals.append({"id": i, "time_start": time_start, "time_end": time_end, "overflow": overflow, "inter": inter})
 
         return intervals

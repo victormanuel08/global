@@ -27,6 +27,14 @@ export const formatDateYYYYMMDD = (date: string): string => {
   return `${year}-${month}-${day}`;
 };
 
+export const formatDateHHMMSS = (date: string): string => {
+  const parsedDate = new Date(date);
+  const hours = parsedDate.getHours().toString().padStart(2, '0');
+  const minutes = parsedDate.getMinutes().toString().padStart(2, '0');
+  const seconds = parsedDate.getSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+};
+
 export const formatDateTime = (datetime: string) => {
   const options = {
     year: 'numeric',

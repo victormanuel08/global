@@ -24,6 +24,19 @@ class GeneralExam(models.Model):
     
     def __str__(self):
         return self.name    
+    
+class Records_details(models.Model):
+    history = models.CharField(max_length=100,null=True, blank=True)    
+    systems_review = models.CharField(max_length=100,null=True, blank=True)    
+    general_exam = models.CharField(max_length=100,null=True, blank=True)  
+    observation = models.CharField(max_length=100,null=True, blank=True)
+    
+    class Meta:
+        verbose_name = 'Detalle de Registro'
+        verbose_name_plural = 'Detalle de Registros'
+    
+    def __str__(self):
+        return self.history
 
 class Records(models.Model):
     id = models.AutoField(primary_key=True)
@@ -89,6 +102,7 @@ class Records(models.Model):
         null=True,
         blank=True,
     )
+    Records_details=models.ManyToManyField(Records_details)
     signed=models.TextField(null=True,blank=True)
     
     

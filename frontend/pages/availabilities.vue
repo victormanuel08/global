@@ -126,27 +126,32 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectDays 
-                    class="border rounded p-1 w-40"  
+                  <SelectDays                     
+                    :class="{
+                      'border rounded p-1 w-40': newAvailabilityThird.speciality_full?.code === '012',
+                      'border rounded p-1 w-56': newAvailabilityThird.speciality_full?.code !== '012'
+                    }"
                     v-model="newAvailabilityDay" 
                     :start="newAvailabilityDate"
                     :end = "newAvailabilityEndDate"
-                  /> 
-                  <UCheckbox 
+                  />    
+                  <UInput
+                    type="number" 
                     v-model="newAvailabilityOverflow" 
-                    class="border rounded p-1"
-                  />     
+                    class="border rounded p-1 w-16"
+                    v-if="newAvailabilityThird.speciality_full?.code === '012'"
+                  />   
                 </div>
                 <div class="flex items-center justify-center">       
                   <UInput
                     type="number" 
                     v-model="newAvailabilityTime" 
-                    class="border rounded p-1 w-24"
+                    class="border rounded p-1 w-28"
                   />     
                   <UInput
                     type="number" 
                     v-model="newAvailabilityQuota" 
-                    class="border rounded p-1 w-24"
+                    class="border rounded p-1 w-28"
                     disabled
                   />    
                 </div>
@@ -190,7 +195,7 @@ const newAvailabilityStartTime1 = ref('08:00:00')
 const newAvailabilityEndTime1 = ref('12:00:00')
 const newAvailabilityQuota = ref(0)
 const newAvailabilityTime = ref(30)
-const newAvailabilityOverflow = ref(false)
+const newAvailabilityOverflow = ref('2')
 const options = ref([])
 
 type Days = {
@@ -266,7 +271,8 @@ const createAvailability = async () => {
         end_time: newAvailabilityEndTime1.value,
         quota: newAvailabilityQuota.value,
         time: newAvailabilityTime.value,
-        third: newAvailabilityThird.value.id
+        third: newAvailabilityThird.value.id,
+        overflow: newAvailabilityOverflow?.value
       },
     });
   }
