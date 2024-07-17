@@ -1,63 +1,92 @@
 <template>
-    <UModal class="modal">
-        <div class="p-4">
-            <component :is="creationPanels.Third.component" :calendar-event="$props.calendarEvent" />
+    <UCard class="m-6">
+        <div class="flex flex-cols-2 gap-4 md:grid-cols-2 m-2">
+            <UTabs :items="items" class="w-full" @change="onChange">
+                <template #default="{ item, index }">
+                    <div class="flex items-center gap-2 relative truncate">
+                        <UIcon :name="item.icon" class="w-4 h-4 flex-shrink-0" />
+                        <span class="truncate">{{ index + 1 }}. {{ item.label }}</span>
+                    </div>
+                </template>
+            </UTabs>
         </div>
-        <UTabs :items="items" class="w-full">
-            <template #default="{ item, index, selected }">
-            <div class="flex items-center gap-2 relative truncate">
-                <UIcon :name="item.icon" class="w-4 h-4 flex-shrink-0" />
-                <span class="truncate">{{ index + 1 }}. {{ item.label }}</span>
-                <span v-if="selected" class="absolute -right-4 w-2 h-2 rounded-full bg-primary-500 dark:bg-primary-400" />
-            </div>            
-            </template>            
-        </UTabs>
+
         <div class="p-4">
             <component :is="creationPanelSelected.component" :calendar-event="$props.calendarEvent" />
         </div>
-    </UModal >
+    </UCard>
 </template>
 <script setup lang="ts">
-import { PanelBasic, PanelSistems, PanelGeneral, PanelThird} from "#components";
+import { PanelBasic, PanelSystems, PanelGeneral, PanelThird, PanelPregnancy, PanelEvolution } from "#components";
 
 const props = defineProps({
-    calendarEvent: Object,    
+    calendarEvent: Object,
 })
 
-const manageClick = (panel: keyof typeof creationPanels) => {
-    creationPanelSelected.value = creationPanels[panel]  
-    console.log(creationPanelSelected.value)  
-}
-
 const creationPanels = {
-    'Basic': { component: PanelBasic},
-    'Third': { component: PanelThird},
-    'Sistems': { component: PanelSistems},
-    'General': { component: PanelGeneral},
+    'Basic': markRaw({
+        component: PanelBasic,
+        title: 'Basic',
+    }),
+    'Third': { component: PanelThird },
+    'Systems': markRaw({
+        component: PanelSystems,
+        title: 'Sistemas',
+    }),
+    'General': { component: PanelGeneral },
+    'Pregnancy': { component: PanelPregnancy },
+    'Evolution': { component: PanelEvolution },
 }
 
-const creationPanelSelected = ref(creationPanels['Basic'])
+const creationPanelSelected = ref(creationPanels['Third'])
 
 const items = [{
-  label: 'Datos Basicos',
-  icon: 'i-heroicons-information-circle',
-  click: () => manageClick('Basic')
+    label: 'Datos Paciente',
+    icon: 'i-heroicons-information-circle',
+    panel: 'Third',
 },
 {
-  label: 'Revision Sistemas',
-  icon: 'i-heroicons-information-circle',
-  click: () => manageClick('Sistems')
-},{
-  label: 'Examen General',
-  icon: 'i-heroicons-information-circle',
-  click: () => manageClick('General')
-}
+    label: 'Datos Consulta',
+    icon: 'i-heroicons-information-circle',
+    panel: 'Basic',
+},
+{
+    label: 'Revision Sistemas',
+    icon: 'i-heroicons-information-circle',
+    panel: 'Systems',
+}, {
+    label: 'Examen General',
+    icon: 'i-heroicons-information-circle',
+    panel: 'General',
+},
 ]
+
+onMounted(() => {
+    if (props.calendarEvent?.patient.sex === "F") {       
+        items.splice(1, 0, {
+            label: 'Maternidad',
+            icon: 'i-heroicons-information-circle',
+            panel: 'Pregnancy',
+        });
+    }
+    if (props.calendarEvent?.medic.speciality_full.code === "012") {       
+        items.push({
+            label: 'Evolucion',
+            icon: 'i-heroicons-information-circle',
+            panel: 'Evolution',
+        });
+    }     
+});
+
+function onChange(index: any) {
+    //alert(`${item.panel}`)    
+    const item = items[index]
+    creationPanelSelected.value = creationPanels[item.panel]
+}
 
 </script>
 <style scoped>
-.modal{  
-  width: 1000%; 
-  max-width: 120000px;   
+.modal {
+    max-width: 800px;
 }
 </style>

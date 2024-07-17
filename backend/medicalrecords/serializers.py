@@ -21,17 +21,60 @@ class SpecialitySerializer(serializers.ModelSerializer):
         
 class ThirdSerializer(serializers.ModelSerializer):    
     speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
+    
+
     class Meta:
         model = Thirds
-        fields = '__all__'        
+        fields = '__all__'      
+        
+      
 
 class RecordSerializer(serializers.ModelSerializer):    
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
     third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)
     diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
+    diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
+    diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
+    diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
+    records_details = serializers.SerializerMethodField()
     class Meta:
         model = Records
-        fields = '__all__'     
+        fields = '__all__'  
+    
+    def get_records_details(self, obj):
+        records_details = Records_details.objects.filter(record=obj)
+        return RecordDetailSerializer(records_details, many=True).data
+
+class RecordDetailsOnlySerializer(serializers.ModelSerializer):
+    records_details = serializers.SerializerMethodField()
+    class Meta:
+        model = Records
+        fields = ('records_details',)
+    
+    def get_records_details(self, obj):
+        records_details = Records_details.objects.filter(record=obj)
+        return RecordDetailSerializer(records_details, many=True).data
+
+    def to_representation(self, instance):
+        # Obtén los detalles de los registros
+        records_details = Records_details.objects.filter(record=instance)
+
+        # Transforma los detalles de los registros según tu nuevo formato
+        transformed_data = {
+            "count": records_details.count(),
+            "next": None,
+            "previous": None,
+            "results": RecordDetailSerializer(records_details, many=True).data
+        }
+
+        return transformed_data
+
+        
+class RecordDetailSerializer(serializers.ModelSerializer):
+    #record_full = RecordSerializer(source = 'record', read_only=True)
+    class Meta:
+        model = Records_details
+        fields = '__all__'   
         
 class GeneralExamSerializer(serializers.ModelSerializer):
     class Meta:

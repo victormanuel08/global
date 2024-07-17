@@ -1,21 +1,21 @@
 <template>
   <div>
-    <h1>Examenes Generales</h1>
+    <h1>Revisión de Sistemas</h1>
     <div class="grid grid-cols-4 gap-4 sm:grid-cols-4">
-      <div v-for="(exam, index) in exams" :key="index">
+      <div v-for="(system, index) in systems" :key="index">
         <UCheckbox
-          v-model="newExams"
+          v-model="newSystems"
           class="border rounded p-1"
-          :label="exam.name"
-          :value="exam.id" 
-          @change="saveExams()"         
+          :label="system.name"
+          :value="system.id" 
+          @change="saveSystems()"         
         />
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-1 m-4">
       <div>
         <label class="block text-sm font-medium text-gray-700">Observaciones:</label>
-        <UTextarea v-model="record.general_exam" variant="outline" placeholder="Motivo de la Consulta" @change="saveExams()" />
+        <UTextarea v-model="record.systems_review" variant="outline" placeholder="Motivo de la Consulta" @change="saveSystems()" />
       </div>
     </div>
   </div>
@@ -26,42 +26,41 @@ const modelValue = defineProps({
     calendarEvent: Object,
 })
 
-interface Exams {
+interface System {
   id: number;
-  code: string;
   name: string;
 }
 
-const exams = ref([] as Exams[]);
-const newExams = ref([] as number[]);
+const systems = ref([] as System[]);
+const newSystems = ref([] as number[]);
 const record = ref({} as any)
 
 onMounted(() => {
-  fetchExams(); 
+  fetchSystems(); 
   fetchRecord(modelValue.calendarEvent?.record)  
 });
 
-const saveExams = async () => {
+const saveSystems = async () => {
   const response = await $fetch<any>(`api/records/${modelValue.calendarEvent?.record}/`, {
     method: 'Patch',
     body: JSON.stringify({
-    types_general_exam: newExams?.value,
-    general_exam: record.value?.general_exam
+      types_systems_review: newSystems?.value,
+      systems_review: record.value?.systems_review
     })
   });
   console.log('Respuesta:', response);
 };
 
-const fetchExams = async () => {
-  const response = await $fetch<any>('api/general_exam');
-  exams.value = response.results;
-  newExams.value = modelValue.calendarEvent?.types_general_exam || [];
+const fetchSystems = async () => {
+  const response = await $fetch<any>('api/systems_review');
+  systems.value = response.results;
+  newSystems.value = modelValue.calendarEvent?.types_systems_review || [];
 };
 
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)    
     record.value = response    
-    newExams.value = record.value.types_systems_review || [];
+    newSystems.value = record.value.types_systems_review || [];
 }
 
 </script>

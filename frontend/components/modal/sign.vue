@@ -1,0 +1,84 @@
+<template>
+    <UModal :record="record" :close="close" :detail="detail">
+        <div class="signature-box border rounded">
+            <div class="signature-content border rounded">
+                <canvas ref="signatureCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+            </div>
+            <div class="buttons mb-2">
+                <UButton variant="soft" @click="clearSignature">Iniciar</UButton>
+                <UButton variant="soft" @click="saveSignature">Guardar</UButton>
+
+            </div>
+        </div>
+    </UModal>
+</template>
+
+<script>
+
+import SignaturePad from "signature_pad";
+
+
+
+export default {
+
+    props: {
+        record: Object,
+        detail: Boolean
+    },
+    defineEmits: ['close'],
+    methods: {
+        clearSignature() {
+            const signaturePad = new SignaturePad(this.$refs.signatureCanvas);
+            signaturePad.clear();
+        },
+        saveSignature() {
+            const signatureData = this.$refs.signatureCanvas.toDataURL('image/png');
+            console.log('Firma guardada:', signatureData);
+            console.log('Firma guardadaen modal:', this.record)
+            if (this.detail) {                
+                console.log('PROPMODALRECORD:',this.record );
+                const response = $fetch(`api/records_details/${this.record}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        signed: signatureData,
+                    }),
+                });
+            } else {
+                const response = $fetch(`api/records/${this.record.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        signed: signatureData,
+                    }),
+                });
+            }
+            //como imprimo aca la prop record que viene de la tabla de records.vue);
+
+            this.$emit('close', false);
+        },
+    },
+};
+</script>
+<style scoped>
+.signature-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 2px double blue;
+    /* Borde doble de color azul */
+    border-radius: 20px;
+    /* Esquinas redondeadas */
+}
+
+.signature-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+</style>

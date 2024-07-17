@@ -67,14 +67,18 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectUsers  class="border rounded p-1 w-28"  v-model="third.user_full">
+                  <SelectUsers  
+                    class="border rounded p-1 w-28"  
+                    v-model="third.user_full"
+                    @change="saveItem(index,'user',third.user_full.id)" 
+                    >
                   </SelectUsers>
                 </div>
 
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="showModalThird(third.id)" :class="ui.span">🖊️</span>
+                  <span @click="showModalThird(third)" :class="ui.span">🖊️</span>
                   <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
                 </div>
               </td>
@@ -99,7 +103,10 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectUsers  class="border rounded p-1 w-28" v-model="newThirdUser">
+                  <SelectUsers  
+                    class="border rounded p-1 w-28" 
+                    v-model="newThirdUser"
+                  >
                   </SelectUsers>
                 </div>
               </td>
@@ -113,6 +120,7 @@
         </table>
       </UCard>   
     </div>
+    <ModalEditThird  :third="thirdSelected" @close="handleModalClose" v-model="isThird" />
   </template>
 
 
@@ -136,6 +144,8 @@ const maternity_breastfeeding_extend_list = ref({})
 const maternity_pregnancy_list = ref({})
 const maternity_violence_list = ref({})
 const type_list = ref({})
+const isThird = ref(false)
+const thirdSelected = ref({})
 
 const {
     data: thirds ,
@@ -238,6 +248,18 @@ onMounted(() => {
    fetchThirds()
    fetchChoices()
 })
+
+const showModalThird = (value: any) => {
+    thirdSelected.value = value
+    console.log('showModalThird',thirdSelected)
+    
+    isThird.value = true
+}
+
+const handleModalClose = (value: any) => {
+    isThird.value = false
+    fetchThirds()
+}
 
 const ui = {
     td: 'p-1 border',

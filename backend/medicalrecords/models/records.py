@@ -25,18 +25,25 @@ class GeneralExam(models.Model):
     def __str__(self):
         return self.name    
     
-class Records_details(models.Model):
-    history = models.CharField(max_length=100,null=True, blank=True)    
-    systems_review = models.CharField(max_length=100,null=True, blank=True)    
-    general_exam = models.CharField(max_length=100,null=True, blank=True)  
-    observation = models.CharField(max_length=100,null=True, blank=True)
+class Records_details(models.Model):   
+    record = models.ForeignKey(
+         'Records',
+        on_delete=models.PROTECT,
+        verbose_name="Registro",
+        related_name="Records",
+        #limit_choices_to={"thirds__name": "Medico"},    
+            
+    )     
+    observation = models.CharField(max_length=100,)
+    date_time = models.DateTimeField(auto_now_add=True)
+    signed=models.TextField(null=True,blank=True)
     
     class Meta:
         verbose_name = 'Detalle de Registro'
         verbose_name_plural = 'Detalle de Registros'
     
     def __str__(self):
-        return self.history
+        return self.observation
 
 class Records(models.Model):
     id = models.AutoField(primary_key=True)
@@ -101,8 +108,7 @@ class Records(models.Model):
         #limit_choices_to={"diagnoses__name": "Diagnostico"},
         null=True,
         blank=True,
-    )
-    Records_details=models.ManyToManyField(Records_details)
+    )    
     signed=models.TextField(null=True,blank=True)
     
     

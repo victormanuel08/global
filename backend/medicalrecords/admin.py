@@ -1,6 +1,6 @@
 
 from .models import *
-from .models import Availability, Cities, Diagnoses, Records, Specialities, Thirds, Scheduled, SEX_CHOICES,TYPE_CHOICES, BLOOD_CHOICES, MATERNITY_PREGNANCY_CHOICES, MATERNITY_BREASFEEDING_CHOICES, MATERNITY_BREASFEEDING_EXTEND_CHOICES, MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES, MATERNITY_VIOLANCE_CHOICES
+from .models import Records_details, Availability, Cities, Diagnoses, Records, Specialities, Thirds, Scheduled, SEX_CHOICES,TYPE_CHOICES, BLOOD_CHOICES, MATERNITY_PREGNANCY_CHOICES, MATERNITY_BREASFEEDING_CHOICES, MATERNITY_BREASFEEDING_EXTEND_CHOICES, MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES, MATERNITY_VIOLANCE_CHOICES
 from django.contrib import admin
 
 
@@ -16,6 +16,10 @@ class DiagnosesAdmin(admin.ModelAdmin):
 
 @admin.register(Records)
 class RecordsAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Records_details)
+class Records_detailsAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Specialities)

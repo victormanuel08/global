@@ -1,5 +1,6 @@
 <template>
-    <div class="rounded-3xl bg-white mt-4 ml-4 mr-4 md:mt-2 md:ml-2 md:mr-2">
+    <ModalEditRecord :calendarEvent="calendarEvent" v-if="isOpen"/>
+    <div class="rounded-3xl bg-white mt-4 ml-4 mr-4 md:mt-2 md:ml-2 md:mr-2" v-else>
         <UCard class="m-4">
             <!-- <UButton @click="modalOpen.createSchedule = true">Nueva Programacion / Agendar</UButton> -->
             <div class="flex items-center justify-center border-solid m-4">
@@ -68,7 +69,7 @@
             <FullCalendar :options="calendarOptions" />
         </UCard>
     </div>
-    <ModalEditRecord :calendarEvent="calendarEvent" v-model="isOpen"/>
+    
 </template>
 
 <script setup lang="ts">
@@ -318,8 +319,10 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 const editRecord = async (record: any) => {
-   // alert("Abrir modal de edición de RecordsMedic "+ record.speciality.description);
+    alert(`Puedes Hacer Evolucion de la Consulta Original`)
+    calendarEvent.value = record;
     isOpen.value = true;
+    console.log('calendarEvent', calendarEvent.value)
 };
 
 

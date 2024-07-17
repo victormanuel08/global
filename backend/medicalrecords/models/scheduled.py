@@ -2,9 +2,6 @@ from django.db import models
 from datetime import date, datetime
 
 
-
-
-
 class Scheduled(models.Model):
     date = models.DateField(verbose_name="Fecha solicitada")
     time = models.TimeField(verbose_name="Hora") 
