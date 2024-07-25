@@ -1,5 +1,7 @@
 <template>
+  <ModalEditRecordAmbulance :calendarEvent="thirdSelected" v-if="isAmbulance" />
     <div class="max-w-5xl mx-auto">
+      
       <UCard class="my-2">
         <template #header>
           <div class="flex justify-between items-center">
@@ -34,7 +36,7 @@
                   <UInput 
                     v-model="third.nit" 
                     @blur="saveItem(index,'nit',third.nit)" 
-                    class="border rounded p-1 w-20" 
+                    class="border rounded p-1 w-32" 
                   />
                 </div>
               </td>
@@ -43,11 +45,11 @@
                   <UInput 
                     v-model="third.name"
                     @blur="saveItem(index,'name',third.name)" 
-                    class="border rounded p-1 w-20" 
+                    class="border rounded p-1 w-32" 
                   />
                   <UInput v-model="third.second_name" 
                     @blur="saveItem(index,'second_name',third.second_name)" 
-                    class="border rounded p-1 w-20" 
+                    class="border rounded p-1 w-32" 
                   />
                 </div>
               </td>
@@ -56,19 +58,19 @@
                   <UInput 
                     v-model="third.last_name" 
                     @blur="saveItem(index,'last_name',third.last_name)" 
-                    class="border rounded p-1 w-20" 
+                    class="border rounded p-1 w-32" 
                   />
                   <UInput 
                     v-model="third.second_last_name" 
                     @blur="saveItem(index,'second_last_name',third.second_last_name)" 
-                    class="border rounded p-1 w-20"
+                    class="border rounded p-1 w-32"
                   />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <SelectUsers  
-                    class="border rounded p-1 w-28"  
+                    class="border rounded p-1 w-32"  
                     v-model="third.user_full"
                     @change="saveItem(index,'user',third.user_full.id)" 
                     >
@@ -78,6 +80,7 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
+                  <span @click="showModalRecordAmbulance(third)" :class="ui.span" title="Agregar Historia Medica Ambulancia">📝</span>
                   <span @click="showModalThird(third)" :class="ui.span">🖊️</span>
                   <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
                 </div>
@@ -86,25 +89,25 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="newThirdNit" placeholder="Identificacion" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdNit" placeholder="Identificacion" class="border rounded p-1 w-32" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="newThirdName" placeholder="Nombre" class="border rounded p-1 w-20"/>
-                  <UInput v-model="newThirdSecondName" placeholder="Segundo Nombre" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdName" placeholder="Nombre" class="border rounded p-1 w-32"/>
+                  <UInput v-model="newThirdSecondName" placeholder="Segundo Nombre" class="border rounded p-1 w-32" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="newThirdLastName" placeholder="Apellido" class="border rounded p-1 w-20" />
-                  <UInput v-model="newThirdSecondLastName" placeholder="Segundo Apellido" class="border rounded p-1 w-20" />
+                  <UInput v-model="newThirdLastName" placeholder="Apellido" class="border rounded p-1 w-32" />
+                  <UInput v-model="newThirdSecondLastName" placeholder="Segundo Apellido" class="border rounded p-1 w-32" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <SelectUsers  
-                    class="border rounded p-1 w-28" 
+                    class="border rounded p-1 w-32" 
                     v-model="newThirdUser"
                   >
                   </SelectUsers>
@@ -145,6 +148,7 @@ const maternity_pregnancy_list = ref({})
 const maternity_violence_list = ref({})
 const type_list = ref({})
 const isThird = ref(false)
+const isAmbulance = ref(false)
 const thirdSelected = ref({})
 
 const {
@@ -161,9 +165,7 @@ const fetchThirds = async () => {
     search ,
     pending,
   } = usePaginatedFetch<any>("/api/thirds/");
-
-  console .log('fetchThirds',thirds.value)
-  
+  console .log('fetchThirds',thirds.value)  
 }
 
 const fetchChoices = async () => {
@@ -251,9 +253,14 @@ onMounted(() => {
 
 const showModalThird = (value: any) => {
     thirdSelected.value = value
-    console.log('showModalThird',thirdSelected)
-    
+    console.log('showModalThird',thirdSelected)    
     isThird.value = true
+}
+
+const showModalRecordAmbulance = (value: any) => {
+    thirdSelected.value = value
+    console.log('showModalRecordAmbulance',thirdSelected)    
+    isAmbulance.value = true
 }
 
 const handleModalClose = (value: any) => {

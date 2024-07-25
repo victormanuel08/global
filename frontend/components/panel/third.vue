@@ -5,31 +5,43 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700">Identificacion:</label>
                 {{ record.nit }}
-                <label class="block text-sm font-medium text-gray-700">Sexo: {{ record.sex }}</label>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Nombre: </label>   
+                <label class="block text-sm font-medium text-gray-700">Nombre: </label>
                 {{ record.name }} {{ record.second_name }} {{ record.last_name }} {{ record.second_last_name }}
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
-                {{ record.city_birth }} - {{ record.date_birth }} ({{ record.year_old }} años)
+                {{ record.city_birth_full?.name }} - {{ record.date_birth }} ({{ record.year_old }} años)
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Telefono:</label>
                 {{ record.phone }}
-               
+
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Etnia: </label>   
-                {{ record.ethnicity }}
+                <label class="block text-sm font-medium text-gray-700">Etnia: </label>
+                {{ record.etnia_full?.name }}
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Tipo de Sangre</label>
-                {{ record.blood_type }} 
+                {{ record.blood_full?.name }}
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Sexo: </label>
+                {{ record.sex_full?.name }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Zona: </label>
+                {{ record.zone_full?.name }}
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Ocupacion: </label>
+                {{ record.occupation_full?.name }}
+            </div>
+
         </div>
-        <div class="flex flex-cols-2 gap-1 md:grid-cols-2">
+        <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
             <div>
                 <label class="block text-sm font-medium text-gray-700">Direccion:</label>
                 {{ record.address }}
@@ -49,12 +61,39 @@
 <script lang="ts" setup>
 
 const modelValue = defineProps({
-    calendarEvent: Object,    
-})  
+    calendarEvent: Object,
+})
 const record = ref<any>({})
 onMounted(() => {
-    record.value = modelValue.calendarEvent?.patient    
-})  
+    if (modelValue.calendarEvent?.patient) {
+        record.value = modelValue.calendarEvent?.patient
+        console.log('CALENDARIO', record.value)
+    } else {
+        record.value = modelValue.calendarEvent
+        console.log('THIRD', record.value)
+    }
+    if (record.value.record) {
+        console.log('RECORD RECORD',record.value)
+        console.log('EXISTE RECORD')
+    } else {
+        createRecord()
+        console.log('CREAR RECORD')
+    }
+})
+
+const createRecord = async () => {
+    const response = await $fetch('api/records/', {
+        method: 'POST',
+        body: {
+            third_patient: record.value?.id,
+            third_medic: record.value?.id, //deberia cargarlo del user       
+        },
+    })
+    console.log('RESPONSE', response.id)
+    record.value.record = response
+
+    console.log('RECORDRESPONSE', record.value)
+}
 
 </script>
 <style></style>

@@ -106,7 +106,7 @@
             </table>
         </UCard>
     </div>
-    <ModalSign  :record="newRecordDetail" @close="handleModalClose" v-model="isSing" :detail="detail"/>
+    <ModalSign  :record="newRecordDetail" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="'signed'" />
 </template>
 
 

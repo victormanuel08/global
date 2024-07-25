@@ -23,7 +23,8 @@ export default {
 
     props: {
         record: Object,
-        detail: Boolean
+        detail: Boolean,
+        typeThird: String,
     },
     defineEmits: ['close'],
     methods: {
@@ -40,14 +41,16 @@ export default {
                 const response = $fetch(`api/records_details/${this.record}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
-                        signed: signatureData,
+                        [this.typeThird]: signatureData,
                     }),
                 });
             } else {
+                console.log('typeThrodSigned:',this.typeThird);
+                console.log('singasasasas1111111:',this.record.id );
                 const response = $fetch(`api/records/${this.record.id}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
-                        signed: signatureData,
+                        [this.typeThird]: signatureData,
                     }),
                 });
             }

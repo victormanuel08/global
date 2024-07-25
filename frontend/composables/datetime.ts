@@ -1,3 +1,5 @@
+
+
 export const getCurrentDate = () => {
     const date = new Date()
     const year = date.getFullYear()
@@ -12,7 +14,7 @@ export const getCurrentTime = () => {
     const minutes = date.getMinutes()
     const seconds = date.getSeconds()
     return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`
-  }
+}
 
 export const formatDate = (date: string) => {
     const [year, month, day] = date.split('-')
@@ -50,6 +52,12 @@ export const formatDateTime = (datetime: string) => {
   return formattedDateTime;
 };
 
+export const getCHOICE = async (value: string, choices: string) => {
+    const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);
+    // console.log('response', response);
+    return response;
+};
+
 export const listDaysOptions = (date: any, enddate: any) => {
   const options = [];
   console.log('fechas', date, enddate)
@@ -77,6 +85,8 @@ export const listDaysOptions = (date: any, enddate: any) => {
 
   return options;
 };
+
+
 
 // Función para obtener fechas dentro del rango
 const getDatesInRange = (startDate: any, endDate: any) => {

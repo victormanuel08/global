@@ -18,8 +18,23 @@ SEX_CHOICES = (
 
 TYPE_CHOICES = (
     ('P', 'Paciente'),
-    ('M', 'Medico')
+    ('M', 'Medico'),
+    ('E', 'Entidad'),
+    ('C', 'Clinica')
 )
+
+TYPE_DOCUMENT_CHOICES = (
+    ('CC', 'Cedula de Ciudadania'),
+    ('CE', 'Cedula de Extranjeria'),
+    ('PA', 'Pasaporte'),
+    ('RC', 'Registro Civil'),
+    ('TI', 'Tarjeta de Identidad'),
+    ('NU', 'Numero Unico de Identificacion'),
+    ('PE', 'Permiso Especial de Permanencia'),
+    ('AS', 'Adulto sin Identificacion'),
+    ('NI', 'Nit')
+)
+
 
 BLOOD_CHOICES = (
     ('A+', 'A+'),
@@ -70,6 +85,29 @@ MATERNITY_VIOLANCE_CHOICES = (
     ('RS', 'Reinsertado'),
     ('IN', 'Intrafamiliar')
 )
+
+STATUS_CHOICES = (
+    ('S', 'Soltero'),
+    ('C', 'Casado'),
+    ('D', 'Divorciado'),
+    ('V', 'Viudo'),
+    ('U', 'Union Libre')
+)
+
+OCCUPATION_CHOICES = (
+    ('E', 'Empleado'),
+    ('I', 'Independiente'),
+    ('D', 'Desempleado'),
+    ('P', 'Pensionado'),
+    ('E', 'Estudiante'),
+    ('H', 'Hogar')
+)
+
+ZONE_CHOICES = (
+    ('U', 'Urbana'),
+    ('R', 'Rural')
+)
+    
     
 # Create your models here.
 class Thirds(models.Model):
@@ -88,8 +126,8 @@ class Thirds(models.Model):
     zone= models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=2, choices=TYPE_CHOICES, null=True, blank=True)
     speciality=models.ForeignKey(Specialities, on_delete=models.PROTECT, null=True, blank=True)
-    city = models.CharField(max_length=100, null=True, blank=True)
-    city_birth = models.CharField(max_length=100, null=True, blank=True)
+    city = models.ForeignKey('Cities', on_delete=models.PROTECT, null=True, blank=True)
+    city_birth = models.ForeignKey('Cities', on_delete=models.PROTECT, null=True, blank=True, related_name='city_birth')
     maternity_pregnancy = models.CharField(max_length=2, choices=MATERNITY_PREGNANCY_CHOICES, null=True, blank=True)
     maternity_breasfeeding = models.CharField(max_length=2, choices=MATERNITY_BREASFEEDING_CHOICES, null=True, blank=True)
     maternity_breasfeeding_extend = models.CharField(max_length=2, choices=MATERNITY_BREASFEEDING_EXTEND_CHOICES, null=True, blank=True)
@@ -97,9 +135,17 @@ class Thirds(models.Model):
     maternity_violence = models.CharField(max_length=2, choices=MATERNITY_VIOLANCE_CHOICES, null=True, blank=True)
     ethnicity = models.CharField(max_length=2, choices=ETNIAS_CHOICES, null=True, blank=True)
     blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES, null=True, blank=True)
+    status= models.CharField(max_length=2, choices=STATUS_CHOICES, null=True, blank=True)
+    occupation = models.CharField(max_length=2, choices=OCCUPATION_CHOICES, null=True, blank=True)
+    zone = models.CharField(max_length=2, choices=ZONE_CHOICES, null=True, blank=True)
+    allergies = models.CharField(max_length=200, null=True, blank=True)
+    pathologies = models.CharField(max_length=200, null=True, blank=True)
+    medications = models.CharField(max_length=200, null=True, blank=True)
+    liquids_foods = models.CharField(max_length=200, null=True, blank=True)    
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     
     def save(self, *args, **kwargs):
         today = datetime.now().date()

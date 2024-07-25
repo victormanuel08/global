@@ -17,27 +17,27 @@
     </UCard>
 </template>
 <script setup lang="ts">
-import { PanelBasic, PanelSystems, PanelGeneral, PanelThird, PanelPregnancy, PanelEvolution, PanelHistory, PanelRecords } from "#components";
+import { PanelBasic, PanelSystems, PanelGeneral, PanelThird, PanelPregnancy, PanelEvolution, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
 
 const props = defineProps({
     calendarEvent: Object,
 })
 
 const creationPanels = {
+    'Third': { component: PanelThird },
+    'History': { component: PanelHistory },
+    'Records': { component: PanelRecords },
     'Basic': markRaw({
         component: PanelBasic,
         title: 'Basic',
-    }),
-    'Third': { component: PanelThird },
-    'Systems': markRaw({
-        component: PanelSystems,
-        title: 'Sistemas',
-    }),
-    'General': { component: PanelGeneral },
-    'History': { component: PanelHistory },
-    'Records': { component: PanelRecords},
+    }),   
+    'Procedures': markRaw({
+        component: PanelProcedures,
+        title: 'Systems',
+    }), 
     'Pregnancy': { component: PanelPregnancy },
-    'Evolution': { component: PanelEvolution },
+    'Objects': { component: PanelObjects },
+    'Documents': { component: PanelDocuments },
 }
 
 const creationPanelSelected = ref(creationPanels['Third'])
@@ -58,47 +58,48 @@ const items = [{
     panel: 'Records',
 },
 {
-    label: 'Datos Consulta',
+    label: 'Datos Evento',
     icon: 'i-heroicons-information-circle',
     panel: 'Basic',
 },
 {
-    label: 'Revision Sistemas',
+    label: 'Lesiones',
     icon: 'i-heroicons-information-circle',
-    panel: 'Systems',
-}, {
-    label: 'Examen General',
+    panel: 'Injuries',
+},
+{
+    label: 'Procedimientos',
     icon: 'i-heroicons-information-circle',
-    panel: 'General',
+    panel: 'Procedures',
+}, 
+{
+    label: 'Objetos',
+    icon: 'i-heroicons-information-circle',
+    panel: 'Objects',
+},
+{
+    label: 'Documentos',
+    icon: 'i-heroicons-information-circle',
+    panel: 'Documents',
 },
 ]
 
 onMounted(() => {
-    if (props.calendarEvent?.patient.sex === "F") {       
+    console.log("modalambulanciaqqqq", props.calendarEvent?.sex)
+    if (props.calendarEvent?.sex === "F") {       
         items.splice(1, 0, {
             label: 'Maternidad',
             icon: 'i-heroicons-information-circle',
             panel: 'Pregnancy',
         });
-    }
-    if (props.calendarEvent?.medic.speciality_full.code === "012") {       
-        items.push({
-            label: 'Evolucion',
-            icon: 'i-heroicons-information-circle',
-            panel: 'Evolution',
-        });
-    }     
+    }    
 });
 
-function onChange(index: any) {
-    //alert(`${item.panel}`)    
+function onChange(index: any) {    
     const item = items[index]
     creationPanelSelected.value = creationPanels[item.panel]
 }
 
 </script>
 <style scoped>
-.modal {
-    max-width: 800px;
-}
 </style>

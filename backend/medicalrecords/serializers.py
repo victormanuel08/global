@@ -20,18 +20,23 @@ class SpecialitySerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class ThirdSerializer(serializers.ModelSerializer):    
-    speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
-    
+    speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)    
+    city_birth_full = CitySerializer(source = 'city_birth', read_only=True)   
+    city_full = CitySerializer(source = 'city', read_only=True) 
 
     class Meta:
         model = Thirds
-        fields = '__all__'      
-        
+        fields = '__all__'             
       
 
 class RecordSerializer(serializers.ModelSerializer):    
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
-    third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)
+    third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
+    third_medic_clinic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    # third_relationship_full = ThirdSerializer(source = 'third_relationship', read_only=True)
+    third_clinic_full = ThirdSerializer(source = 'third_clinic', read_only=True)
+    third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
     diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
     diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
     diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
@@ -85,6 +90,18 @@ class SystemsReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemsReview
         fields = '__all__'
+        
+class ProcedureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Procedures
+        fields = '__all__'
+        
+class PolicySerializer(serializers.ModelSerializer):
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    class Meta:
+        model = Policy
+        fields = '__all__'
+        
         
 class ScheduledSerializer(serializers.ModelSerializer):
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)

@@ -1,27 +1,27 @@
 <template>
     <div>
-        <h1>Informacion Paciente</h1>
+        <h1>Informacion Feminas</h1>
         <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
             <div>
                 <label class="block text-sm font-medium text-gray-700">Lactancia:</label>
-                {{ convertChoice(record.maternity_breasfeeding, maternity_list) }}             
+               
+                {{ record.maternity_full?.name }}     
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Amamantamiento Complemntario: </label>
-                {{ convertChoice(record.maternity_breasfeeding_complementary, maternity_complementary_list) }}
+                {{ record.maternity_complementary_full?.name }}
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Amaamantamiento extendido: </label>   
-                {{convertChoice(record.maternity_breasfeeding_extend, maternity_extend_list) }}
+                {{ record.maternity_extend_full?.name }}
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Embarazo</label>
-               {{ convertChoice(record.maternity_pregnancy, maternity_pregnancy_list) }}
+                {{ record.maternity_pregnancy_full?.name }}
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Violencia :</label>
-               {{ convertChoice(record.maternity_violence, maternity_violence_list) }}
-               
+                {{ record.maternity_violance_full?.name }}               
             </div>           
         </div>
     </div>
@@ -32,44 +32,16 @@
 const modelValue = defineProps({
     calendarEvent: Object,    
 })  
-const maternity_list = ref<any[]>([])
-const maternity_complementary_list = ref<any[]>([])
-const maternity_extend_list = ref<any[]>([])
-const maternity_pregnancy_list = ref<any[]>([])
-const maternity_violence_list = ref<any[]>([])
 
 const record = ref<any>({})
-onMounted(() => {
-    fetchChoices()
-    record.value = modelValue.calendarEvent?.patient    
-    console.log("RECORD", record)
-    
+
+onMounted(() => { 
+    if (modelValue.calendarEvent?.patient) {        
+        record.value = modelValue.calendarEvent?.patient       
+    }else{
+    record.value = modelValue.calendarEvent    
+} 
 })  
-const fetchChoices = async () => {
-  const response = await $fetch<any>('api/api/choices/') 
-  maternity_list.value = response.MATERNITY_CHOICES
-  maternity_complementary_list.value = response.MATERNITY_COMPLEMENTARY_CHOICES
-  maternity_extend_list.value = response.MATERNITY_EXTEND_CHOICES
-  maternity_pregnancy_list.value = response.MATERNITY_PREGNANCY_CHOICES
-  maternity_violence_list.value = response.MATERNITY_VIOLANCE_CHOICES
-  console.log("CHOICES", response)
-
-}
-
-const convertChoice = (value: string | number, list: any[]) => {
-    try {
-        if (value === null) {
-            return '';
-        }
-        const stringValue = String(value); 
-        const choice = list.find((item) => item[0] === stringValue);
-        return choice ? choice[1] : stringValue;
-    } catch (error) {
-        console.error('Error al cargar las opciones:', error);
-    }
-};
-
-
 
 </script>
 <style></style>

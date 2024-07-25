@@ -20,8 +20,22 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordSerializer
-    search_fields = ['records_details','records_details__record','records_details__observation','reason_consultation','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis_1__name',"history", "systems_review", "general_exam",  "allergies", "date_time"]
+    search_fields = ['third_patient','third_patient__id', 'records_details']  # Otras búsquedas
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        third_patient_id = self.request.query_params.get('third_patient')
+        third_patient_nit = self.request.query_params.get('third_patient_nit')
+
+        if third_patient_id:
+            queryset = queryset.filter(third_patient=third_patient_id)
+
+        if third_patient_nit:
+            queryset = queryset.filter(third_patient__nit=third_patient_nit)
+
+        return queryset
+
+    
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):
@@ -42,6 +56,11 @@ class RecordDetailsOnlyViewSet(viewsets.ViewSet):
 class SpecialityViewSet(viewsets.ModelViewSet):
     queryset = Specialities.objects.all()
     serializer_class = SpecialitySerializer
+    search_fields = ['code','description']
+    
+class ProceduresViewSet(viewsets.ModelViewSet):
+    queryset = Procedures.objects.all()
+    serializer_class = ProcedureSerializer
     search_fields = ['code','description']
 
 class ThirdViewSet(viewsets.ModelViewSet):
@@ -89,6 +108,12 @@ class ScheduledViewSet(viewsets.ModelViewSet):
             return queryset
 
 class ChoicesAPIView(APIView):    
+    def get_choice_by_id(self, choice_list, choice_id):
+        for choice in choice_list:
+            if choice[0] == choice_id:
+                return {"id": choice[0], "name": choice[1]}
+        return None
+    
     def get(self, request):
         choices_data = {
             "TYPE_CHOICES": TYPE_CHOICES,
@@ -99,10 +124,71 @@ class ChoicesAPIView(APIView):
             "MATERNITY_COMPLEMENTARY_CHOICES": MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES,
             "MATERNITY_VIOLANCE_CHOICES": MATERNITY_VIOLANCE_CHOICES,
             "ETNIAS_CHOICES": ETNIAS_CHOICES,
-            "SEX_CHOICES": SEX_CHOICES,
-            "TYPE_CHOICES": TYPE_CHOICES,
+            "SEX_CHOICES": SEX_CHOICES,                 
+            "STATUS_CHOICES": STATUS_CHOICES,
+            "OCCUPATION_CHOICES": OCCUPATION_CHOICES,
+            "ZONE_CHOICES": ZONE_CHOICES,
+            "TYPE_DOCUMENT_CHOICES": TYPE_DOCUMENT_CHOICES,                       
+            "PRIORITY_CHOICES": PRIORITY_CHOICES,
+            "RELATIONSHIP_CHOICES": RELATIONSHIP_CHOICES,
+            "EXTERNAL_CAUSE_CHOICES": EXTERNAL_CAUSE_CHOICES,
+            "VEHICLE_TYPE_CHOICES": VEHICLE_TYPE_CHOICES,
+            "GLASGOW_RO_CHOICES": GLASGOW_RO_CHOICES,
+            "GLASGOW_RV_CHOICES": GLASGOW_RV_CHOICES,
+            "GLASGOW_RM_CHOICES": GLASGOW_RM_CHOICES,
+            "HALF_CHOICES": HALF_CHOICES,   
+            "BODY_PART_CHOICES": BODY_PART_CHOICES,
+            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,        
         }
+        selected_choice_id = "P"
+        selected_choice = self.get_choice_by_id(choices_data.get("TYPE_CHOICES", []), selected_choice_id)
+
+        if selected_choice:
+            print(f"Objeto seleccionado: {selected_choice}")
+        else:
+            print(f"No se encontró un objeto con ID {selected_choice_id}")
+
         return Response(choices_data, status=status.HTTP_200_OK)
+    
+class SearchChoiceAPIView(APIView):
+    def get_choice_by_id(self, choice_list, choice_id):
+        for choice in choice_list:
+            if choice[0] == choice_id:
+                return {"id": choice[0], "name": choice[1]}
+        return None
+
+    def get(self, request, choice_type, choice_id):
+        choices_data = {
+            "TYPE_CHOICES": TYPE_CHOICES,
+            "BLOOD_CHOICES": BLOOD_CHOICES,
+            "MATERNITY_PREGNANCY_CHOICES": MATERNITY_PREGNANCY_CHOICES,
+            "MATERNITY_CHOICES": MATERNITY_BREASFEEDING_CHOICES,
+            "MATERNITY_EXTEND_CHOICES": MATERNITY_BREASFEEDING_EXTEND_CHOICES,
+            "MATERNITY_COMPLEMENTARY_CHOICES": MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES,
+            "MATERNITY_VIOLANCE_CHOICES": MATERNITY_VIOLANCE_CHOICES,
+            "ETNIAS_CHOICES": ETNIAS_CHOICES,
+            "SEX_CHOICES": SEX_CHOICES,                 
+            "STATUS_CHOICES": STATUS_CHOICES,
+            "OCCUPATION_CHOICES": OCCUPATION_CHOICES,
+            "ZONE_CHOICES": ZONE_CHOICES,
+            "TYPE_DOCUMENT_CHOICES": TYPE_DOCUMENT_CHOICES,                       
+            "PRIORITY_CHOICES": PRIORITY_CHOICES,
+            "RELATIONSHIP_CHOICES": RELATIONSHIP_CHOICES,
+            "EXTERNAL_CAUSE_CHOICES": EXTERNAL_CAUSE_CHOICES,
+            "VEHICLE_TYPE_CHOICES": VEHICLE_TYPE_CHOICES,
+            "GLASGOW_RO_CHOICES": GLASGOW_RO_CHOICES,
+            "GLASGOW_RV_CHOICES": GLASGOW_RV_CHOICES,
+            "GLASGOW_RM_CHOICES": GLASGOW_RM_CHOICES,
+            "HALF_CHOICES": HALF_CHOICES,            
+        }
+
+        selected_choice = self.get_choice_by_id(choices_data.get(choice_type, []), choice_id)
+
+        if selected_choice:
+            return Response(selected_choice, status=status.HTTP_200_OK)
+        else:
+            return Response( {}, status=status.HTTP_200_OK)
+           #return Response({}, status=status.HTTP_404_NOT_FOUND)  
     
 class AvailabilityViewSet(viewsets.ModelViewSet):
     queryset = Availability.objects.all()
@@ -121,7 +207,3 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(date=date)
 
         return queryset
-
-    
-
-        

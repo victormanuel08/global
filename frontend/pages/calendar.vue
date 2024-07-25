@@ -1,5 +1,5 @@
 <template>
-    <ModalEditRecord :calendarEvent="calendarEvent" v-if="isOpen"/>
+    <ModalEditRecord :calendarEvent="calendarEvent" v-if="isOpen" />
     <div class="rounded-3xl bg-white mt-4 ml-4 mr-4 md:mt-2 md:ml-2 md:mr-2" v-else>
         <UCard class="m-4">
             <!-- <UButton @click="modalOpen.createSchedule = true">Nueva Programacion / Agendar</UButton> -->
@@ -320,7 +320,20 @@ const saveItem = async (index: number, field: string, value: string) => {
 
 const editRecord = async (record: any) => {
     alert(`Puedes Hacer Evolucion de la Consulta Original`)
-    calendarEvent.value = record;
+    calendarEvent.value = record;    
+    calendarEvent.value.patient.type_full = await getCHOICE(calendarEvent.value.patient.type, 'TYPE_CHOICES')
+    calendarEvent.value.patient.sex_full = await getCHOICE(calendarEvent.value.patient.sex, "SEX_CHOICES")
+    calendarEvent.value.patient.blood_full = await getCHOICE(calendarEvent.value.patient.blood_type, "BLOOD_CHOICES")
+    calendarEvent.value.patient.etnia_full = await getCHOICE(calendarEvent.value.patient.ethnicity, "ETNIAS_CHOICES")
+    calendarEvent.value.patient.zone_full = await getCHOICE(calendarEvent.value.patient.zone, "ZONE_CHOICES")
+    calendarEvent.value.patient.occupation_full = await getCHOICE(calendarEvent.value.patient.occupation, "OCCUPATION_CHOICES")
+    calendarEvent.value.patient.maternity_full = await getCHOICE(calendarEvent.value.patient.maternity_breasfeeding, "MATERNITY_CHOICES")
+    calendarEvent.value.patient.maternity_complementary_full = await getCHOICE(calendarEvent.value.patient.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
+    calendarEvent.value.patient.maternity_extend_full = await getCHOICE(calendarEvent.value.patient.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")
+    calendarEvent.value.patient.maternity_pregnancy_full = await getCHOICE(calendarEvent.value.patient.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
+    calendarEvent.value.patient.maternity_violance_full = await getCHOICE(calendarEvent.value.patient.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")    
+    
+    console.log('watch1', calendarEvent.value)    
     isOpen.value = true;
     console.log('calendarEvent', calendarEvent.value)
 };
