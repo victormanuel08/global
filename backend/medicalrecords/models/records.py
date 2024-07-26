@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 PRIORITY_CHOICES = (
     ('W', 'White'),
@@ -77,8 +78,8 @@ HALF_CHOICES = (
 )
 
 BODY_PART_CHOICES = (
-    ('CA', 'Cabeza'),
-    ('CU', 'Cuello'),
+    ('CA', 'Cabeza', '3,15,10,22', '3,4,15,16,9,10,21,22'),
+    ('CU', 'Cuello', '27,34', '27,28,33,34'),
     ('TO', 'Torax'),
     ('DO', 'Dorso'),
     ('AB', 'Abdomen'),
@@ -318,11 +319,21 @@ class Records(models.Model):
         null=True,
         blank=True,
     )
+    third_driver = models.ForeignKey(
+        'Thirds',
+        on_delete=models.PROTECT,
+        verbose_name="Conductor",
+        related_name="thirds_driver",
+        #limit_choices_to={"thirds__name": "Medico"},
+        null=True,
+        blank=True,
+    )
     signed_obj=models.TextField(null=True,blank=True)  
     relationship_obj = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES,null=True, blank=True)
-    observations = models.CharField(max_length=200,null=True, blank=True)     
-    
-    
+    observations = models.CharField(max_length=200,null=True, blank=True)    
+    body= ArrayField(models.CharField(max_length=300), blank=True,  null=True)  
+    body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
+    injuries = models.CharField(max_length=300,null=True, blank=True)    
     
     class Meta:
         ordering = ['date_time']

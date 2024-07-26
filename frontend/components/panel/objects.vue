@@ -48,7 +48,7 @@
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
-
+                       {{ record.relationship_obj_full?.name }}.  {{ record.third_obj_full?.name }} {{ record.third_obj_full?.second_name }} {{ record.third_obj_full?.last_name }} {{ record.third_obj_full?.second_last_name }}
                     </p>
                 </strong>
             </div>

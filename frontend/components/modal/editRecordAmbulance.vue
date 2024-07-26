@@ -17,7 +17,7 @@
     </UCard>
 </template>
 <script setup lang="ts">
-import { PanelBasic, PanelSystems, PanelGeneral, PanelThird, PanelPregnancy, PanelEvolution, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
+import { PanelBasic,  PanelThird, PanelPregnancy, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
 
 const props = defineProps({
     calendarEvent: Object,
@@ -36,6 +36,7 @@ const creationPanels = {
         title: 'Systems',
     }), 
     'Pregnancy': { component: PanelPregnancy },
+    'Injuries': { component: PanelInjuries },
     'Objects': { component: PanelObjects },
     'Documents': { component: PanelDocuments },
 }

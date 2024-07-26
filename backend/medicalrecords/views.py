@@ -150,12 +150,20 @@ class ChoicesAPIView(APIView):
 
         return Response(choices_data, status=status.HTTP_200_OK)
     
+    
 class SearchChoiceAPIView(APIView):
     def get_choice_by_id(self, choice_list, choice_id):
         for choice in choice_list:
             if choice[0] == choice_id:
-                return {"id": choice[0], "name": choice[1]}
+                result = {"id": choice[0], "name": choice[1]}
+                if len(choice) >= 3:
+                    result["male"] = choice[2]
+                if len(choice) >= 4:
+                    result["female"] = choice[3]
+                return result
         return None
+    
+
 
     def get(self, request, choice_type, choice_id):
         choices_data = {
@@ -179,7 +187,9 @@ class SearchChoiceAPIView(APIView):
             "GLASGOW_RO_CHOICES": GLASGOW_RO_CHOICES,
             "GLASGOW_RV_CHOICES": GLASGOW_RV_CHOICES,
             "GLASGOW_RM_CHOICES": GLASGOW_RM_CHOICES,
-            "HALF_CHOICES": HALF_CHOICES,            
+            "HALF_CHOICES": HALF_CHOICES,    
+            "BODY_PART_CHOICES": BODY_PART_CHOICES,
+            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,       
         }
 
         selected_choice = self.get_choice_by_id(choices_data.get(choice_type, []), choice_id)
@@ -189,6 +199,31 @@ class SearchChoiceAPIView(APIView):
         else:
             return Response( {}, status=status.HTTP_200_OK)
            #return Response({}, status=status.HTTP_404_NOT_FOUND)  
+           
+class SearchBodyAPIView(APIView):
+    def get_choice_by_id(self, choice_list, choice_id, sex):
+        for choice in choice_list:
+            if sex == "male" and len(choice) >= 4 and choice[2] and choice_id in choice[2]:
+                return {"id": choice[0], "name": choice[1], "details": choice[2]}
+            elif sex == "female" and len(choice) >= 5 and choice[3] and choice_id in choice[3]:
+                return {"id": choice[0], "name": choice[1], "details": choice[3]}
+        return None
+
+    def get(self, request, choice_type, choice_id, sex):
+        choices_data = {
+            "BODY_PART_CHOICES": BODY_PART_CHOICES,
+            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,
+        }
+
+        selected_choice = self.get_choice_by_id(choices_data.get(choice_type, []), choice_id, sex)
+
+        if selected_choice:
+            return Response(selected_choice, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_200_OK)
+
+
+
     
 class AvailabilityViewSet(viewsets.ModelViewSet):
     queryset = Availability.objects.all()

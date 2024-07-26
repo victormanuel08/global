@@ -41,6 +41,8 @@ const choices = {
     GLASGOW_RV_CHOICES: [] as choice[],
     GLASGOW_RM_CHOICES: [] as choice[],
     HALF_CHOICES: [] as choice[],
+    BODY_PART_CHOICES: [] as choice[],
+    BODY_PART_SIDE_CHOICES: [] as choice[],
 } 
        
 type choice = {
@@ -82,7 +84,9 @@ const fetchChoices = async () => {
             GLASGOW_RO_CHOICES,
             GLASGOW_RV_CHOICES,
             GLASGOW_RM_CHOICES,
-            HALF_CHOICES,            
+            HALF_CHOICES,       
+            BODY_PART_CHOICES,
+            BODY_PART_SIDE_CHOICES,     
     } = response;
 
     const mapToChoice = (list: any[]): choice[] => {
@@ -111,7 +115,9 @@ const fetchChoices = async () => {
     choices.GLASGOW_RO_CHOICES = mapToChoice(GLASGOW_RO_CHOICES);
     choices.GLASGOW_RV_CHOICES = mapToChoice(GLASGOW_RV_CHOICES);
     choices.GLASGOW_RM_CHOICES = mapToChoice(GLASGOW_RM_CHOICES);
-    choices.HALF_CHOICES = mapToChoice(HALF_CHOICES);       
+    choices.HALF_CHOICES = mapToChoice(HALF_CHOICES);    
+    choices.BODY_PART_CHOICES = mapToChoice(BODY_PART_CHOICES);
+    choices.BODY_PART_SIDE_CHOICES = mapToChoice(BODY_PART_SIDE_CHOICES);   
     options.value = choices[props.choiceType];
   } catch (error) {
     console.error('Error al cargar las opciones:', error);

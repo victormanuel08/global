@@ -32,11 +32,12 @@ class ThirdSerializer(serializers.ModelSerializer):
 class RecordSerializer(serializers.ModelSerializer):    
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
     third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
-    third_medic_clinic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
+    third_medic_clinic_full = ThirdSerializer(source = 'third_medic_clinic', read_only=True)    
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
     # third_relationship_full = ThirdSerializer(source = 'third_relationship', read_only=True)
     third_clinic_full = ThirdSerializer(source = 'third_clinic', read_only=True)
     third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
+    third_driver_full=ThirdSerializer(source = 'third_driver', read_only=True)
     diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
     diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
     diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)

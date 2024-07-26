@@ -34,6 +34,7 @@ urlpatterns = [
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
     path('api/choices/', ChoicesAPIView.as_view(), name='choices-list'),
     path('api/choices/<str:choice_type>/<str:choice_id>/', SearchChoiceAPIView.as_view(), name='search-choice'),
+    path('api/choices/<str:choice_type>/<str:choice_id>/<str:sex>/', SearchBodyAPIView.as_view(), name='search-choice'), 
     path('records/<int:pk>/records_details/', RecordDetailsOnlyViewSet.as_view({'get': 'retrieve'}), name='record-details'),
     
     path('', include(router.urls)),
