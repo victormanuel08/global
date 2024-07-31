@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Objetos</h1>
-        <div class="grid grid-cols-5  md:grid-cols-5">
+        <div class="grid grid-cols-5  md:grid-cols-5 mt-4">
             <div>
                 <UCheckbox 
                     v-model="record.obj" 
@@ -16,7 +16,7 @@
             <div></div>
         </div>
 
-        <div class="grid grid-cols-1  md:grid-cols-1" v-if="record.obj" >
+        <div class="grid grid-cols-1  md:grid-cols-1 mt-4" v-if="record.obj" >
             <div>
                 <label class="block text-sm font-medium text-gray-700">Descripcion Objetos:</label>
                 <UTextarea
@@ -28,10 +28,13 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-5  md:grid-cols-5" v-if="record.obj" >
+        <div class="grid grid-cols-5  md:grid-cols-5 mt-4" v-if="record.obj" >
             <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Toma Objetos:</label>
-                <SelectThird :third-type="'P'"  v-model="record.third_obj_full" @change="saveItem(record.id, 'third_obj', record.third_obj_full.id )">
+                <label class="block text-sm font-medium text-gray-700">
+                    Tercero Toma Objetos:                     
+                    <span @click="showModalThird('')">➕</span>
+                </label>
+                <SelectThird :placeholder="'Acompañante'" :third-type="'P'"  v-model="record.third_obj_full" @change="saveItem(record.id, 'third_obj', record.third_obj_full.id )">
                 </SelectThird>
             </div>
             <div>
@@ -40,9 +43,9 @@
             </div>
             <div></div>
             <div></div>
-            <div>
+            <div class="mt-20">
                 <button @click="signedRecord()">
-                    🖋️ Firmar aqui
+                    🖋️ 
                 </button>
                 <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
                 <strong>
@@ -55,12 +58,23 @@
         </div>
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="'signed_obj'" />
+    <ModalEditThird  :third="thirdSelected"   :typeT="'P'" @close="handleModalClose" v-model="isThird" />
 </template>
 
 <script lang="ts" setup>
 
 const isSing = ref(false)
 const detail = ref(false)
+
+
+const isThird = ref(false)
+const thirdSelected = ref<any>({})  
+
+const showModalThird = (value: any) => {
+    thirdSelected.value = value
+    console.log('showModalThird',thirdSelected)    
+    isThird.value = true
+}
 
 const modelValue = defineProps({
     calendarEvent: Object,

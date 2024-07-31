@@ -3,6 +3,8 @@ from medicalrecords.models import *
 from medicalrecords.serializers import *
 from .models import Thirds
 from datetime import datetime, timedelta
+from drf_extra_fields.fields import Base64ImageField
+
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,6 +25,13 @@ class ThirdSerializer(serializers.ModelSerializer):
     speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)    
     city_birth_full = CitySerializer(source = 'city_birth', read_only=True)   
     city_full = CitySerializer(source = 'city', read_only=True) 
+    namenit = serializers.SerializerMethodField()
+
+    def get_namenit(self, obj):
+        if obj.type_document == 'NI':
+            return f"{obj.nit} - {obj.name}"
+        else:
+            return f"{obj.nit} - {obj.name} {obj.second_name} {obj.last_name} {obj.second_last_name}"
 
     class Meta:
         model = Thirds
@@ -43,6 +52,9 @@ class RecordSerializer(serializers.ModelSerializer):
     diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
     diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
     records_details = serializers.SerializerMethodField()
+    
+
+
     class Meta:
         model = Records
         fields = '__all__'  

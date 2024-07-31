@@ -7,3 +7,5 @@ pillow
 django-environ
 djangorestframework-simplejwt
 django-extensions
+pillow
+drf-extra-fields

@@ -112,11 +112,12 @@ ZONE_CHOICES = (
 # Create your models here.
 class Thirds(models.Model):
     id = models.AutoField(primary_key=True)
+    type_document = models.CharField(max_length=2, choices=TYPE_DOCUMENT_CHOICES, null=True, blank=True, default='CC')
     nit= models.CharField(max_length=100)    
     name = models.CharField(max_length=100)
-    second_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    second_last_name = models.CharField(max_length=100)
+    second_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
+    second_last_name = models.CharField(max_length=100,null=True, blank=True)
     date_birth= models.DateField(null=True, blank=True)
     year_old= models.IntegerField(null=True, blank=True)
     sex= models.CharField(max_length=2, choices=SEX_CHOICES, null=True, blank=True)

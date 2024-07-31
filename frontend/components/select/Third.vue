@@ -1,5 +1,5 @@
 <template>
-    <USelectMenu v-model="modelValue" option-attribute="nit" :options="options" :searchable="true" v-model:query="query"
+    <USelectMenu v-model="modelValue" option-attribute="namenit" :options="options" :searchable="true" v-model:query="query"
         :clearSearchOnClose="true" @click="clickHandler"
         :placeholder="props.thirdType === 'P' ? 'Paciente' : props.thirdType === 'M' ? 'Médico' : props.thirdType === 'E' ? 'Entidad' : 'Clínica'"
         >
@@ -43,6 +43,8 @@ const retrieveFromApi = async () => {
     })
 
     options.value = response.results
+
+   
 }
 
 

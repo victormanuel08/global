@@ -41,7 +41,7 @@
             </div>
 
         </div>
-        <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
+        <div class="grid grid-cols-3 gap-4 md:grid-cols-3 mt-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700">Direccion:</label>
                 {{ record.address }}
@@ -50,15 +50,27 @@
                 <label class="block text-sm font-medium text-gray-700">Email:</label>
                 {{ record.email }}
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Edicion Tercero:</label>
+                {{ record.eps_full?.name }}
+                <span @click="showModalThird(record)" >🖊️</span>
+            </div>
         </div>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
 
-
-        </div>
     </div>
+    <ModalEditThird  :third="thirdSelected"   :typeT="'P'" @close="handleModalClose" v-model="isThird" />
 </template>
 
 <script lang="ts" setup>
+
+const isThird = ref(false)
+const thirdSelected = ref<any>({})  
+
+const showModalThird = (value: any) => {
+    thirdSelected.value = value
+    console.log('showModalThird',thirdSelected)    
+    isThird.value = true
+}
 
 const modelValue = defineProps({
     calendarEvent: Object,

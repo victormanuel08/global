@@ -5,6 +5,8 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+import base64
+
 
     
 class CityViewSet(viewsets.ModelViewSet):
@@ -20,22 +22,8 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordSerializer
-    search_fields = ['third_patient','third_patient__id', 'records_details']  # Otras búsquedas
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        third_patient_id = self.request.query_params.get('third_patient')
-        third_patient_nit = self.request.query_params.get('third_patient_nit')
-
-        if third_patient_id:
-            queryset = queryset.filter(third_patient=third_patient_id)
-
-        if third_patient_nit:
-            queryset = queryset.filter(third_patient__nit=third_patient_nit)
-
-        return queryset
-
-    
+    search_fields = ['third_patient', 'third_patient__nit','records_details'] 
+    filteeset_fields = ['third_patient', 'third_patient__nit','records_details']# Otras búsquedas   
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):
@@ -66,9 +54,10 @@ class ProceduresViewSet(viewsets.ModelViewSet):
 class ThirdViewSet(viewsets.ModelViewSet):
     queryset = Thirds.objects.all()
     serializer_class = ThirdSerializer
-    search_fields = ['name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
-    filterset_fields = ['type','speciality','name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type'] # Aqui no hace falta poner citi_id, es obvio que si le pones city le vas a pasar el id
-
+    # search_fields = ['name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
+    #filterset_fields = ['type','type_document','speciality','name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
+    search_fields = ['type','name','last_name','second_name','second_last_name', 'nit']
+    filterset_fields = ['type','name','last_name','second_name','second_last_name', 'nit']
     
 class GeneralExamViewSet(viewsets.ModelViewSet):
     queryset = GeneralExam.objects.all()
@@ -203,9 +192,9 @@ class SearchChoiceAPIView(APIView):
 class SearchBodyAPIView(APIView):
     def get_choice_by_id(self, choice_list, choice_id, sex):
         for choice in choice_list:
-            if sex == "male" and len(choice) >= 4 and choice[2] and choice_id in choice[2]:
+            if sex == "M" and len(choice) >= 2 and choice[2] and choice_id in choice[2]:
                 return {"id": choice[0], "name": choice[1], "details": choice[2]}
-            elif sex == "female" and len(choice) >= 5 and choice[3] and choice_id in choice[3]:
+            elif sex == "F" and len(choice) >= 2 and choice[3] and choice_id in choice[3]:
                 return {"id": choice[0], "name": choice[1], "details": choice[3]}
         return None
 

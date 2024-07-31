@@ -68,9 +68,9 @@ export default {
     align-items: center;
     padding: 1rem;
     border: 2px double blue;
-    /* Borde doble de color azul */
+
     border-radius: 20px;
-    /* Esquinas redondeadas */
+
 }
 
 .signature-content {

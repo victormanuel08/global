@@ -20,7 +20,7 @@
           <thead>
             <tr>
               <th :class="ui.th">Fecha</th>
-              <th :class="ui.th">Medico</th>
+      
               <th :class="ui.th">Paciente</th>
               <th :class="ui.th">Diagnostico</th>
               <th :class="ui.th">Firma</th>
@@ -35,15 +35,7 @@
                   {{ (record.date_time) }}
                 </div>                
               </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird 
-                    :third-type="'M'"
-                    v-model="record.third_medic_full"
-                  >
-                  </SelectThird>
-                </div>                
-              </td>
+
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <SelectThird :third-type="'P'"
@@ -53,6 +45,13 @@
                 </div>
               </td>
               <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <SelectThird 
+                    :third-type="'M'"
+                    v-model="record.third_medic_full"
+                  >
+                  </SelectThird>
+                </div>  
                 <div class="flex items-center justify-center">                  
                   <SelectDiagnoses 
                     class=" w-72"
@@ -71,7 +70,7 @@
                   <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
-                      {{ record.third_patient_full.name }} {{ record.third_patient_full.second_name }} {{ record.third_patient_full.last_name }} {{ record.third_patient_full.second_last_name }}
+                      {{ record.third_patient_full?.name }} {{ record.third_patient_full?.second_name }} {{ record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
                     </p>
                   </strong>
                 </div>

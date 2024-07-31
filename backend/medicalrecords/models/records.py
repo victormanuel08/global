@@ -80,25 +80,25 @@ HALF_CHOICES = (
 BODY_PART_CHOICES = (
     ('CA', 'Cabeza', '3,15,10,22', '3,4,15,16,9,10,21,22'),
     ('CU', 'Cuello', '27,34', '27,28,33,34'),
-    ('TO', 'Torax'),
-    ('DO', 'Dorso'),
-    ('AB', 'Abdomen'),
-    ('PE', 'Pelvis/Perine'),
-    ('MI', 'Miembro Inferior'),
-    ('SU', 'Miembro Superior'),
+    ('TO', 'Torax','',''),
+    ('DO', 'Dorso','',''),
+    ('AB', 'Abdomen','63,75,87','75,76'),
+    ('PE', 'Pelvis/Perine','99,98,100','87,88'),
+    ('MI', 'Miembro Inferior','105,106,107,110,111,112,118,117,119,129,130,131,141,142,153,154,155,165,166,167,122,123,124,135,147,159,171,178,177,183','99,100,111,112,123,124,135,136,147,148,159,160,171,172,183,184,105,106,117,118,129,130,141,142,153,154,165,166,177,178,189,190'),
+    ('SU', 'Miembro Superior','',''),
 )
 
 BODY_PART_SIDE_CHOICES = (
-    ('GL', 'Glutea'),
-    ('AM', 'Anterior Muslo'),
-    ('PM', 'Posterior Muslo'),
-    ('AR', 'Anterior Rodilla'),
-    ('PR', 'Posterior Rodilla'),
-    ('AP', 'Anterior Pierna'),
-    ('PP', 'Posterior Pierna'),
-    ('TA', 'Tobillo anterior'),
-    ('TP', 'Tobullo posterior'),
-    ('PI', 'Pie'),
+    ('GL', 'Glutea','105,106,107','93,94,105,106'),
+    ('AM', 'Anterior Muslo','122,123,124,110,111,112','99,100,101,111,112,123,124'),
+    ('PM', 'Posterior Muslo','118,117,119,129,130,131','117,118,116,129,130'),
+    ('AR', 'Anterior Rodilla','135','135,136'),
+    ('PR', 'Posterior Rodilla','141,142','141,142'),
+    ('AP', 'Anterior Pierna','147,159','159,160,147,148'),
+    ('PP', 'Posterior Pierna','153,154,155,165,166,167','153,154,165,166'),
+    ('TA', 'Tobillo anterior','171','171,172'),
+    ('TP', 'Tobullo posterior','178,177','177,178'),
+    ('PI', 'Pie','183',''),
 )   
     
 
@@ -334,6 +334,7 @@ class Records(models.Model):
     body= ArrayField(models.CharField(max_length=300), blank=True,  null=True)  
     body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
     injuries = models.CharField(max_length=300,null=True, blank=True)    
+    imgcc = models.ImageField(upload_to='records/', null=True, blank=True)
     
     class Meta:
         ordering = ['date_time']
