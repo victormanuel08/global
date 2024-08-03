@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from datetime import datetime
 
 PRIORITY_CHOICES = (
     ('W', 'White'),
@@ -100,6 +101,21 @@ BODY_PART_SIDE_CHOICES = (
     ('TP', 'Tobullo posterior','178,177','177,178'),
     ('PI', 'Pie','183',''),
 )   
+
+PAYMENT_MODEL_CHOICES = (
+    ('FF', 'FONDO FIJO'),
+    ('EV', 'EVENTO'),
+    ('SE', 'SEGURO SOAT'),
+)
+
+TYPE_POLICE_CHOICES = (
+    ('MP', 'MEDICINA PREPAGADA'),
+    ('PS', 'SUBSIDIADA'),
+    ('PC', 'CONTRIBUTIVO'),
+    ('SE', 'SOAT'),
+)
+    
+
     
 
 class Procedures(models.Model):
@@ -113,9 +129,33 @@ class Procedures(models.Model):
         
     def __str__(self):
         return self.name    
+    
+class Vehicles(models.Model):
+    id = models.AutoField(primary_key=True)
+    brand = models.CharField(max_length=100)
+    plate = models.CharField(max_length=100)
+    vehicle_type = models.CharField(max_length=2,choices=VEHICLE_TYPE_CHOICES)
+    third_driver = models.ForeignKey(
+        'Thirds',
+        on_delete=models.PROTECT,
+        verbose_name="Conductor",
+        related_name="thirds_driver_vehicle",
+        #limit_choices_to={"thirds__name": "Paciente"},
+        null=True,
+        blank=True,
+    )  
+    
+    class Meta:
+        ordering = ['brand']
+        verbose_name = 'Vehiculo'
+        verbose_name_plural = 'Vehiculos'
+        
+    def __str__(self):
+        return self.brand
 
 class Policy(models.Model):    
-    number= models.IntegerField()
+    description= models.CharField(max_length=30)
+    name= models.CharField(max_length=100,default='Contrato')
     third_entity = models.ForeignKey(
         'Thirds',
         on_delete=models.PROTECT,
@@ -123,17 +163,20 @@ class Policy(models.Model):
         related_name="thirds_policy_entity",
         #limit_choices_to={"thirds__name": "Entidad"},
     )
-    brand = models.CharField(max_length=100)
-    plate = models.CharField(max_length=100)
-    vehicle_type = models.CharField(max_length=2,choices=VEHICLE_TYPE_CHOICES)
+    vehicle = models.ForeignKey('Vehicles', on_delete=models.PROTECT, null=True, blank=True)
+    date_start = models.DateField(default=datetime(datetime.now().year, 1, 1))
+    date_end = models.DateField(default=datetime(datetime.now().year, 12, 31))    
+    payment_model = models.CharField(max_length=2,choices=PAYMENT_MODEL_CHOICES, default='SE')
+    type_police= models.CharField(max_length=2,choices=TYPE_POLICE_CHOICES, default='SE')
+    amount_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)   
     
     class Meta:
-        ordering = ['number']
+        ordering = ['description']
         verbose_name = 'Poliza'
         verbose_name_plural = 'Polizas'
         
     def __str__(self):
-        return self.number
+        return self.description
 
 class SystemsReview(models.Model):
     code = models.CharField(max_length=2, unique=True)
@@ -334,13 +377,22 @@ class Records(models.Model):
     body= ArrayField(models.CharField(max_length=300), blank=True,  null=True)  
     body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
     injuries = models.CharField(max_length=300,null=True, blank=True)    
+    service=models.ForeignKey('Services', on_delete=models.PROTECT, null=True, blank=True)
+    fee=models.ForeignKey('Fees', on_delete=models.PROTECT, null=True, blank=True)
+    policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
     imgcc = models.ImageField(upload_to='records/', null=True, blank=True)
+    imgso= models.ImageField(upload_to='records/', null=True, blank=True)
+    imgtp= models.ImageField(upload_to='records/', null=True, blank=True)
+    imglc= models.ImageField(upload_to='records/', null=True, blank=True)
+    imgco= models.ImageField(upload_to='records/', null=True, blank=True)
+    imgic= models.ImageField(upload_to='records/', null=True, blank=True)
     
     class Meta:
         ordering = ['date_time']
         verbose_name = 'Registro'
         verbose_name_plural = 'Registros'
         
-    def __str__(self):
-        return self.diagnosis.name
+
+    def __str__(self): 
+        return f"{self.id}"
     

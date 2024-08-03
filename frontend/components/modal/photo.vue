@@ -1,9 +1,11 @@
 <template>
-  <UModal :record="record" :close="close" :detail="detail">
+  <UModal v-model="innerShow">
     <div class="camera-modal border rounded">
       <div>
-        <video ref="cameraVideo" autoplay></video>
+        <video  ref="cameraVideoEl" autoplay></video>       
       </div>
+
+      
       <div class="grid grid-rows-5 p-4">
         <button class="round-button large-icon" @click="toggleCamera">
           🔄
@@ -13,111 +15,100 @@
           📷
         </button>
         <div></div>
-        <UInput type="file" accept="image/*" @change="uploadPhoto" class="round-button large-icon"/>
+        <UInput type="file" accept="image/*" @change="uploadPhoto" class="round-button large-icon" />
       </div>
     </div>
   </UModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
-const emit = defineEmits(['close'])
+const props = defineProps<{
+  record: any,
+  detail: boolean,
+  typeImg: string,
+}>();
 
-const cameraVideo = ref(null);
-let currentCamera = 'user';
-
-const props = defineProps({
-  record: Object,
-  detail: Boolean,
-  typeImg: String,
-});
-
+const innerShow = defineModel<boolean>();
+const cameraVideoEl = ref<HTMLVideoElement>();
+const currentCamera = ref('user' as 'user' | 'environment');
 
 
-const uploadPhoto = (event) => {
-  console.log('Evento de cambio:', event[0]); 
+
+const uploadPhoto = (event: any) => {
   const selectedFile = event[0];
-  console.log('Archivo seleccionado:', selectedFile); 
   saveImage(props.record.id, props.typeImg, selectedFile);
 };
 
 
-const initCamera = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    if (cameraVideo.value) {
-      cameraVideo.value.srcObject = stream;
-    } else {
-      console.error('El elemento de video es nulo.');
-    }
-  } catch (error) {
-    console.error('Error al acceder a la cámara:', error);
+const stopStream = () => {
+  if (cameraVideoEl.value && cameraVideoEl.value.srcObject) {
+    const mediaStream = cameraVideoEl.value.srcObject as MediaStream;
+    const tracks = mediaStream.getTracks() as MediaStreamTrack[];
+    tracks.forEach((track) => track.stop());
   }
 };
 
+const initStream = async () => {
+  stopStream();
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  if (cameraVideoEl.value) cameraVideoEl.value.srcObject = stream;
+};
+
+watch(innerShow, () => {
+  if (innerShow.value) {
+    initStream();
+  } else {
+    stopStream();
+  }
+});
+
 const toggleCamera = () => {
-  currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-  initCamera();
+  currentCamera.value = currentCamera.value === 'user' ? 'environment' : 'user';
+  initStream();
 };
 
 const takePhoto = () => {
-  if (cameraVideo.value.readyState === 4) {
+  if (!cameraVideoEl.value) return
+  if (cameraVideoEl.value.readyState === 4) {
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.width = cameraVideo.value.videoWidth;
-    canvas.height = cameraVideo.value.videoHeight;
-    context.drawImage(cameraVideo.value, 0, 0);
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    canvas.width = cameraVideoEl.value.videoWidth;
+    canvas.height = cameraVideoEl.value.videoHeight;
+    context.drawImage(cameraVideoEl.value, 0, 0);
     canvas.toBlob((blob) => {
-      if (blob) {        
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = 'mi_foto.png'; 
-        document.body.appendChild(downloadLink);        
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+      if (blob) {
         saveImage(props.record.id, props.typeImg, blob);
       }
     }, 'image/png');
+    
   }
 };
 
 
-const saveImage = async (index, field, file) => {
+const saveImage = async (index: number, field: string, blob: Blob) => {
   try {
-    const response = await fetch(`api/records/${index}`, {
+    console.log("blob", blob)
+    const file = new File([blob], 'image.png', { type: 'image/png' });
+    const formData = new FormData();
+    formData.append(field, file);
+
+    const response = await $fetch(`api/records/${index}/`, {
       method: 'PATCH',
-      body: JSON.stringify({
-        [field]: file,
-      }),
+      body: formData,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "multipart/form-data; boundary=----"
       },
     });
-    if (response.ok) {
-      console.log('Imagen guardada correctamente.');
-    } else {
-      console.error('Error al guardar la imagen.');
-    }
+    innerShow.value = false;
   } catch (error) {
     console.error('Error en la solicitud al servidor:', error);
   }
 };
 
-const closeCameraAndModal = () => {
-  if (cameraVideo.value && cameraVideo.value.srcObject) {
-    const tracks = cameraVideo.value.srcObject.getTracks();
-    tracks.forEach((track) => track.stop());
-  }
-};
-
-onBeforeUnmount(() => {
-  console.log('onBeforeUnmount');
-  closeCameraAndModal();
-});
 </script>
 
 <style scoped>
-
 .button-container {
   display: flex;
   gap: 1rem;
@@ -127,7 +118,7 @@ onBeforeUnmount(() => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  font-size: 24px; 
+  font-size: 24px;
   background-color: #ccc;
   display: flex;
   justify-content: center;

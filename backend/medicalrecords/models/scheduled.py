@@ -17,11 +17,43 @@ class Scheduled(models.Model):
         verbose_name="Tercero Medico",
         related_name="scheduled_medics",
     )
+    third_entity = models.ForeignKey(
+        "Thirds",
+        on_delete=models.PROTECT,
+        verbose_name="Tercero Entidad",
+        related_name="scheduled_entity",
+        blank=True, 
+        null=True,
+    )
     speciality = models.ForeignKey(
         "Specialities",
         on_delete=models.PROTECT,
         verbose_name="Especialidad",
         related_name="specialities",        
+    )
+    service = models.ForeignKey(
+        "Services",
+        on_delete=models.PROTECT,
+        verbose_name="Servicio",
+        related_name="services",
+        blank=True,
+        null=True,   
+    )
+    fee = models.ForeignKey(
+        "Fees",
+        on_delete=models.PROTECT,
+        verbose_name="Tarifa",
+        related_name="fees",
+        blank=True,
+        null=True,   
+    )
+    policy = models.ForeignKey(
+        "Policy",
+        on_delete=models.PROTECT,
+        verbose_name="Poliza",
+        related_name="sheduled_policy",
+        blank=True,
+        null=True,   
     )
     record = models.ForeignKey(
         "Records",

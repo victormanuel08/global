@@ -1,5 +1,5 @@
 <template>
-    <UModal :third="third"  :third2="thirdSelected">
+    <UModal >
         <div class="border rounded m-4 ">
             <div class=" m-4 ">
                 <div v-if="thirdSelected?.id > 0">
@@ -9,7 +9,7 @@
                     <h3><strong>Usuario: </strong>{{ thirdSelected?.user }}</h3>
                 </div>
                 <div v-else>
-                    <h3>Crear Tercero{{ $props.typeT }}</h3>
+                    <h3>Crear Tercero</h3>
                     <div class="mt-4">
                         <Label class="block text-sm font-medium text-gray-700">Identificacion:</label>
                         <div class="grid grid-cols-2 gap-2 md:grid-cols-2 ">
@@ -18,7 +18,7 @@
                                 @change="validateNit" />
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4">
+                    <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4"  v-if="newThirdDocument?.id !== 'NI'" >
                         <div>
                             <Label class="block text-sm font-medium text-gray-700">Genero:</label>
                             <SelectChoice :choiceType="'SEX_CHOICES'" v-model="newThirdSex" />

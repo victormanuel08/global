@@ -8,6 +8,10 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 
 router = routers.DefaultRouter()
 router.register('cities', CityViewSet)
@@ -23,6 +27,11 @@ router.register('general_exam', GeneralExamViewSet)
 router.register('procedures', ProceduresViewSet)
 router.register('systems_review', SystemsReviewViewSet)
 router.register('availabilities', AvailabilityViewSet)
+router.register('vehicles', VehicleViewSet)
+router.register('polices', PoliceViewSet)
+router.register('fees', FeeViewSet)
+router.register('services', ServiceViewSet)
+
 
 
 
@@ -38,5 +47,5 @@ urlpatterns = [
     path('records/<int:pk>/records_details/', RecordDetailsOnlyViewSet.as_view({'get': 'retrieve'}), name='record-details'),
     
     path('', include(router.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -34,6 +34,8 @@
                 <label class="block text-sm font-medium text-gray-700">Temperatura Corporal:</label>
                 <UInput v-model="record.ef_temp" @change="saveItem(record.id, 'ef_temp', record.ef_temp)" />
             </div>
+
+
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Respuesta Ocular:</label>
                 <SelectChoice :choiceType="'GLASGOW_RO_CHOICES'" v-model="record.glasgow_ro_full"
@@ -53,6 +55,26 @@
                 <label class="block text-sm font-medium text-gray-700">GLASGOW TOTAL:</label>
                 {{ glasgow }} / 15
             </div>
+        </div>
+
+        <div class="grid grid-cols-4  md:grid-cols-4 m-4">
+            <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Tercero Entidad:  <span @click="typeT='E', showModalThird('')">➕</span></label>
+                <SelectThird :third-type="'E'"  v-model="record.third_entity_full" @change="saveItem(record.id, 'third_entity', record.third_entity_full.id )">
+                </SelectThird>
+            </div>
+
+            <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Servicio Esp. {{ record.third_medic_full?.speciality_full.description }}</label>
+                <SelectServices v-model="record.service_full"  :third="record.third_entity_full" :specialities="record.third_medic_full?.speciality_full"   @change="saveItem(record.id, 'service', record.service_full.id )">
+                </SelectServices>
+            </div>
+            <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Contrato</label>
+                <SelectFeed :third="record.third_entity_full" :specialities="record.third_medic_full?.speciality_full" :service="record.service_full"  @change="saveItem(record.id, 'fee', record.fee_full.id )">
+                </SelectFeed>
+            </div>
+            <div></div>
         </div>
 
         <div class="grid grid-cols-1  md:grid-cols-1 m-4">
@@ -110,6 +132,7 @@
 
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="'signed'" />
+    <ModalEditThird  :third="thirdSelected"   :typeT="'E'" @close="handleModalClose" v-model="isThird" />
 </template>
 
 <script lang="ts" setup>
@@ -118,11 +141,16 @@ const modelValue = defineProps({
     calendarEvent: Object,
 })
 
+
+const isThird = ref(false)
+const thirdSelected = ref<any>({})  
+
 const detail = ref(false)
 const isSing = ref(false)
 const glasgow = ref<any>(0)
 
 type Record = {
+    id: number,
     reason_consultation: string,
     diagnosis: string,
     diagnosis_full: any
@@ -137,6 +165,10 @@ type Record = {
         second_last_name: string,
     },
     third_medic_full: any
+    third_entity_full: any
+    service_full: any
+    fee_full: any
+    third_entity: number
     diagnoses_1: string,
     diagnoses_2: string,
     diagnoses_3: string,
@@ -179,7 +211,7 @@ const retrieveFromApi = async (q: any) => {
     record.value.glasgow_ro_full = await getCHOICE(response.glasgow_ro, 'GLASGOW_RO_CHOICES')
     record.value.glasgow_rv_full = await getCHOICE(response.glasgow_rv, 'GLASGOW_RV_CHOICES')
     record.value.glasgow_rm_full = await getCHOICE(response.glasgow_rm, 'GLASGOW_RM_CHOICES')
-    console.log(record.value)
+    console.log('RECORDTODO',record.value)
 }
 
 const signedRecord = async () => {
@@ -220,7 +252,12 @@ onMounted(() => {
 });
 
 
-
+const showModalThird = (value: any) => {
+    thirdSelected.value = value
+    console.log('showModalThird',thirdSelected)    
+    isThird.value = true
+    
+}
 
 
 

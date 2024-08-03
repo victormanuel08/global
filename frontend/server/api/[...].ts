@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const method: HTTPMethod = event.method;
     const requestHeaders = getHeaders(event);
     const headers = {
-        "Content-Type": "application/json",
+        "Content-Type": requestHeaders["content-type"] || "application/json",
         "Accept": "application/json",
     }
 
@@ -17,12 +17,14 @@ export default defineEventHandler(async (event) => {
         query,
     };
 
+
+
     if (["POST", "PUT", "PATCH"].includes(method)) {
-        // if (headers["Content-Type"] === "application/json") {
+        if (headers["Content-Type"] === "application/json") {
           reqOpts.body = await readBody(event);
-        // } else {
-        //   reqOpts.body = await readRawBody(event, false);
-        // }
+        } else {
+          reqOpts.body = await readRawBody(event, false);
+        }
       }
 
     try {

@@ -16,7 +16,7 @@ class DiagnosesAdmin(admin.ModelAdmin):
 
 @admin.register(Records)
 class RecordsAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('diagnosis', 'diagnosis_1', 'diagnosis_2', 'diagnosis_3')
 
 @admin.register(Records_details)
 class Records_detailsAdmin(admin.ModelAdmin):
@@ -48,5 +48,21 @@ class AvailabilityAdmin(admin.ModelAdmin):
 
 @admin.register(Procedures)
 class ProceduresAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Vehicles)
+class VehicleAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Policy)
+class PoliceAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Fees)
+class FeeAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Services)
+class ServiceAdmin(admin.ModelAdmin):
     pass
 

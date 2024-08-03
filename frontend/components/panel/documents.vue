@@ -49,11 +49,13 @@
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Entidad:  <span @click="typeT='E', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'E'"  v-model="record.third_entity_full" @change="saveItem(record.id, 'third_entity', record.third_entity_full.id )">
-                </SelectThird>
+                <label class="block text-sm font-medium text-gray-700">Poliza:  <span @click="typeT='', showModalPolice('SE')">➕</span></label>
+                <SelectPolice :third-type="'E'"  v-model="record.policy_full" @change="saveItem(record.id, 'policy', record.policy_full.id )">
+                </SelectPolice>
             </div>
         </div>
+        
+
 
         <div class="grid grid-cols-2  md:grid-cols-2" v-if="record.obj" >
             <div class="m-2">
@@ -79,40 +81,40 @@
 
         <div class="grid grid-cols-3  md:grid-cols-3"  >
             <div  class="border rounded p-1 m-2">
-                <button @click="photoRecord('imgCC')">
+                <button @click="photoRecord('imgcc')">
                     📷 CEDULA
                 </button>
-                <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
+                <img :src="record.imgcc"  width="60%" height="auto" v-if ="record.imgcc"/>
             </div>
             <div  class="border rounded p-1 m-2">
-                <button @click="photoRecord('img')">
+                <button @click="photoRecord('imgso')">
                     📷 SOAT
                 </button>
-                <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
+                <img :src="record.imgso" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgso"/>
             </div>
             <div  class="border rounded p-1 m-2">
-                <button @click="photoRecord('')">
+                <button @click="photoRecord('imgtp')">
                     📷 TARJETA PROPIEDAD
                 </button>
-                <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
+                <img :src="record.imgtp" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgtp"/>
             </div>
             <div  class="border rounded p-1 m-2">
-                <button @click="photoRecord('')">
+                <button @click="photoRecord('imglc')">
                     📷 LICENCIA CONDUCIR
                 </button>
-                <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
+                <img :src="record.imglc" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imglc"/>
             </div>
             <div  class="border rounded p-1 m-2">
-                <button @click="photoRecord('')">
+                <button @click="photoRecord('imgco')">
                     📷 CONSENTIMIENTO
                 </button>
-                <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
+                <img :src="record.imgco" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgco"/>
             </div>
             <div  class="border rounded p-1 m-2">
-                <button @click="photoRecord('')">
+                <button @click="photoRecord('imgic')">
                     📷 INGRESO CLINICA
                 </button>
-                <img :src="record.signed_obj" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_obj"/>
+                <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgic"/>
             </div>
          
         </div>
@@ -166,6 +168,7 @@
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
     <ModalEditThird  :third="thirdSelected"   :typeT="typeT" @close="handleModalClose" v-model="isThird" />
+    <ModalNewPolice  :third="thirdSelected"   :typeT="typeT" @close="handleModalClose" v-model="isPolice" />    
 </template>
 
 <script lang="ts" setup>
@@ -180,6 +183,8 @@ const typeT = ref('')
 
 const isThird = ref(false)
 const isPhoto = ref(false)
+const isPolice = ref(false)
+
 const thirdSelected = ref<any>({})  
 
 const showModalThird = (value: any) => {
@@ -189,9 +194,13 @@ const showModalThird = (value: any) => {
     
 }
 
-const handleImageUpload = async (event: any) => {
-    const file = event.target.files[0];   
-};
+const showModalPolice = (value: any) => {
+    thirdSelected.value = value
+    console.log('showModalThird',thirdSelected)    
+    isPolice.value = true
+    
+}
+
 
 const modelValue = defineProps({
     calendarEvent: Object,
@@ -218,17 +227,13 @@ const signedRecord = async (q: string) => {
 const photoRecord = async (q: string) => {
     typeImg.value = q
     isPhoto.value = true
-    console.log('photoRecord',q)
-    console.log('photoRecordtype',typeImg.value)
-    console.log('photoRecordreord',record.value)
-    console.log('photoRecorddetail',detail.value)
 }
 
-const handleModalClose = (value: any) => {
+const handleModalClose = async (value: any) => {
     isSing.value = false
     isPhoto.value = false
-    fetchRecord(modelValue.calendarEvent?.record.id)  
-   
+    await fetchRecord(modelValue.calendarEvent?.record.id)    
+     
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
@@ -238,7 +243,8 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    fetchRecord(modelValue.calendarEvent?.record.id)  
+    await fetchRecord(modelValue.calendarEvent?.record.id)  
+ 
 };
 
 

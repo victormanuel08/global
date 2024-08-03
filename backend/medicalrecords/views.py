@@ -7,6 +7,32 @@ from rest_framework.response import Response
 from rest_framework import status
 import base64
 
+class ServiceViewSet(viewsets.ModelViewSet):
+    queryset = Services.objects.all()
+    serializer_class = ServiceSerializer
+    search_fields = [ 'code', 'description','speciality']
+    filterset_fields=['code', 'description','speciality']
+
+
+
+class VehicleViewSet(viewsets.ModelViewSet):
+    queryset = Vehicles.objects.all()
+    serializer_class = VehicleSerializer
+    search_fields = ['plate', 'brand']
+    
+class PoliceViewSet(viewsets.ModelViewSet):
+    queryset = Policy.objects.all()
+    serializer_class = PoliceSerializer
+    search_fields = ['plate', 'brand']
+    
+class FeeViewSet(viewsets.ModelViewSet):
+    queryset = Fees.objects.all()
+    serializer_class = FeeSerializer
+    search_fields = ['code', 'description','specialities','third_entity','service','policy']
+    filterset_fields=['code', 'description','specialities','third_entity','service','policy']
+
+
+
 
     
 class CityViewSet(viewsets.ModelViewSet):
@@ -22,8 +48,8 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordSerializer
-    search_fields = ['third_patient', 'third_patient__nit','records_details'] 
-    filteeset_fields = ['third_patient', 'third_patient__nit','records_details']# Otras búsquedas   
+    search_fields = ['third_patient', 'third_patient__nit','policy'] 
+    filterset_fields = ['third_patient', 'third_patient__nit','policy']# Otras búsquedas   
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):
@@ -56,8 +82,8 @@ class ThirdViewSet(viewsets.ModelViewSet):
     serializer_class = ThirdSerializer
     # search_fields = ['name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
     #filterset_fields = ['type','type_document','speciality','name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
-    search_fields = ['type','name','last_name','second_name','second_last_name', 'nit']
-    filterset_fields = ['type','name','last_name','second_name','second_last_name', 'nit']
+    search_fields = ['type','name','last_name','second_name','second_last_name', 'nit', 'type_document']
+    filterset_fields = ['type','name','last_name','second_name','second_last_name', 'nit','type_document']
     
 class GeneralExamViewSet(viewsets.ModelViewSet):
     queryset = GeneralExam.objects.all()
@@ -127,7 +153,9 @@ class ChoicesAPIView(APIView):
             "GLASGOW_RM_CHOICES": GLASGOW_RM_CHOICES,
             "HALF_CHOICES": HALF_CHOICES,   
             "BODY_PART_CHOICES": BODY_PART_CHOICES,
-            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,        
+            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,   
+            "PAYMENT_MODEL_CHOICES": PAYMENT_MODEL_CHOICES,
+            "TYPE_POLICE_CHOICES": TYPE_POLICE_CHOICES,
         }
         selected_choice_id = "P"
         selected_choice = self.get_choice_by_id(choices_data.get("TYPE_CHOICES", []), selected_choice_id)
@@ -178,7 +206,9 @@ class SearchChoiceAPIView(APIView):
             "GLASGOW_RM_CHOICES": GLASGOW_RM_CHOICES,
             "HALF_CHOICES": HALF_CHOICES,    
             "BODY_PART_CHOICES": BODY_PART_CHOICES,
-            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,       
+            "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,    
+            "PAYMENT_MODEL_CHOICES": PAYMENT_MODEL_CHOICES,
+            "TYPE_POLICE_CHOICES": TYPE_POLICE_CHOICES,  
         }
 
         selected_choice = self.get_choice_by_id(choices_data.get(choice_type, []), choice_id)
