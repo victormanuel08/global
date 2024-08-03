@@ -1,5 +1,6 @@
 import type { H3Event, HTTPMethod } from "h3";
 import { FetchError } from "ofetch";
+const API_URL = "http://127.0.0.1:8000"
 
 export default defineEventHandler(async (event) => {
     const route = event.context.params?._;
@@ -26,10 +27,13 @@ export default defineEventHandler(async (event) => {
       }
 
     try {
-        let url = `http://localhost:8000/${route}/`;
+        let url = `${API_URL}/${route}/`;
+        console.log("Request", url, reqOpts)
         const response = await $fetch(url, reqOpts);
+        console.log("Response", response)   
         return response;
     } catch (error) {
+        console.log("Error", error)
         if (error instanceof FetchError) {
             setResponseStatus(event, error.statusCode);
             return error.data;

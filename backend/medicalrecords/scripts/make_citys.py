@@ -1,5 +1,5 @@
 from medicalrecords.models import Cities
-from django.contrib.auth.models import User
+from users.models import User
 
 cities_to_create = [       
     {
