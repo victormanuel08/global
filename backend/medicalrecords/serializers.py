@@ -3,6 +3,27 @@ from medicalrecords.models import *
 from medicalrecords.serializers import *
 from .models import Thirds
 from datetime import datetime, timedelta
+from drf_extra_fields.fields import Base64ImageField
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Services
+        fields = '__all__'
+        
+
+
+class VehicleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vehicles
+        fields = '__all__'
+        
+class PoliceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Policy
+        fields = '__all__'
+        
+
+
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,18 +41,98 @@ class SpecialitySerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class ThirdSerializer(serializers.ModelSerializer):    
-    speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
+    speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)    
+    city_birth_full = CitySerializer(source = 'city_birth', read_only=True)   
+    city_full = CitySerializer(source = 'city', read_only=True) 
+    namenit = serializers.SerializerMethodField()
+
+    def get_namenit(self, obj):
+        if obj.type_document == 'NI':
+            return f"{obj.nit} - {obj.name}"
+        else:
+            return f"{obj.nit} - {obj.name} {obj.second_name} {obj.last_name} {obj.second_last_name}"
+
     class Meta:
         model = Thirds
-        fields = '__all__'        
+        fields = '__all__'    
+        
+class PolicySerializer(serializers.ModelSerializer):
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    class Meta:
+        model = Policy
+        fields = '__all__'
+
+    
+class FeeSerializer(serializers.ModelSerializer):
+    service_full = ServiceSerializer(source = 'service', read_only=True)
+    speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    policy_full = PolicySerializer(source = 'policy', read_only=True)
+    
+    class Meta:
+        model = Fees
+        fields = '__all__'
+         
+      
 
 class RecordSerializer(serializers.ModelSerializer):    
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
-    third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)
+    third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
+    third_medic_clinic_full = ThirdSerializer(source = 'third_medic_clinic', read_only=True)    
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    # third_relationship_full = ThirdSerializer(source = 'third_relationship', read_only=True)
+    third_clinic_full = ThirdSerializer(source = 'third_clinic', read_only=True)
+    third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
+    third_driver_full=ThirdSerializer(source = 'third_driver', read_only=True)
     diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
+    diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
+    diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
+    diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
+    policy_full = PoliceSerializer( source = 'policy' ,  read_only = True)
+    service_full = ServiceSerializer(source = 'service', read_only=True)
+    fee_full = FeeSerializer(source = 'fee', read_only=True)
+    records_details = serializers.SerializerMethodField()
+    
+
+
     class Meta:
         model = Records
-        fields = '__all__'     
+        fields = '__all__'  
+    
+    def get_records_details(self, obj):
+        records_details = Records_details.objects.filter(record=obj)
+        return RecordDetailSerializer(records_details, many=True).data
+
+class RecordDetailsOnlySerializer(serializers.ModelSerializer):
+    records_details = serializers.SerializerMethodField()
+    class Meta:
+        model = Records
+        fields = ('records_details',)
+    
+    def get_records_details(self, obj):
+        records_details = Records_details.objects.filter(record=obj)
+        return RecordDetailSerializer(records_details, many=True).data
+
+    def to_representation(self, instance):
+        # Obtén los detalles de los registros
+        records_details = Records_details.objects.filter(record=instance)
+
+        # Transforma los detalles de los registros según tu nuevo formato
+        transformed_data = {
+            "count": records_details.count(),
+            "next": None,
+            "previous": None,
+            "results": RecordDetailSerializer(records_details, many=True).data
+        }
+
+        return transformed_data
+
+        
+class RecordDetailSerializer(serializers.ModelSerializer):
+    #record_full = RecordSerializer(source = 'record', read_only=True)
+    class Meta:
+        model = Records_details
+        fields = '__all__'   
         
 class GeneralExamSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,6 +143,14 @@ class SystemsReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemsReview
         fields = '__all__'
+        
+class ProcedureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Procedures
+        fields = '__all__'
+        
+
+        
         
 class ScheduledSerializer(serializers.ModelSerializer):
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
@@ -90,3 +199,4 @@ class AvailabilitySerializer(serializers.ModelSerializer):
             intervals.append({"id": i, "time_start": time_start, "time_end": time_end, "overflow": overflow, "inter": inter})
 
         return intervals
+

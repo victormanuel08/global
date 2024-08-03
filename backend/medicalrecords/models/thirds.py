@@ -12,7 +12,25 @@ ETNIAS_CHOICES = (
 
 SEX_CHOICES = (("M", "Masculino"), ("F", "Femenino"), ("O", "Otros"))
 
-TYPE_CHOICES = (("P", "Paciente"), ("M", "Medico"))
+TYPE_CHOICES = (
+    ('P', 'Paciente'),
+    ('M', 'Medico'),
+    ('E', 'Entidad'),
+    ('C', 'Clinica')
+)
+
+TYPE_DOCUMENT_CHOICES = (
+    ('CC', 'Cedula de Ciudadania'),
+    ('CE', 'Cedula de Extranjeria'),
+    ('PA', 'Pasaporte'),
+    ('RC', 'Registro Civil'),
+    ('TI', 'Tarjeta de Identidad'),
+    ('NU', 'Numero Unico de Identificacion'),
+    ('PE', 'Permiso Especial de Permanencia'),
+    ('AS', 'Adulto sin Identificacion'),
+    ('NI', 'Nit')
+)
+
 
 BLOOD_CHOICES = (
     ("A+", "A+"),
@@ -34,91 +52,98 @@ MATERNITY_PREGNANCY_CHOICES = (
 )
 
 MATERNITY_BREASFEEDING_CHOICES = (
-    ("0", "Ninguno"),
-    ("1", "Menos de 1 mes"),
-    ("2", "1 a 3 meses"),
-    ("3", "3 a 6 meses"),
-    ("4", "Mas de 6 meses"),
-    ("5", "Mas de 1 año"),
+    ('NI', 'Ninguno'),
+    ('UM', 'Menos de 1 mes'),
+    ('TM', '1 a 3 meses'),
+    ('SM', '3 a 6 meses'),
+    ('MM', 'Mas de 6 meses'),
+    ('UA', 'Mas de 1 año')
 )
 
 MATERNITY_BREASFEEDING_EXTEND_CHOICES = (
-    ("0", "Nunca"),
-    ("1", "Menos de 1 Mes"),
-    ("2", "1 a 3 meses"),
-    ("3", "3 a 6 meses"),
+    ('NI', 'Nunca'),
+    ('UM', 'Menos de 1 Mes'),
+    ('TM', '1 a 3 meses'),
+    ('SM', '3 a 6 meses')
 )
 
 MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES = (
-    ("0", "Nunca"),
-    ("1", "Menos de 1 Mes"),
-    ("2", "1 a 3 meses"),
-    ("3", "3 a 6 meses"),
+    ('NI', 'Nunca'),
+    ('UM', 'Menos de 1 Mes'),
+    ('TM', '1 a 3 meses'),
+    ('SM', '3 a 6 meses')
 )
 
 MATERNITY_VIOLANCE_CHOICES = (
-    ("N", "Ninguno"),
-    ("M", "Mina ANtipersona"),
-    ("D", "Desmovilizado"),
-    ("R", "Reinsertado"),
-    ("I", "Intrafamiliar"),
+    ('NI', 'Ninguno'),
+    ('MA', 'Mina ANtipersona'),
+    ('DM', 'Desmovilizado'),
+    ('RS', 'Reinsertado'),
+    ('IN', 'Intrafamiliar')
 )
 
+STATUS_CHOICES = (
+    ('S', 'Soltero'),
+    ('C', 'Casado'),
+    ('D', 'Divorciado'),
+    ('V', 'Viudo'),
+    ('U', 'Union Libre')
+)
 
+OCCUPATION_CHOICES = (
+    ('E', 'Empleado'),
+    ('I', 'Independiente'),
+    ('D', 'Desempleado'),
+    ('P', 'Pensionado'),
+    ('E', 'Estudiante'),
+    ('H', 'Hogar')
+)
+
+ZONE_CHOICES = (
+    ('U', 'Urbana'),
+    ('R', 'Rural')
+)
+    
+    
 # Create your models here.
 class Thirds(models.Model):
     id = models.AutoField(primary_key=True)
-    nit = models.CharField(max_length=100)
+    type_document = models.CharField(max_length=2, choices=TYPE_DOCUMENT_CHOICES, null=True, blank=True, default='CC')
+    nit= models.CharField(max_length=100)    
     name = models.CharField(max_length=100)
-    second_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    second_last_name = models.CharField(max_length=100)
-    date_birth = models.DateField(null=True, blank=True)
-    year_old = models.IntegerField(null=True, blank=True)
-    sex = models.CharField(max_length=1, choices=SEX_CHOICES, null=True, blank=True)
+    second_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
+    second_last_name = models.CharField(max_length=100,null=True, blank=True)
+    date_birth= models.DateField(null=True, blank=True)
+    year_old= models.IntegerField(null=True, blank=True)
+    sex= models.CharField(max_length=2, choices=SEX_CHOICES, null=True, blank=True)
     email = models.EmailField(max_length=100, null=True, blank=True)
     phone = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
-    zone = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES, null=True, blank=True)
-    speciality = models.ForeignKey(
-        Specialities, on_delete=models.PROTECT, null=True, blank=True
-    )
-    city = models.CharField(max_length=100, null=True, blank=True)
-    city_birth = models.CharField(max_length=100, null=True, blank=True)
-    maternity_pregnancy = models.CharField(
-        max_length=2, choices=MATERNITY_PREGNANCY_CHOICES, null=True, blank=True
-    )
-    maternity_breasfeeding = models.CharField(
-        max_length=1, choices=MATERNITY_BREASFEEDING_CHOICES, null=True, blank=True
-    )
-    maternity_breasfeeding_extend = models.CharField(
-        max_length=1,
-        choices=MATERNITY_BREASFEEDING_EXTEND_CHOICES,
-        null=True,
-        blank=True,
-    )
-    maternity_breasfeeding_complementary = models.CharField(
-        max_length=1,
-        choices=MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES,
-        null=True,
-        blank=True,
-    )
-    maternity_violence = models.CharField(
-        max_length=1, choices=MATERNITY_VIOLANCE_CHOICES, null=True, blank=True
-    )
-    ethnicity = models.CharField(
-        max_length=1, choices=ETNIAS_CHOICES, null=True, blank=True
-    )
-    blood_type = models.CharField(
-        max_length=3, choices=BLOOD_CHOICES, null=True, blank=True
-    )
-    user = models.ForeignKey(
-        "users.User", on_delete=models.PROTECT, null=True, blank=True
-    )
+    zone= models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES, null=True, blank=True)
+    speciality=models.ForeignKey(Specialities, on_delete=models.PROTECT, null=True, blank=True)
+    city = models.ForeignKey('Cities', on_delete=models.PROTECT, null=True, blank=True)
+    city_birth = models.ForeignKey('Cities', on_delete=models.PROTECT, null=True, blank=True, related_name='city_birth')
+    maternity_pregnancy = models.CharField(max_length=2, choices=MATERNITY_PREGNANCY_CHOICES, null=True, blank=True)
+    maternity_breasfeeding = models.CharField(max_length=2, choices=MATERNITY_BREASFEEDING_CHOICES, null=True, blank=True)
+    maternity_breasfeeding_extend = models.CharField(max_length=2, choices=MATERNITY_BREASFEEDING_EXTEND_CHOICES, null=True, blank=True)
+    maternity_breasfeeding_complementary = models.CharField(max_length=2, choices=MATERNITY_BREASFEEDING_COMPLEMENTARY_CHOICES, null=True, blank=True)
+    maternity_violence = models.CharField(max_length=2, choices=MATERNITY_VIOLANCE_CHOICES, null=True, blank=True)
+    ethnicity = models.CharField(max_length=2, choices=ETNIAS_CHOICES, null=True, blank=True)
+    blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES, null=True, blank=True)
+    status= models.CharField(max_length=2, choices=STATUS_CHOICES, null=True, blank=True)
+    occupation = models.CharField(max_length=2, choices=OCCUPATION_CHOICES, null=True, blank=True)
+    zone = models.CharField(max_length=2, choices=ZONE_CHOICES, null=True, blank=True)
+    allergies = models.CharField(max_length=200, null=True, blank=True)
+    pathologies = models.CharField(max_length=200, null=True, blank=True)
+    medications = models.CharField(max_length=200, null=True, blank=True)
+    liquids_foods = models.CharField(max_length=200, null=True, blank=True)    
+    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    
     def save(self, *args, **kwargs):
         today = datetime.now().date()
         birth_date = self.date_birth

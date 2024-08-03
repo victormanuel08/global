@@ -1,10 +1,12 @@
 <template>
-    <USelectMenu v-model="modelValue" option-attribute="nit" :options="options" :searchable="true"
-        v-model:query="query" :clearSearchOnClose="true" @click="clickHandler" :placeholder="props.thirdType === 'P' ? 'Paciente' : 'Médico'" >
+    <USelectMenu v-model="modelValue" option-attribute="namenit" :options="options" :searchable="true" v-model:query="query"
+        :clearSearchOnClose="true" @click="clickHandler"
+        :placeholder="props.thirdType === 'P' ? 'Paciente' : props.thirdType === 'M' ? 'Médico' : props.thirdType === 'E' ? 'Entidad' : 'Clínica'"
+        >
     </USelectMenu>
+
 </template>
 <script setup lang="ts">
-
 
 const options = ref<any[]>([])
 const typeThird = ref('asasasa')
@@ -29,7 +31,7 @@ const clickHandler = () => {
 const retrieveFromApi = async () => {
     const queryParams = {
         search: query.value,
-        type: props.thirdType,        
+        type: props.thirdType,
     }
 
     if (props.specialities) {
@@ -41,21 +43,22 @@ const retrieveFromApi = async () => {
     })
 
     options.value = response.results
+
+   
 }
 
 
 watch(
-  [query, () => props.specialities],
-  async ([newQuery, newSpeciality], [oldQuery, oldSpeciality]) => {
-    if (oldSpeciality !== newSpeciality) {
-      // Si la especialidad cambió, borramos el tercero que teníamos seleccionado
-      modelValue.value = {};
+    [query, () => props.specialities],
+    async ([newQuery, newSpeciality], [oldQuery, oldSpeciality]) => {
+        if (oldSpeciality !== newSpeciality) {
+            // Si la especialidad cambió, borramos el tercero que teníamos seleccionado
+            modelValue.value = {};
+        }
+        // Llama a retrieveFromApi() aquí o realiza otras acciones necesarias
+        retrieveFromApi();
     }
-    // Llama a retrieveFromApi() aquí o realiza otras acciones necesarias
-    retrieveFromApi();
-  }
 );
 
 
 </script>
-

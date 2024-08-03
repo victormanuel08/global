@@ -1,5 +1,6 @@
 <template>
-    <div class="rounded-3xl bg-white mt-4 ml-4 mr-4 md:mt-2 md:ml-2 md:mr-2">
+    <ModalEditRecord :calendarEvent="calendarEvent" v-if="isOpen" />
+    <div class="rounded-3xl bg-white mt-4 ml-4 mr-4 md:mt-2 md:ml-2 md:mr-2" v-else>
         <UCard class="m-4">
             <!-- <UButton @click="modalOpen.createSchedule = true">Nueva Programacion / Agendar</UButton> -->
             <div class="flex items-center justify-center border-solid m-4">
@@ -7,68 +8,57 @@
             </div>
             <div class="flex items-center justify-center border-solid">
 
-                <SelectThird 
-                    :third-type="'P'" 
-                    class="border rounded p-1 w-28" 
-                    v-model="newScheduledPatient"
-                    @change="saveItem(selectedEventId, 'third_patient', newScheduledPatient.id)" >
+                <SelectThird :third-type="'P'" class="border rounded p-1 w-28" v-model="newScheduledPatient"
+                    @change="saveItem(selectedEventId, 'third_patient', newScheduledPatient.id)">
                 </SelectThird>
 
-                <SelectInsurance
-                    v-model="newScheduledInsurance" class="border rounded p-1 w-60"
+                <SelectInsurance v-model="newScheduledInsurance" class="border rounded p-1 w-60"
                     :third="newScheduledPatient.id"
                     @change="saveItem(selectedEventId, 'insurance', newScheduledInsurance.id)"
-                    v-if="newScheduledPatient"
-                    :placeholder="'Aseguradora'"
-                >
+                    v-if="newScheduledPatient" :placeholder="'Aseguradora'">
                 </SelectInsurance>
-                <SelectSpecialities 
-                    v-model="newScheduledSpeciality" 
-                    class="border rounded p-1 w-60"
-                    @change="saveItem(selectedEventId, 'speciality', newScheduledSpeciality.id)"  
-                    v-if="newScheduledInsurance"                 
-                >
-                </SelectSpecialities>
-                <SelectThird 
-                    class="border rounded p-1 w-28" 
-                    :third-type="'M'" 
-                    :specialities="newScheduledSpeciality"
-                    v-model="newScheduledMedic"
-                    @change="saveItem(selectedEventId, 'third_medic', newScheduledMedic.id)"
-                    v-if="newScheduledSpeciality"
-                >
+                <SelectThird v-model="newScheduledEntity" :third-type="'E'"
+                    @change="saveItem(selectedEventId, 'third_entity', newScheduledEntity.id)"
+                    v-if="newScheduledInsurance.insurance === 1">
                 </SelectThird>
-                <SelectOptionsDate 
-                    v-model="newScheduledOptions" 
-                    class="border rounded p-1 w-80"
-                    :third="newScheduledMedic" 
-                    @change="saveItem(selectedEventId, 'date', newScheduledOptions.date)"
-                >
+                <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-60"
+                    @change="saveItem(selectedEventId, 'speciality', newScheduledSpeciality.id)"
+                    v-if="newScheduledInsurance">
+                </SelectSpecialities>
+           
+                <SelectServices v-model="newScheduledService" :third="newScheduledEntity"
+                    :specialities="newScheduledSpeciality"
+                    @change="saveItem(selectedEventId, 'service', newScheduledService.id)" v-if="newScheduledSpeciality">
+                </SelectServices>
+          
+               <SelectFeed v-model="newScheduledFee" :third="newScheduledFee" :specialities="newScheduledSpeciality" 
+                    :service="newScheduledService" @change="saveItem(selectedEventId, 'fee', newScheduledFee.id)" v-if="newScheduledService  && newScheduledInsurance.insurance === 1">
+                </SelectFeed >
+        
+                <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities="newScheduledSpeciality"
+                    v-model="newScheduledMedic" @change="saveItem(selectedEventId, 'third_medic', newScheduledMedic.id)"
+                    v-if="newScheduledFee || newScheduledService">
+                </SelectThird>
+                <SelectOptionsDate v-model="newScheduledOptions" class="border rounded p-1 w-80"
+                    :third="newScheduledMedic" @change="saveItem(selectedEventId, 'date', newScheduledOptions.date)" v-if="newScheduledMedic">
                 </SelectOptionsDate>
-                <USelectMenu 
-                    v-model="newScheduledOptionsHours" 
-                    class="border rounded p-1 w-40" 
-                    :class="{
-                      'border rounded p-1 w-56': newScheduledSpeciality.code === '012',
-                      'border rounded p-1 w-40': newScheduledSpeciality.code !== '012'
-                    }"
-                    :options="rangehours"
-                    option-attribute="inter"
-                    @change="saveItem(selectedEventId, 'time', newScheduledOptionsHours.time_start)" 
-                    :placeholder="'Hora'"
-                    v-if = "newScheduledOptions"
-                />
+                <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-40" :class="{
+                    'border rounded p-1 w-56': newScheduledSpeciality.code === '012',
+                    'border rounded p-1 w-40': newScheduledSpeciality.code !== '012'
+                }" :options="rangehours" option-attribute="inter"
+                    @change="saveItem(selectedEventId, 'time', newScheduledOptionsHours.time_start)"
+                    :placeholder="'Hora'" v-if="newScheduledOptions" />
                 <span v-if="isEdit" @click="clean()" class="p-4 cursor-pointer" title="Limpiar Campos">
                     🧹
-                </span>   
+                </span>
                 <span v-else @click="createScheduled" class="p-4 cursor-pointer" title="Agendar Cita">
                     💾
                 </span>
-            </div>         
+            </div>
             <FullCalendar :options="calendarOptions" />
         </UCard>
     </div>
-    <ModalEditRecord :calendarEvent="calendarEvent" v-model="isOpen"/>
+
 </template>
 
 <script setup lang="ts">
@@ -89,6 +79,9 @@ const newScheduledTime = ref<any>(getCurrentTime());
 const newScheduledPatient = ref<any>('');
 const newScheduledInsurance = ref<any>(0);
 const newScheduledRecord = ref<any>('');
+const newScheduledEntity = ref<any>('');
+const newScheduledService = ref<any>('');
+const newScheduledFee = ref<any>('');
 const query = ref('');
 const rangehours = ref<any[]>([]);
 const selectedEventId = ref<number>(0);
@@ -101,8 +94,8 @@ const eventsToShow = ref<any[]>([
 
 const calendarOptions = computed(() => ({
     plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
-    initialView: calendarInitialView.value,    
-    locale: 'es', 
+    initialView: calendarInitialView.value,
+    locale: 'es',
     headerToolbar: {
         left: 'prev,next',
         center: 'title',
@@ -118,18 +111,18 @@ const calendarOptions = computed(() => ({
     },
     //location: "es-Es",
     events: eventsToShow.value,
-    eventClick: function (info: any) {     
+    eventClick: function (info: any) {
         if (info.event.extendedProps.record) {
             newScheduledRecord.value = info.event.extendedProps.record;
             calendarEvent.value = info.event.extendedProps;
             editRecord(calendarEvent.value)
-        }else{
+        } else {
             selectedEventId.value = info.event.extendedProps.scheduled;
             newScheduledPatient.value = info.event.extendedProps.patient;
             newScheduledSpeciality.value = info.event.extendedProps.speciality;
             newScheduledMedic.value = info.event.extendedProps.medic;
             newScheduledDate.value = info.event.extendedProps.date;
-            newScheduledTime.value = info.event.extendedProps.time; 
+            newScheduledTime.value = info.event.extendedProps.time;
             //modalOpen.createSchedule = true;
             isEdit.value = true;
             alert("Puedes editar la cita");
@@ -186,7 +179,7 @@ async function fetchScheduleds() {
             medic: scheduled.third_medic_full,
             patient: scheduled.third_patient_full,
             scheduled: scheduled.id,
-            record:scheduled.record,
+            record: scheduled.record,
             date: scheduled.date,
             time: scheduled.time,
             color: scheduled.confirmed ? 'green' : 'red',
@@ -222,6 +215,7 @@ const createScheduled = async () => {
     }
 
     try {
+        console.log('newScheduledFee.value', newScheduledFee.value)
         const response = await $fetch('api/scheduleds/', {
             method: 'POST',
             body: {
@@ -233,6 +227,10 @@ const createScheduled = async () => {
                 confirmed: false,
                 insurance: newScheduledInsurance.value.insurance,
                 date_origin: newScheduledInsurance.value?.date, // Se agrega el campo date_origin si lo tiene newScheduledInsurance
+                third_entity: newScheduledEntity.value?.id,
+                service: newScheduledService.value?.id,
+                fee: newScheduledFee.value?.id,
+                policy: newScheduledFee.value.policy_full.id,
             },
         });
         await fetchScheduleds();
@@ -244,6 +242,9 @@ const createScheduled = async () => {
         newScheduledOptions.value = '';
         newScheduledOptionsHours.value = '';
         newScheduledInsurance.value = '';
+        newScheduledEntity.value = '';
+        newScheduledService.value = '';
+        newScheduledFee.value = '';
     } catch (error) {
         console.error('Error al crear la cita:', error);
     }
@@ -264,14 +265,14 @@ watch(newScheduledOptions, async (newVal, oldVal) => {
         calendarInitialView.value = "timeGridDay";
         console.log("calendar", calendarOptions.value)
 
-        await fetchScheduleds();    
-        
+        await fetchScheduleds();
+
         if (newScheduledOptionsHours.value.overflow > 0) {
             const timeList = eventsToShow.value.map(item => item.time);
-            console.log ('timelist', timeList)
+            console.log('timelist', timeList)
             newVal.rangetime = newVal.rangetime.filter(item => !timeList.includes(item.time_start));
-        }   
-        rangehours.value = newVal.rangetime       
+        }
+        rangehours.value = newVal.rangetime
     } else {
         newScheduledOptionsHours.value = {}; // Vacía el arreglo si newScheduledOptions no tiene selección
     }
@@ -291,7 +292,7 @@ watch(calendarInitialView,
         if (newView) {
             console.log('calendarInitialView', newView)
             await fetchScheduleds();
-        }    
+        }
     }
 );
 
@@ -318,8 +319,23 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 const editRecord = async (record: any) => {
-   // alert("Abrir modal de edición de RecordsMedic "+ record.speciality.description);
+    alert(`Puedes Hacer Evolucion de la Consulta Original`)
+    calendarEvent.value = record;
+    calendarEvent.value.patient.type_full = await getCHOICE(calendarEvent.value.patient.type, 'TYPE_CHOICES')
+    calendarEvent.value.patient.sex_full = await getCHOICE(calendarEvent.value.patient.sex, "SEX_CHOICES")
+    calendarEvent.value.patient.blood_full = await getCHOICE(calendarEvent.value.patient.blood_type, "BLOOD_CHOICES")
+    calendarEvent.value.patient.etnia_full = await getCHOICE(calendarEvent.value.patient.ethnicity, "ETNIAS_CHOICES")
+    calendarEvent.value.patient.zone_full = await getCHOICE(calendarEvent.value.patient.zone, "ZONE_CHOICES")
+    calendarEvent.value.patient.occupation_full = await getCHOICE(calendarEvent.value.patient.occupation, "OCCUPATION_CHOICES")
+    calendarEvent.value.patient.maternity_full = await getCHOICE(calendarEvent.value.patient.maternity_breasfeeding, "MATERNITY_CHOICES")
+    calendarEvent.value.patient.maternity_complementary_full = await getCHOICE(calendarEvent.value.patient.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
+    calendarEvent.value.patient.maternity_extend_full = await getCHOICE(calendarEvent.value.patient.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")
+    calendarEvent.value.patient.maternity_pregnancy_full = await getCHOICE(calendarEvent.value.patient.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
+    calendarEvent.value.patient.maternity_violance_full = await getCHOICE(calendarEvent.value.patient.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
+
+    console.log('watch1', calendarEvent.value)
     isOpen.value = true;
+    console.log('calendarEvent', calendarEvent.value)
 };
 
 
