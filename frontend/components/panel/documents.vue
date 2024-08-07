@@ -49,7 +49,7 @@
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Poliza:  <span @click="typeT='', showModalPolice('SE')">➕</span></label>
+                <label class="block text-sm font-medium text-gray-700">Poliza:  <span @click="typeT='D', showModalPolice('')">➕</span></label>
                 <SelectPolice :third-type="'E'"  v-model="record.policy_full" @change="saveItem(record.id, 'policy', record.policy_full.id )">
                 </SelectPolice>
             </div>
@@ -168,7 +168,8 @@
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
     <ModalEditThird  :third="thirdSelected"   :typeT="typeT" @close="handleModalClose" v-model="isThird" />
-    <ModalNewPolice  :third="thirdSelected"   :typeT="typeT" @close="handleModalClose" v-model="isPolice" />    
+    <ModalNewPolice  :third="thirdSelected"   :typeT="'D'" @close="handleModalClose" v-model="isPolice" />    
+
 </template>
 
 <script lang="ts" setup>
@@ -188,17 +189,15 @@ const isPolice = ref(false)
 const thirdSelected = ref<any>({})  
 
 const showModalThird = (value: any) => {
-    thirdSelected.value = value
+  
     console.log('showModalThird',thirdSelected)    
     isThird.value = true
     
 }
 
-const showModalPolice = (value: any) => {
-    thirdSelected.value = value
+const showModalPolice = (value: any) => {    
     console.log('showModalThird',thirdSelected)    
-    isPolice.value = true
-    
+    isPolice.value = true    
 }
 
 
@@ -232,6 +231,7 @@ const photoRecord = async (q: string) => {
 const handleModalClose = async (value: any) => {
     isSing.value = false
     isPhoto.value = false
+    thirdSelected.value = {}
     await fetchRecord(modelValue.calendarEvent?.record.id)    
      
 }

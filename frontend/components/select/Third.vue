@@ -15,14 +15,21 @@ const modelValue = defineModel<any>({ default: () => ({}) }) //Esto es para que 
 
 
 type Props = {
+    third?: object
     thirdType?: string
     specialities?: string | number
+    policeType?: string
 }
 
+
 const props = withDefaults(defineProps<Props>(), {
+    third: {},
     thirdType: '',
-    specialities: ''
+    specialities: '',
+    policeType: ''
 })
+
+console.log('stprops', props)
 
 const clickHandler = () => {
     retrieveFromApi()
@@ -41,6 +48,11 @@ const retrieveFromApi = async () => {
     const response = await $fetch<any>("api/thirds", {
         query: queryParams
     })
+
+    if (props.third && props.thirdType === 'SE') {
+        console.log('props.thirdapi', props.third)
+        response.results.push(props.third)
+    }
 
     options.value = response.results
 

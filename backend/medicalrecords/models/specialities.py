@@ -1,5 +1,6 @@
 from django.db import models
-from .thirds import *
+
+
 
 class Specialities(models.Model):
     id = models.AutoField(primary_key=True)
@@ -19,6 +20,8 @@ class Services(models.Model):
     code = models.CharField(max_length=20)
     description = models.TextField(max_length=300)
     speciality = models.ForeignKey(Specialities, on_delete=models.CASCADE)
+    amount_soat = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount_particular = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     
     class Meta:
         ordering = ['description']
@@ -29,9 +32,8 @@ class Services(models.Model):
         return self.description
     
 class Fees(models.Model):
-    id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=20)
-    description = models.TextField(max_length=300)
+    id = models.AutoField(primary_key=True)    
+    description = models.TextField(max_length=300, null=True, blank=True)
     service = models.ForeignKey(Services, on_delete=models.CASCADE)
     specialities = models.ForeignKey(Specialities, on_delete=models.CASCADE)
     third_entity = models.ForeignKey(

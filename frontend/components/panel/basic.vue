@@ -4,13 +4,14 @@
         <div class="grid grid-cols-6  md:grid-cols-6 m-4">
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
-                <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
-                    @change="saveItem(record.id, 'priority', record.priority_full.id)">
-                    <template #option="{ option: person }">
-                        <span v-for="color in person.colors" :key="color.id" class="h-2 w-2 rounded-full"
-                            :class="`bg-${color}-500 dark:bg-${color}-400`" />
-                        <span class="truncate">{{ person.name }}</span>
-                    </template>
+                <SelectChoice 
+                    :choiceType="'PRIORITY_CHOICES'" 
+                    v-model="record.priority_full"
+                    @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
+                    :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white': 'background-color: black'"  
+                    :color = "record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white': 'background-color: black'"  
+                    
+                    >
                 </SelectChoice>
             </div>
             <div class="mr-2">
@@ -141,6 +142,21 @@ const modelValue = defineProps({
     calendarEvent: Object,
 })
 
+function getColorForPriority(priorityName:any) {
+    console.log('color',priorityName)
+    switch (priorityName) {
+        case 'red':
+            return 'red'; // Color para alta prioridad
+        case 'yellow':
+            return 'yellow'; // Color para prioridad media
+        case 'Baja':
+            return '#4CAF50'; // Color para baja prioridad
+        default:
+            return '#CCCCCC'; // Color predeterminado (gris claro)
+    }
+}
+
+
 
 const isThird = ref(false)
 const thirdSelected = ref<any>({})  
@@ -190,6 +206,8 @@ type Record = {
 }
 const record = ref({} as Record)
 
+const color = ref({ backgroundColor: getColorForPriority(record.value.priority_full?.name) });
+
 const signed = ref(record.value.signed)
 const qq =ref()
 
@@ -211,7 +229,7 @@ const retrieveFromApi = async (q: any) => {
     record.value.glasgow_ro_full = await getCHOICE(response.glasgow_ro, 'GLASGOW_RO_CHOICES')
     record.value.glasgow_rv_full = await getCHOICE(response.glasgow_rv, 'GLASGOW_RV_CHOICES')
     record.value.glasgow_rm_full = await getCHOICE(response.glasgow_rm, 'GLASGOW_RM_CHOICES')
-    console.log('RECORDTODO',record.value)
+
 }
 
 const signedRecord = async () => {
@@ -233,7 +251,7 @@ const saveItem = async (index: number, field: string, value: string) => {
     if (field === 'glasgow_ro' || field === 'glasgow_rv' || field === 'glasgow_rm') {
         glasgow.value = parseInt(record.value.glasgow_ro_full.id) + parseInt(record.value.glasgow_rv_full.id) + parseInt(record.value.glasgow_rm_full.id)
     }
-    console.log('GLASS', glasgow.value)
+
     retrieveFromApi(index)
 
 };
@@ -254,7 +272,7 @@ onMounted(() => {
 
 const showModalThird = (value: any) => {
     thirdSelected.value = value
-    console.log('showModalThird',thirdSelected)    
+
     isThird.value = true
     
 }

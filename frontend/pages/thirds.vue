@@ -159,7 +159,7 @@ const fetchThirds = async () => {
     search,
     pending,
   } = usePaginatedFetch<any>("/api/thirds/");
-  console.log('fetchThirds', thirds.value)
+
 }
 
 const fetchChoices = async () => {
@@ -174,7 +174,7 @@ const fetchChoices = async () => {
   type_list.value = response.TYPE_CHOICES
   sex_list.value = response.SEX_CHOICES
 
-  console.log('fetchChoices', response)
+
 }
 
 const deleteThird = async (id: number) => {
@@ -196,12 +196,12 @@ const saveItem = async (index: number, field: string, value: string) => {
       [field]: value,
     }),
   });
-  console.log('saveItem', response)
+
   fetchThirds();
 };
 
 const createThird = async () => {
-  console.log('createThird', newThirdDocument.value)
+
   const message = confirm('¿Estás seguro de crear este Tercero?')
 
   if (!message) {
@@ -252,13 +252,13 @@ onMounted(() => {
 
 const showModalThird = (value: any) => {
   thirdSelected.value = value
-  console.log('showModalThird', thirdSelected)
+
   isThird.value = true
 }
 
 const showModalRecordAmbulance = (value: any) => {
   thirdSelected.value = value
-  console.log('showModalRecordAmbulance', thirdSelected)
+
   isAmbulance.value = true
 }
 

@@ -29,4 +29,9 @@ Get-Content .\medicalrecords\scripts\make_records.py | & python manage.py shell
 Get-Content .\medicalrecords\scripts\make_specilities.py | & python manage.py shell
 Get-Content .\medicalrecords\scripts\make_procedures.py | & python manage.py shell
 
+python manage.py shell
+
+exec(open('.\medicalrecords\scripts\make_services.py').read())
+
+python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_services.py').read())"
 

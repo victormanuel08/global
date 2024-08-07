@@ -86,7 +86,7 @@ const items = [{
 ]
 
 onMounted(() => {
-    console.log("modalambulanciaqqqq", props.calendarEvent?.sex)
+
     if (props.calendarEvent?.sex === "F") {       
         items.splice(1, 0, {
             label: 'Maternidad',

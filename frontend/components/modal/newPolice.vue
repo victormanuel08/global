@@ -1,45 +1,48 @@
 <template>
-    <UModal :third="third" :third2="thirdSelected">
+    <UModal>
         <div class="border rounded m-4 ">
             <div class=" m-4 ">
 
 
-                <h3>Crear Poliza</h3>
-                <div class="mt-4">
-                    <Label class="block text-sm font-medium text-gray-700">Numero:</label>
-                    <div class="grid grid-cols-2 gap-2 md:grid-cols-2 ">
-                        <UInput v-model="newThirdNit" placeholder="Identificacion" />
-                        <SelectChoice :choiceType="'TYPE_DOCUMENT_CHOICES'" v-model="newThirdDocument"
-                            @change="validateNit" />
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4" v-if="newThirdDocument?.id !== 'NI'">
-                    <div>
-                        <Label class="block text-sm font-medium text-gray-700">Tipo Poliza:</label>
-                        <SelectChoice :choiceType="'SEX_CHOICES'" v-model="newThirdSex" />
-                    </div>
-                    <div>
-                        <Label class="block text-sm font-medium text-gray-700">Tipo Pago:</label>
-                        <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="newThirdBlood" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Vehiculo: <span @click="showModalVehicle('SE')">➕</span></label>
-                        <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="newThirdBlood" />
-                    </div>
-                </div>
+                <h3>Crear Poliza {{ newTypePolice.name }}</h3>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4">
+                    <div v-if="$props.typeT !=='D'">
+                        <Label class="block text-sm font-medium text-gray-700">Tipo Poliza:</label>
+                        <SelectChoice :choiceType="'TYPE_POLICE_CHOICES'" v-model="newTypePolice" @change="validate" />
+                    </div>
+                    <div v-if="newTypePolice.id === 'SE'">
+                        <Label class="block text-sm font-medium text-gray-700">Entidad:</label>
+                        <SelectThird v-model="newThirdEntity" :third-type="'E'" :third="props.third"
+                            :police-type="newTypePolice.id" class="border rounded p-1">
+                        </SelectThird>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4" v-if="newTypePolice.id === 'SE'">
+
+                    <div>
+                        <Label class="block text-sm font-medium text-gray-700">Numero:</label>
+                        <SelectChoice :choiceType="'TYPE_POLICE_CHOICES'" v-model="newDescriptionNumber"
+                            @change="validate" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Vehiculo: <span
+                                @click="showModalVehicle('SE')">➕</span></label>
+                        <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="newVehicle" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4" v-if="newTypePolice.id === 'SE'">
                     <div>
                         <Label class="block text-sm font-medium text-gray-700">Fecha Inicio:</label>
-                        <SelectChoice :choiceType="'SEX_CHOICES'" v-model="newThirdSex" />
+                        <UInput type="date" v-model="newDateStart" />
                     </div>
                     <div>
                         <Label class="block text-sm font-medium text-gray-700">Fecha Fin:</label>
-                        <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="newThirdBlood" />
+                        <UInput type="date" v-model="newDateEnd" />
                     </div>
                 </div>
 
                 <div class="flex items-center justify-center mt-4">
-                    <span @click="createThird">💾</span>
+                    <span @click="createPolice">💾</span>
                 </div>
             </div>
         </div>
@@ -48,15 +51,12 @@
 
 <script lang="ts" setup>
 
-const thirdSelected = ref({} as Third[])
-const newThirdDocument = ref({})
-const newThirdNit = ref('')
-const newThirdName = ref('')
-const newThirdSecondName = ref('')
-const newThirdLastName = ref('')
-const newThirdSecondLastName = ref('')
-const newThirdBlood = ref({})
-const newThirdSex = ref({})
+const newTypePolice = ref({})
+const newThirdEntity = ref({})
+const newDescriptionNumber = ref({})
+const newVehicle = ref({})
+const newDateStart = ref({})
+const newDateEnd = ref({})
 
 const isvehicle = ref(false)
 
@@ -69,112 +69,61 @@ type Props = {
 
 const props = defineProps<Props>()
 
-const typeThird = ref(props.typeT)
-
-const query = ref("")
-
-const showModalVehicle = (value: string) => {
-    isvehicle.value = true
-    console.log('showModalVehicle', value)
-}
-
-watch(() => props.third, async (value: any) => {
-    if (value) {
-        propEvent(value)
-    }
-})
+const createPolice = async () => {
 
 
-
-const propEvent = async (value: any) => {
-    thirdSelected.value = value
-    thirdSelected.value.type_full = await getCHOICE(value.type, 'TYPE_CHOICES')
-    thirdSelected.value.sex_full = await getCHOICE(value.sex, "SEX_CHOICES")
-    thirdSelected.value.blood_full = await getCHOICE(value.blood_type, "BLOOD_CHOICES")
-    thirdSelected.value.etnia_full = await getCHOICE(value.ethnicity, "ETNIAS_CHOICES")
-    thirdSelected.value.zone_full = await getCHOICE(value.zone, "ZONE_CHOICES")
-    thirdSelected.value.occupation_full = await getCHOICE(value.occupation, "OCCUPATION_CHOICES")
-    thirdSelected.value.maternity_full = await getCHOICE(value.maternity_breasfeeding, "MATERNITY_CHOICES")
-    thirdSelected.value.maternity_complementary_full = await getCHOICE(value.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
-    thirdSelected.value.maternity_extend_full = await getCHOICE(value.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")
-    thirdSelected.value.maternity_pregnancy_full = await getCHOICE(value.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
-    thirdSelected.value.maternity_violance_full = await getCHOICE(value.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
-    thirdSelected.value.type_document_full = await getCHOICE(value.type_document, "TYPE_DOCUMENT_CHOICES")
-    typeThird.value = props.typeT
-
-    console.log('watch1', thirdSelected.value)
-
-}
-
-const saveItem = async (index: number, field: string, value: string) => {
-    const response = await $fetch(`api/thirds/${index}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-            [field]: value,
-        }),
-    });
-    console.log('saveItem', response)
-};
-
-const validateNit = async () => {
-    const queryParams = {
-        search: query.value,
-        nit: newThirdNit.value,
-        type_document: newThirdDocument.value.id
-    }
-    const response = await $fetch<any>("api/thirds", {
-        query: queryParams
-    })
-    if (response.results.length > 0) {
-        propEvent(response.results[0])
-    }
-
-}
-
-const createThird = async () => {
-    console.log('createThird', newThirdDocument.value)
-    const message = confirm('¿Estás seguro de crear este Tercero?')
-
-    if (!message) {
-        newThirdDocument.value = ''
-        newThirdNit.value = ''
-        newThirdName.value = ''
-        newThirdSecondName.value = ''
-        newThirdLastName.value = ''
-        newThirdSecondLastName.value = ''
-        typeThird.value = ''
-        newThirdSex.value = ''
-        newThirdBlood.value = ''
-
-        return
-    }
-
-    const response = await $fetch('api/thirds/', {
+    const response = await $fetch<any>('api/polices/', {
         method: 'POST',
         body: {
-            type_document: newThirdDocument.value.id,
-            nit: newThirdNit.value,
-            name: newThirdName.value,
-            second_name: newThirdSecondName.value,
-            last_name: newThirdLastName.value,
-            second_last_name: newThirdSecondLastName.value,
-            type: typeThird.value,
-            blood_type: newThirdBlood.value.id,
-            sex: newThirdSex.value.id
-        },
+            type_police: newTypePolice.value.id,
+            payment_model: 'EV',
+            third_entity: newThirdEntity.value.id,
+            description: newDescriptionNumber.value,
+            vehicle: newVehicle?.value.id,
+            date_start: newDateStart.value,
+            date_end: newDateEnd.value,
+        }
     })
+    const third = await $fetch<any>(`api/thirds/${props.third.id}`);
 
-    newThirdDocument.value = ''
-    newThirdNit.value = ''
-    newThirdName.value = ''
-    newThirdSecondName.value = ''
-    newThirdLastName.value = ''
-    newThirdSecondLastName.value = ''
-    typeThird.value = ''
-    newThirdSex.value = ''
-    newThirdBlood.value = ''
+    third['policys'].push(response.id)
+
+    await $fetch<any>(`api/thirds/${props.third.id}/`, {
+        method: 'PUT',
+        body: third
+    })
+    alert('Poliza creada, cerrar modal')
 }
 
+const validate = async() => {
+    if (props.typeT === 'C') {
+        if (newTypePolice.value.id === "SE") {
+            if (newThirdEntity.value = props.third) {
+                newThirdEntity.value = ''
+                newDescriptionNumber.value = ''
+            }
+        } else if (newTypePolice.value.id === "PA") {
+            newThirdEntity.value = props.third
+            newDescriptionNumber.value = props.third?.nit
+            newDateStart.value = getCurrentDate()
+            newDateEnd.value = formatDateYYYYMMDD('2050-12-31')
+        } else {
+            alert('Solo puede crear polizas Particular y Soat')
+            newTypePolice.value = ''
+            newThirdEntity.value = ''
+            newDescriptionNumber.value = ''
+            newVehicle.value = ''
+            newDateStart.value = ''
+            newDateEnd.value = ''
+        }
+    } else if (props.typeT === 'D') {
+        newTypePolice.value = await getCHOICE('SE', 'TYPE_POLICE_CHOICES')
+
+        newThirdEntity.value = ''
+        newDescriptionNumber.value = ''
+
+    } 
+}
 
 </script>
 

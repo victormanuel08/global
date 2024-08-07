@@ -13,7 +13,7 @@ const search = async (q: string) => {
             search: q
         }
     })
-    console.log("City", response.results)
+
     return response.results
 }
 </script>
