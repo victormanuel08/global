@@ -145,8 +145,8 @@ class Thirds(models.Model):
     pathologies = models.CharField(max_length=200, null=True, blank=True)
     medications = models.CharField(max_length=200, null=True, blank=True)
     liquids_foods = models.CharField(max_length=200, null=True, blank=True)    
-    user = models.ForeignKey('auth.User', on_delete=models.PROTECT, null=True, blank=True)
-    policys = models.ManyToManyField(Policy)
+    user = models.OneToOneField('auth.User', on_delete=models.PROTECT, null=True, blank=True)
+    policys = models.ManyToManyField(Policy, null=True, blank=True)
  
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -4,9 +4,9 @@
             <div class=" m-4 ">
 
 
-                <h3>Crear Poliza {{ newTypePolice.name }}</h3>
+                <h3>Crear Poliza {{ newTypePolice.name }} {{ props.typeT }}</h3>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4">
-                    <div v-if="$props.typeT !=='D'">
+                    <div v-if="$props.typeT !== 'D'">
                         <Label class="block text-sm font-medium text-gray-700">Tipo Poliza:</label>
                         <SelectChoice :choiceType="'TYPE_POLICE_CHOICES'" v-model="newTypePolice" @change="validate" />
                     </div>
@@ -21,8 +21,7 @@
 
                     <div>
                         <Label class="block text-sm font-medium text-gray-700">Numero:</label>
-                        <SelectChoice :choiceType="'TYPE_POLICE_CHOICES'" v-model="newDescriptionNumber"
-                            @change="validate" />
+                        <UInput v-model="newDescriptionNumber" />
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Vehiculo: <span
@@ -39,6 +38,10 @@
                         <Label class="block text-sm font-medium text-gray-700">Fecha Fin:</label>
                         <UInput type="date" v-model="newDateEnd" />
                     </div>
+                    <div>
+                        <Label class="block text-sm font-medium text-gray-700">Afectacion Inicial:</label>
+                        <UInput v-model="newAmountAffection" />
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-center mt-4">
@@ -53,10 +56,12 @@
 
 const newTypePolice = ref({})
 const newThirdEntity = ref({})
-const newDescriptionNumber = ref({})
+const newDescriptionNumber = ref('')
 const newVehicle = ref({})
 const newDateStart = ref({})
 const newDateEnd = ref({})
+const newAmountAffection = ref(0)
+const newAmountTotal = ref(0)
 
 const isvehicle = ref(false)
 
@@ -68,22 +73,45 @@ type Props = {
 }
 
 const props = defineProps<Props>()
+watch(() => props.typeT, async () => {
+
+    await validate()
+})
+
+
+
+
 
 const createPolice = async () => {
+    if (newTypePolice.value.id === "SE") {
+        const year = await formatDateYYYY0101(newDateStart.value)
+        const valueSOAT = await getVALUE('SE', year)
+        if (valueSOAT.results && valueSOAT.results.length > 0) {
+            const amount = valueSOAT.results[0].amount;            
+            newAmountTotal.value = amount;
+        } else {
+            alert('No se encontro el valor del SOAT en ese año debe agregar el valor en configuracion')
+            return
+        }
 
-
+        newAmountTotal.value = valueSOAT.results[0].amount
+        console.log('newAmountTotal', newAmountTotal.value)
+    }
     const response = await $fetch<any>('api/polices/', {
         method: 'POST',
         body: {
             type_police: newTypePolice.value.id,
             payment_model: 'EV',
             third_entity: newThirdEntity.value.id,
-            description: newDescriptionNumber.value,
+            description: newDescriptionNumber?.value,
+            amount_affection: newAmountAffection.value,
+            amount_total: newAmountTotal.value,
             vehicle: newVehicle?.value.id,
             date_start: newDateStart.value,
             date_end: newDateEnd.value,
         }
     })
+    console.log('PROPS', props)
     const third = await $fetch<any>(`api/thirds/${props.third.id}`);
 
     third['policys'].push(response.id)
@@ -95,7 +123,7 @@ const createPolice = async () => {
     alert('Poliza creada, cerrar modal')
 }
 
-const validate = async() => {
+const validate = async () => {
     if (props.typeT === 'C') {
         if (newTypePolice.value.id === "SE") {
             if (newThirdEntity.value = props.third) {
@@ -122,8 +150,11 @@ const validate = async() => {
         newThirdEntity.value = ''
         newDescriptionNumber.value = ''
 
-    } 
+    }
+
 }
+
+
 
 </script>
 

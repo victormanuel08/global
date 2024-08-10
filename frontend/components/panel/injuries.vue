@@ -7,7 +7,8 @@
                 <img src="@/assets/img/body.PNG" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
                 <img src="@/assets/img/body2.PNG" alt="Imagen" v-else />
                 <div class="grid-container">
-                    <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">                       
+                    <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">    
+                                     
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">                            
                             <div class="square" v-if="injurie.point === n">
                                 <div class="circle">
@@ -45,16 +46,16 @@
                         <button @click="deleteInjury(injurie)">
                             ❌ {{ index + 1 }}
                         </button>
-                        {{ injurie.body_part.name }}
+                        {{ injurie.body_part.name }} {{ injurie.point }}
                         <UTooltip :text="injurie.injurie" :shortcuts="['⌘', 'O']">
                             <span>👁️</span>
                         </UTooltip>
                     </div>
                     <div>
-                        <button @click="saveInjuries(record.id, listInjuries, listBody)">
+                        <button @click="saveInjuries(record.id, listInjuries, listBody, listInjuries2)">
                             💾 Listado Lesiones
                         </button>
-                        {{ points }}
+                 
                     </div>
                 </div>
             </div>
@@ -67,6 +68,7 @@
 
 const newInjurie = ref('')
 const listInjuries = ref([] as injurie[])
+const listInjuries2 = ref([] as any[])
 const listBody = ref([] as any[])
 const point = ref(0)
 
@@ -80,6 +82,7 @@ const modelValue = defineProps({
 })
 
 onMounted(() => {
+   
     fetchRecord(modelValue.calendarEvent?.record.id)
 });
 
@@ -92,15 +95,24 @@ type injurie = {
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
-    console.log('RECORDobjets', record.value)
-    record.value.body_part_full = await getCHOICE(record.value.body, 'BODY_PART_CHOICES')
+    console.log('RECORDobjetsFEETRECORD', record.value)   
+
+    
+    record.value.body_part_full = await getCHOICE(record.value.body , 'BODY_PART_CHOICES')
     record.value.body_part_side_full = await getCHOICE(record.value.body_side, 'BODY_PART_SIDE_CHOICES')
+    if (record.value.list_injuries){
+        listInjuries.value = JSON.parse(record.value.list_injuries)
+    }
+  
 }
 
-const saveInjuries = async (index: number, injuries: object[], body: any) => {
+const saveInjuries = async (index: number, injuries: object[], body: any,injuries2:object[]) => {
+
     let newConcatInjuries = '';
+
     for (const injury of injuries) {
         newConcatInjuries += `${injury.body_part.name}  ${injury.injurie}\n`;
+ 
     }
 
     const response = await $fetch(`api/records/${index}`, {
@@ -108,6 +120,7 @@ const saveInjuries = async (index: number, injuries: object[], body: any) => {
         body: JSON.stringify({
             body: body,
             injuries: newConcatInjuries,
+            list_injuries: JSON.stringify(injuries)
         }),
     });
     fetchRecord(modelValue.calendarEvent?.record.id);
@@ -121,33 +134,42 @@ const cleanFields = async () => {
 }
 
 const createListInjuries = async (body_part: any, body_part_side: any, injurie: string, point: number, sex: string) => {
-
     let pointStart
     if (body_part.id === 'MI' && !body_part_side.id) {
         return alert('Seleccione una parte del cuerpo')
     }
     if (body_part.id === 'MI' && body_part_side.id) {
         pointStart = await getCHOICE(body_part_side?.id, 'BODY_PART_SIDE_CHOICES');
+        console.log('pointStart1', pointStart)
     }else{
         pointStart = await getCHOICE(body_part?.id, 'BODY_PART_CHOICES');
+        console.log('pointStart2', pointStart)
     }  
 
     if (!point) {
+        
         if (sex === 'F') {            
             const valoresFemeninos = pointStart.female.split(',').map(Number);
             point = Math.min(...valoresFemeninos);
+            console.log('pointF', point)
         } else if (sex === 'M') {            
             const valoresMasculinos = pointStart.male.split(',').map(Number);
             point = Math.min(...valoresMasculinos);
+            console.log('pointM', point)
         }
     }
     if (body_part_side.id) {
-        listInjuries.value.push({ body_part: body_part_side, injurie: injurie, point: point });
+        listInjuries.value.push({ body_part: body_part_side, injurie: injurie, point: point });  
         listBody.value.push(body_part_side.id);
+        console.log('body_part_side1', listInjuries.value)
+        console.log('body_part_side1', listBody.value)
     } else {
-        listInjuries.value.push({ body_part: body_part, injurie: injurie, point: point });
+        listInjuries.value.push({ body_part: body_part, injurie: injurie, point: point });    
         listBody.value.push(body_part.id);
+        console.log('body_part_side2', listInjuries.value)
+        console.log('body_part_side2', listBody.value)
     }
+
     cleanFields();
 };
 
@@ -161,8 +183,11 @@ const showRegion = async (n: number) => {
     record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', record.value.third_patient_full?.sex);
     record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', record.value.third_patient_full?.sex);
     point.value = n 
+    console.log('pointshowregion', point.value)
 
 }
+
+
 
 </script>
 <style>

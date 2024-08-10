@@ -5,10 +5,7 @@ from .models import Thirds
 from datetime import datetime, timedelta
 from drf_extra_fields.fields import Base64ImageField
 
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Services
-        fields = '__all__'
+
         
 
 
@@ -17,10 +14,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         model = Vehicles
         fields = '__all__'
         
-class PoliceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Policy
-        fields = '__all__'
+
         
 
 
@@ -38,6 +32,13 @@ class DiagnosisSerializer(serializers.ModelSerializer):
 class SpecialitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Specialities
+        fields = '__all__'
+        
+class ServiceSerializer(serializers.ModelSerializer):
+    speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
+    
+    class Meta:
+        model = Services
         fields = '__all__'
         
 class ThirdSerializer(serializers.ModelSerializer):    
@@ -75,33 +76,8 @@ class FeeSerializer(serializers.ModelSerializer):
          
       
 
-class RecordSerializer(serializers.ModelSerializer):    
-    third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
-    third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
-    third_medic_clinic_full = ThirdSerializer(source = 'third_medic_clinic', read_only=True)    
-    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
-    # third_relationship_full = ThirdSerializer(source = 'third_relationship', read_only=True)
-    third_clinic_full = ThirdSerializer(source = 'third_clinic', read_only=True)
-    third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
-    third_driver_full=ThirdSerializer(source = 'third_driver', read_only=True)
-    diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
-    diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
-    diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
-    diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
-    policy_full = PoliceSerializer( source = 'policy' ,  read_only = True)
-    # service_full = ServiceSerializer(source = 'service', read_only=True)
-    fee_full = FeeSerializer(source = 'fee', read_only=True)
-    records_details = serializers.SerializerMethodField()
     
 
-
-    class Meta:
-        model = Records
-        fields = '__all__'  
-    
-    def get_records_details(self, obj):
-        records_details = Records_details.objects.filter(record=obj)
-        return RecordDetailSerializer(records_details, many=True).data
 
 class RecordDetailsOnlySerializer(serializers.ModelSerializer):
     records_details = serializers.SerializerMethodField()
@@ -150,7 +126,42 @@ class ProcedureSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 
+class PoliceSerializer(serializers.ModelSerializer):
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    vehicle_full = VehicleSerializer(source = 'vehicle', read_only=True)
+
+    class Meta:
+        model = Policy
+        fields = '__all__'        
         
+
+class RecordSerializer(serializers.ModelSerializer):    
+    third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
+    third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
+    third_medic_clinic_full = ThirdSerializer(source = 'third_medic_clinic', read_only=True)    
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    # third_relationship_full = ThirdSerializer(source = 'third_relationship', read_only=True)
+    third_clinic_full = ThirdSerializer(source = 'third_clinic', read_only=True)
+    third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
+    third_driver_full=ThirdSerializer(source = 'third_driver', read_only=True)
+    diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
+    diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
+    diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
+    diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
+    policy_full = PoliceSerializer( source = 'policy' ,  read_only = True)
+    # service_full = ServiceSerializer(source = 'service', read_only=True)
+    fee_full = FeeSerializer(source = 'fee', read_only=True)
+    records_details = serializers.SerializerMethodField()
+    
+
+
+    class Meta:
+        model = Records
+        fields = '__all__'  
+        
+    def get_records_details(self, obj):
+        records_details = Records_details.objects.filter(record=obj)
+        return RecordDetailSerializer(records_details, many=True).data
         
 class ScheduledSerializer(serializers.ModelSerializer):
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
@@ -201,4 +212,10 @@ class AvailabilitySerializer(serializers.ModelSerializer):
             intervals.append({"id": i, "time_start": time_start, "time_end": time_end, "overflow": overflow, "inter": inter})
 
         return intervals
+
+class ValueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Values
+        fields = '__all__'
+
 

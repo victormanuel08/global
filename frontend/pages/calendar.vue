@@ -265,7 +265,7 @@ const createScheduled = async () => {
                 third_entity: newScheduledEntity.value?.id,
                 service: newScheduledService.value?.id,
                 fee: newScheduledFee.value?.id,
-                policy: newScheduledFee.value.policy_full.id,
+                policy: newScheduledFee.value.policy_full?.id,
             },
         });
         await fetchScheduleds();

@@ -31,6 +31,7 @@ router.register('vehicles', VehicleViewSet)
 router.register('polices', PoliceViewSet)
 router.register('fees', FeeViewSet)
 router.register('services', ServiceViewSet)
+router.register('values', ValuesViewSet)
 
 
 
