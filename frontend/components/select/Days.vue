@@ -14,12 +14,12 @@ const props = withDefaults(defineProps<Props>(), {
     start: '',
     end: ''
 })
-console.log("Props", props.start, props.end)
+
 const loadOptions = () => {
     options.value = listDaysOptions(props.start, props.end)
 }
 loadOptions()
-console.log("Options", options.value)
+
 watch([ props.start, () => props.end],
     async ([ newStart, newEnd],
         [oldStart,oldEnd]) => {

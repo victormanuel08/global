@@ -1,5 +1,5 @@
 <template>
-    <UModal >
+    <UModal        @update:modelValue="modalClosedHandler(thirdSelected)">
         <div class="border rounded m-4 ">
             <div class=" m-4 ">
                 <div v-if="thirdSelected?.id > 0">
@@ -7,9 +7,10 @@
                         thirdSelected?.last_name }} {{ thirdSelected?.second_last_name }}</h3>
                     <h3><strong>Identificacion: </strong>{{ thirdSelected?.nit }}</h3>
                     <h3><strong>Usuario: </strong>{{ thirdSelected?.user }}</h3>
+                    
                 </div>
                 <div v-else>
-                    <h3>Crear Tercero</h3>
+                    <h3>Crear Tercero {{ props.typeT }}</h3>
                     <div class="mt-4">
                         <Label class="block text-sm font-medium text-gray-700">Identificacion:</label>
                         <div class="grid grid-cols-2 gap-2 md:grid-cols-2 ">
@@ -48,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-3 gap-4 md:grid-cols-3 mt-4" v-if="thirdSelected?.id > 0">
+        <div class="grid grid-cols-3 gap-4 md:grid-cols-3 mt-4" v-if="thirdSelected?.id > 0 && newThirdDocument?.id !== 'NI'">
             <div>
                 <label class="block text-sm font-medium text-gray-700">Tipo:</label>
                 <SelectChoice :choiceType="'TYPE_CHOICES'" v-model="thirdSelected.type_full"
@@ -105,7 +106,7 @@
                     @change="saveItem(thirdSelected.id, 'phone', thirdSelected.phone)" />
             </div>
         </div>
-        <div class="mt-4" v-if="thirdSelected.sex_full?.id === 'F' && thirdSelected?.id > 0">
+        <div class="mt-4" v-if="thirdSelected.sex_full?.id === 'F' && thirdSelected?.id > 0 ">
             <h3>Maternidad</h3>
             <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
                 <div>
@@ -156,7 +157,7 @@
 
 <script lang="ts" setup>
 
-const thirdSelected = ref({} as Third[])
+const thirdSelected = ref({}as Third);
 const newThirdDocument = ref({})
 const newThirdNit = ref('')
 const newThirdName = ref('')
@@ -171,6 +172,7 @@ const newThirdSex = ref({})
 type Props = {
     third: object
     typeT: string
+    
 }
 
 const props = defineProps<Props>()
@@ -181,12 +183,19 @@ const query = ref("")
 
 
 
+
 watch(() => props.third, async (value: any) => {
     if (value) {
+        newThirdNit.value = ''
+        newThirdDocument.value=''
         propEvent(value)
     }
 })
 
+if (typeThird.value==='E'){
+   
+    newThirdDocument.value=await getCHOICE('NI', 'TYPE_DOCUMENT_CHOICES')
+    }
 
 
 const propEvent = async (value: any) => {
@@ -204,9 +213,6 @@ const propEvent = async (value: any) => {
     thirdSelected.value.maternity_violance_full = await getCHOICE(value.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
     thirdSelected.value.type_document_full = await getCHOICE(value.type_document, "TYPE_DOCUMENT_CHOICES")
     typeThird.value = props.typeT
-
-    console.log('watch1', thirdSelected.value)
-
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
@@ -216,10 +222,11 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    console.log('saveItem', response)
+   
 };
 
 const validateNit = async () => {
+
     const queryParams = {
         search: query.value,
         nit: newThirdNit.value,
@@ -235,7 +242,7 @@ const validateNit = async () => {
 }
 
 const createThird = async () => {
-    console.log('createThird', newThirdDocument.value)
+
     const message = confirm('¿Estás seguro de crear este Tercero?')
 
     if (!message) {
@@ -251,7 +258,9 @@ const createThird = async () => {
 
         return
     }
-
+    if (typeThird.value==='E'){
+        newThirdDocument.value.id='NI'
+    }
     const response = await $fetch('api/thirds/', {
         method: 'POST',
         body: {
@@ -267,15 +276,12 @@ const createThird = async () => {
         },
     })
 
-    newThirdDocument.value = ''
-    newThirdNit.value = ''
-    newThirdName.value = ''
-    newThirdSecondName.value = ''
-    newThirdLastName.value = ''
-    newThirdSecondLastName.value = ''
-    typeThird.value = ''
-    newThirdSex.value = ''
-    newThirdBlood.value = ''
+    validateNit()
+
+}
+
+const modalClosedHandler = (thirdSelected: any) => {
+    thirdSelected = thirdSelected
 }
 
 

@@ -67,8 +67,7 @@ const isThird = ref(false)
 const thirdSelected = ref<any>({})  
 
 const showModalThird = (value: any) => {
-    thirdSelected.value = value
-    console.log('showModalThird',thirdSelected)    
+    thirdSelected.value = value  
     isThird.value = true
 }
 
@@ -77,23 +76,24 @@ const modelValue = defineProps({
 })
 const record = ref<any>({})
 onMounted(() => {
+
     if (modelValue.calendarEvent?.patient) {
         record.value = modelValue.calendarEvent?.patient
-        console.log('CALENDARIO', record.value)
+
     } else {
         record.value = modelValue.calendarEvent
-        console.log('THIRD', record.value)
+
     }
     if (record.value.record) {
-        console.log('RECORD RECORD',record.value)
-        console.log('EXISTE RECORD')
+
     } else {
         createRecord()
-        console.log('CREAR RECORD')
+ 
     }
 })
 
 const createRecord = async () => {
+
     const response = await $fetch('api/records/', {
         method: 'POST',
         body: {
@@ -101,10 +101,9 @@ const createRecord = async () => {
             third_medic: record.value?.id, //deberia cargarlo del user       
         },
     })
-    console.log('RESPONSE', response.id)
+
     record.value.record = response
 
-    console.log('RECORDRESPONSE', record.value)
 }
 
 </script>

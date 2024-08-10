@@ -1,13 +1,17 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from datetime import datetime
+from .specialities import *
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 PRIORITY_CHOICES = (
-    ('W', 'White'),
-    ('R', 'Red'),
-    ('Y', 'Yellow'),
-    ('G', 'Green'),
-    ('B', 'Black'),
+    ('W', 'Blanco'),
+    ('R', 'Rojo'),
+    ('Y', 'Amarillo'),
+    ('G', 'Verde'),
+    ('B', 'Negro'),
 )
 
 RELATIONSHIP_CHOICES = (
@@ -105,15 +109,24 @@ BODY_PART_SIDE_CHOICES = (
 PAYMENT_MODEL_CHOICES = (
     ('FF', 'FONDO FIJO'),
     ('EV', 'EVENTO'),
-    ('SE', 'SEGURO SOAT'),
 )
 
 TYPE_POLICE_CHOICES = (
-    ('MP', 'MEDICINA PREPAGADA'),
-    ('PS', 'SUBSIDIADA'),
-    ('PC', 'CONTRIBUTIVO'),
     ('SE', 'SOAT'),
+    ('AD', 'ADRES'),
+    ('EP', 'EAPB'), 
+    ('PA', 'PARTICULAR'), 
+    ('EZ', 'ZONA SEGURA'),
+    ('AR', 'ARL'),
+    ('MP', 'MEDICINA PREPAGADA'),
+    ('VI', 'VINCULADOS'),
 )
+
+VALUES_CHOICES = {
+    ('SE', 'SOAT'),
+    ('FO', 'FOSIGA-ECAT'),
+    ('SM', 'SALARIO MINIMO'),
+}
     
 
     
@@ -169,6 +182,10 @@ class Policy(models.Model):
     payment_model = models.CharField(max_length=2,choices=PAYMENT_MODEL_CHOICES, default='SE')
     type_police= models.CharField(max_length=2,choices=TYPE_POLICE_CHOICES, default='SE')
     amount_total = models.DecimalField(max_digits=12, decimal_places=2, default=0)   
+    amount_affection = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+   
+    template= models.BooleanField(default=False)
+    template_origin= models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
     
     class Meta:
         ordering = ['description']
@@ -177,6 +194,38 @@ class Policy(models.Model):
         
     def __str__(self):
         return self.description
+    
+    
+@receiver(post_save, sender=Policy)
+def create_fees_for_policy(sender, instance, created, **kwargs):
+    
+    # ACA CUANDO CREO UNA POLIZA Y  TIENE PLANTILLA
+    if created and instance.template_origin:   
+        existing_fees = Fees.objects.filter(policy=instance.template_origin)
+        for fee in existing_fees:  
+            amountFee = fee.amount   
+            if instance.amountFee > 0:    
+                Fees.objects.create(                
+                    service=fee.service,
+                    specialities=fee.specialities,
+                    third_entity=instance.third_entity,
+                    amount=amountFee, 
+                    policy=instance,
+                )
+    # ACA ES PARA CUANDO CREO UNA PLANTILLA DE POLIZA    
+    if created and instance.template and instance.type_police == 'SE' and instance.payment_model == 'SE':
+        all_services = Services.objects.all()
+        for service in all_services:
+            specialitiesService = service.speciality
+            Fees.objects.create(                
+                service=service,
+                specialities=specialitiesService,
+                third_entity=instance.third_entity,
+                amount= 0, 
+                policy=instance,
+                )   
+
+
 
 class SystemsReview(models.Model):
     code = models.CharField(max_length=2, unique=True)
@@ -334,6 +383,7 @@ class Records(models.Model):
     glasgow_rm = models.CharField(max_length=10,choices=GLASGOW_RM_CHOICES,null=True, blank=True)
     procedures = models.ManyToManyField(Procedures, null=True, blank=True)
     procedures_others=models.CharField(max_length=300,null=True, blank=True)
+
     half = models.CharField(max_length=2,choices=HALF_CHOICES,null=True, blank=True)
     time_start = models.TimeField( null=True, blank=True)
     time_end = models.TimeField( null=True, blank=True)
@@ -377,9 +427,11 @@ class Records(models.Model):
     body= ArrayField(models.CharField(max_length=300), blank=True,  null=True)  
     body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
     injuries = models.CharField(max_length=300,null=True, blank=True)    
-    service=models.ForeignKey('Services', on_delete=models.PROTECT, null=True, blank=True)
-    fee=models.ForeignKey('Fees', on_delete=models.PROTECT, null=True, blank=True)
+    
+    service =models.ManyToManyField(Services, null=True, blank=True)
+    total_services = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
+    
     imgcc = models.ImageField(upload_to='records/', null=True, blank=True)
     imgso= models.ImageField(upload_to='records/', null=True, blank=True)
     imgtp= models.ImageField(upload_to='records/', null=True, blank=True)
@@ -395,4 +447,11 @@ class Records(models.Model):
 
     def __str__(self): 
         return f"{self.id}"
+    
+class Values(models.Model):
+    values=models.CharField(max_length=2,choices=VALUES_CHOICES)
+    amount=models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    year_date=models.DateField(default=datetime(datetime.now().year, 1, 1)) 
+    
+
     

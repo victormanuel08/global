@@ -71,7 +71,7 @@ const isThird = ref(false)
 const thirdSelected = ref<any>({})  
 
 const showModalThird = (value: any) => {
-    thirdSelected.value = value
+    thirdSelected.value = null
     console.log('showModalThird',thirdSelected)    
     isThird.value = true
 }
@@ -102,7 +102,7 @@ const signedRecord = async () => {
 
 const handleModalClose = (value: any) => {
     isSing.value = false
-    fetchRecord(modelValue.calendarEvent?.record.id)  
+    fetchRecord(modelValue.calendarEvent?.record?.id)  
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
@@ -112,7 +112,7 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    fetchRecord(modelValue.calendarEvent?.record.id)  
+    fetchRecord(modelValue.calendarEvent?.record?.id)  
 };
 
 </script>

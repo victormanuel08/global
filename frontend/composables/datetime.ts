@@ -54,19 +54,19 @@ export const formatDateTime = (datetime: string) => {
 
 export const getCHOICE = async (value: string, choices: string) => {
     const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);    
-    console.log('response', response)
+
     return response;
 };
 
 export const getBODYPART = async (value: number, choices: string, field: string) => {
   const response = await $fetch<any>(`api/api/choices/${choices}/${value}/${field}`);    
-  console.log('response', response)
+
   return response;
 };
 
 export const listDaysOptions = (date: any, enddate: any) => {
   const options = [];
-  console.log('fechas', date, enddate)
+
   const allDates = getDatesInRange(date, enddate);
   if (allDates.length > 0) {
     options.push({

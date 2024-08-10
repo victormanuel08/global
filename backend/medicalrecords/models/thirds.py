@@ -1,6 +1,8 @@
 from django.db import models
-from .specialities import Specialities
+from .specialities import *
+from .records import *
 from datetime import datetime
+
 
 ETNIAS_CHOICES = (
     ("N", "Ninguno"),
@@ -140,6 +142,9 @@ class Thirds(models.Model):
     medications = models.CharField(max_length=200, null=True, blank=True)
     liquids_foods = models.CharField(max_length=200, null=True, blank=True)    
     user = models.ForeignKey('auth.User', on_delete=models.PROTECT, null=True, blank=True)
+    policys = models.ManyToManyField(Policy)
+ 
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

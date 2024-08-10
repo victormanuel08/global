@@ -6,59 +6,92 @@
             <div class="flex items-center justify-center border-solid m-4">
                 <strong>AGENDAMIENTO DE CITAS GLOBAL SAFE IPS</strong>
             </div>
-            <div class="flex items-center justify-center border-solid">
-
-                <SelectThird :third-type="'P'" class="border rounded p-1 w-28" v-model="newScheduledPatient"
-                    @change="saveItem(selectedEventId, 'third_patient', newScheduledPatient.id)">
-                </SelectThird>
-
-                <SelectInsurance v-model="newScheduledInsurance" class="border rounded p-1 w-60"
-                    :third="newScheduledPatient.id"
-                    @change="saveItem(selectedEventId, 'insurance', newScheduledInsurance.id)"
-                    v-if="newScheduledPatient" :placeholder="'Aseguradora'">
-                </SelectInsurance>
-                <SelectThird v-model="newScheduledEntity" :third-type="'E'"
-                    @change="saveItem(selectedEventId, 'third_entity', newScheduledEntity.id)"
-                    v-if="newScheduledInsurance.insurance === 1">
-                </SelectThird>
-                <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-60"
-                    @change="saveItem(selectedEventId, 'speciality', newScheduledSpeciality.id)"
-                    v-if="newScheduledInsurance">
-                </SelectSpecialities>
-           
-                <SelectServices v-model="newScheduledService" :third="newScheduledEntity"
-                    :specialities="newScheduledSpeciality"
-                    @change="saveItem(selectedEventId, 'service', newScheduledService.id)" v-if="newScheduledSpeciality">
-                </SelectServices>
-          
-               <SelectFeed v-model="newScheduledFee" :third="newScheduledFee" :specialities="newScheduledSpeciality" 
-                    :service="newScheduledService" @change="saveItem(selectedEventId, 'fee', newScheduledFee.id)" v-if="newScheduledService  && newScheduledInsurance.insurance === 1">
-                </SelectFeed >
-        
-                <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities="newScheduledSpeciality"
-                    v-model="newScheduledMedic" @change="saveItem(selectedEventId, 'third_medic', newScheduledMedic.id)"
-                    v-if="newScheduledFee || newScheduledService">
-                </SelectThird>
-                <SelectOptionsDate v-model="newScheduledOptions" class="border rounded p-1 w-80"
-                    :third="newScheduledMedic" @change="saveItem(selectedEventId, 'date', newScheduledOptions.date)" v-if="newScheduledMedic">
-                </SelectOptionsDate>
-                <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-40" :class="{
-                    'border rounded p-1 w-56': newScheduledSpeciality.code === '012',
-                    'border rounded p-1 w-40': newScheduledSpeciality.code !== '012'
-                }" :options="rangehours" option-attribute="inter"
-                    @change="saveItem(selectedEventId, 'time', newScheduledOptionsHours.time_start)"
-                    :placeholder="'Hora'" v-if="newScheduledOptions" />
-                <span v-if="isEdit" @click="clean()" class="p-4 cursor-pointer" title="Limpiar Campos">
-                    🧹
-                </span>
-                <span v-else @click="createScheduled" class="p-4 cursor-pointer" title="Agendar Cita">
-                    💾
-                </span>
+            <div class="flex flex-cols-4 justify-center border-solid mt-4 mb-4">
+                <div>
+                    <label class="font-bold">Paciente</label>
+                    <SelectThird :third-type="'P'" class="border rounded p-1 w-64" v-model="newScheduledPatient"
+                        @change="saveItem(selectedEventId, 'third_patient', newScheduledPatient.id)">
+                    </SelectThird>
+                </div>
+                <div v-if="newScheduledPatient">
+                    <label class="font-bold">
+                        Polizas:<span @click="typeT='E', showModalPolice()">➕</span>
+                    </label>
+                    <SelectInsurance v-model="newScheduledInsurance" class="border rounded p-1 w-96"
+                        :third="newScheduledPatient.id"
+                        @change="saveItem(selectedEventId, 'insurance', newScheduledInsurance.id)"
+                        :placeholder="'Aseguradora'">
+                    </SelectInsurance>
+                </div>
+                <div v-if="newScheduledInsurance.insurance === 1">
+                    <label class="font-bold">Entidad</label>
+                    <SelectThird v-model="newScheduledEntity" :third-type="'E'" class="border rounded p-1 w-64"
+                        @change="saveItem(selectedEventId, 'third_entity', newScheduledEntity.id)">
+                    </SelectThird>
+                </div>
+                <div v-if="newScheduledInsurance">
+                    <label class="font-bold">Especialidad</label>
+                    <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-64"
+                        @change="saveItem(selectedEventId, 'speciality', newScheduledSpeciality.id)">
+                    </SelectSpecialities>
+                </div>
+            </div>
+            <div class="flex grid-cols-4 justify-center border-solid mt-4 mb-4">
+                <div v-if="newScheduledSpeciality">
+                    <label class="font-bold">Servicios</label>
+                    <SelectServices v-model="newScheduledService" :third="newScheduledEntity"
+                        class="border rounded p-1 w-72" :specialities="newScheduledSpeciality"
+                        @change="saveItem(selectedEventId, 'service', newScheduledService.id)">
+                    </SelectServices>
+                </div>
+                <div v-if="newScheduledService && newScheduledInsurance.insurance === 1">
+                    <label class="font-bold">Contrato</label>
+                    <div class="border rounded p-1 w-64">
+                        <SelectFeed v-model="newScheduledFee" :third="newScheduledEntity"
+                            :specialities="newScheduledSpeciality" :service="newScheduledService"
+                            @change="saveItem(selectedEventId, 'fee', newScheduledFee.id)">
+                        </SelectFeed>
+                    </div>
+                </div>
+                <div v-if="newScheduledFee || newScheduledService">
+                    <label class="font-bold">Medico</label>
+                    <SelectThird class="border rounded p-1 w-64" :third-type="'M'"
+                        :specialities="newScheduledSpeciality" v-model="newScheduledMedic"
+                        @change="saveItem(selectedEventId, 'third_medic', newScheduledMedic.id)">
+                    </SelectThird>
+                </div>
+                <div v-if="newScheduledMedic">
+                    <label class="font-bold">Fecha</label>
+                    <SelectOptionsDate v-model="newScheduledOptions" class="border rounded p-1 w-64"
+                        :third="newScheduledMedic"
+                        @change="saveItem(selectedEventId, 'date', newScheduledOptions.date)">
+                    </SelectOptionsDate>
+                </div>
+                <div v-if="newScheduledMedic">
+                    <label class="font-bold">Disponibilidad</label>
+                    <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-64" :class="{
+                        'border rounded p-1 w-64': newScheduledSpeciality.code === '012',
+                        'border rounded p-1 w-64': newScheduledSpeciality.code !== '012'
+                    }" :options="rangehours" option-attribute="inter"
+                        @change="saveItem(selectedEventId, 'time', newScheduledOptionsHours.time_start)"
+                        :placeholder="'Hora'" v-if="newScheduledOptions" />
+                </div>
+                <div v-if="newScheduledOptionsHours">
+                    <label class="font-bold">Accion</label>
+                    <div>
+                        <span v-if="isEdit" @click="clean()" class="p-4 cursor-pointer" title="Limpiar Campos">
+                            🧹
+                        </span>
+                        <span v-else @click="createScheduled" class="p-4 cursor-pointer" title="Agendar Cita">
+                            💾
+                        </span>
+                    </div>
+                </div>
             </div>
             <FullCalendar :options="calendarOptions" />
         </UCard>
     </div>
-
+    <ModalNewPolice  :third="newScheduledPatient"   :typeT="'C'" @close="handleModalClose" v-model="isPolice" />   
 </template>
 
 <script setup lang="ts">
@@ -71,6 +104,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 
 const newScheduledSpeciality = ref<any>('');
 const isEdit = ref(false);
+const typeT = ref('')
+const isPolice = ref(false)
 const newScheduledMedic = ref<any>('');
 const newScheduledOptions = ref<any>('');
 const newScheduledOptionsHours = ref<any>('');
@@ -215,7 +250,7 @@ const createScheduled = async () => {
     }
 
     try {
-        console.log('newScheduledFee.value', newScheduledFee.value)
+
         const response = await $fetch('api/scheduleds/', {
             method: 'POST',
             body: {
@@ -261,16 +296,16 @@ watch(newScheduledOptions, async (newVal, oldVal) => {
     calendarInitialView.value = "timeGridDay";
     if (newVal) {
         //await fetchScheduleds();  
-        console.log("rangos", newVal.rangetime)
+
         calendarInitialView.value = "timeGridDay";
-        console.log("calendar", calendarOptions.value)
+
 
         await fetchScheduleds();
 
         if (newScheduledOptionsHours.value.overflow > 0) {
             const timeList = eventsToShow.value.map(item => item.time);
-            console.log('timelist', timeList)
-            newVal.rangetime = newVal.rangetime.filter(item => !timeList.includes(item.time_start));
+
+            newVal.rangetime = newVal.rangetime.filter((item: any) => !timeList.includes(item.time_start));
         }
         rangehours.value = newVal.rangetime
     } else {
@@ -290,7 +325,7 @@ watch(
 watch(calendarInitialView,
     async (newView, oldView) => {
         if (newView) {
-            console.log('calendarInitialView', newView)
+
             await fetchScheduleds();
         }
     }
@@ -333,12 +368,21 @@ const editRecord = async (record: any) => {
     calendarEvent.value.patient.maternity_pregnancy_full = await getCHOICE(calendarEvent.value.patient.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
     calendarEvent.value.patient.maternity_violance_full = await getCHOICE(calendarEvent.value.patient.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
 
-    console.log('watch1', calendarEvent.value)
+
     isOpen.value = true;
-    console.log('calendarEvent', calendarEvent.value)
+
 };
 
+const showModalPolice = () => {  
 
+    isPolice.value = true
+}
+
+const handleModalClose = async (value: any) => {
+
+    isPolice.value = false
+    await fetchScheduleds()
+}
 
 </script>
 

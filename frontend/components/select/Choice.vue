@@ -5,12 +5,8 @@
       :options="options" 
       :searchable="true"
       v-model:query="query" 
-      :clearSearchOnClose="true" 
-      @click="clickHandler"      
-      
+      :clearSearchOnClose="true"   
       >
-
-        
     </USelectMenu>
 </template>
 
@@ -18,6 +14,7 @@
 
 const modelValue = defineModel<any>({ default: () => ({}) })
 const options = ref<any[]>([])
+
 
 const choices = {
     TYPE_CHOICES: [] as choice[],
@@ -43,6 +40,8 @@ const choices = {
     HALF_CHOICES: [] as choice[],
     BODY_PART_CHOICES: [] as choice[],
     BODY_PART_SIDE_CHOICES: [] as choice[],
+    PAYMENT_MODEL_CHOICES: [] as choice[],
+    TYPE_POLICE_CHOICES: [] as choice[],
 } 
        
 type choice = {
@@ -87,6 +86,8 @@ const fetchChoices = async () => {
             HALF_CHOICES,       
             BODY_PART_CHOICES,
             BODY_PART_SIDE_CHOICES,     
+            PAYMENT_MODEL_CHOICES,
+            TYPE_POLICE_CHOICES,
     } = response;
 
     const mapToChoice = (list: any[]): choice[] => {
@@ -118,6 +119,8 @@ const fetchChoices = async () => {
     choices.HALF_CHOICES = mapToChoice(HALF_CHOICES);    
     choices.BODY_PART_CHOICES = mapToChoice(BODY_PART_CHOICES);
     choices.BODY_PART_SIDE_CHOICES = mapToChoice(BODY_PART_SIDE_CHOICES);   
+    choices.PAYMENT_MODEL_CHOICES = mapToChoice(PAYMENT_MODEL_CHOICES);
+    choices.TYPE_POLICE_CHOICES = mapToChoice(TYPE_POLICE_CHOICES);
     options.value = choices[props.choiceType];
   } catch (error) {
     console.error('Error al cargar las opciones:', error);
@@ -125,4 +128,6 @@ const fetchChoices = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

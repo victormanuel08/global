@@ -6,14 +6,25 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 import base64
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.db.models import Q
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Services.objects.all()
     serializer_class = ServiceSerializer
-    search_fields = [ 'code', 'description','speciality']
-    filterset_fields=['code', 'description','speciality']
+    search_fields = [ 'code', 'description','speciality','amount_soat','amount_particular']
+    filterset_fields=['code', 'description','speciality','amount_soat','amount_particular']
 
-
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        amount_gt = self.request.query_params.get('amount_particular__gt')
+        amount_soat_gt = self.request.query_params.get('amount_soat__gt')  # Nuevo filtro para monto SOAT
+        if amount_gt:
+            queryset = queryset.filter(amount_particular__gt=float(amount_gt))
+        if amount_soat_gt:
+            queryset = queryset.filter(amount_soat__gt=float(amount_soat_gt))
+        return queryset
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicles.objects.all()
@@ -25,11 +36,26 @@ class PoliceViewSet(viewsets.ModelViewSet):
     serializer_class = PoliceSerializer
     search_fields = ['plate', 'brand']
     
+ 
+    
 class FeeViewSet(viewsets.ModelViewSet):
     queryset = Fees.objects.all()
     serializer_class = FeeSerializer
     search_fields = ['code', 'description','specialities','third_entity','service','policy']
     filterset_fields=['code', 'description','specialities','third_entity','service','policy']
+    
+    @receiver(pre_save, sender=Fees)
+    def update_description(sender, instance, **kwargs):
+        # Consultar la entidad Policy
+        try:
+            policy_entity = Policy.objects.get(id=instance.policy_id)
+            # Combinar nombre y descripción
+            combined_description = f"{policy_entity.name} - {policy_entity.description}"
+            # Asignar al campo description en Fees
+            instance.description = combined_description
+        except Policy.DoesNotExist:
+            # Manejar el caso en que no se encuentre la entidad Policy
+            pass
 
 
 
@@ -70,7 +96,8 @@ class RecordDetailsOnlyViewSet(viewsets.ViewSet):
 class SpecialityViewSet(viewsets.ModelViewSet):
     queryset = Specialities.objects.all()
     serializer_class = SpecialitySerializer
-    search_fields = ['code','description']
+    search_fields = ['code','description','id']
+    filterset_fields = ['code','description','id']
     
 class ProceduresViewSet(viewsets.ModelViewSet):
     queryset = Procedures.objects.all()
@@ -98,7 +125,7 @@ class SystemsReviewViewSet(viewsets.ModelViewSet):
 class ScheduledViewSet(viewsets.ModelViewSet):
     queryset = Scheduled.objects.all()
     serializer_class = ScheduledSerializer
-    search_fields = ['date_origin','insurance','confirmed','third_medic','speciality','date', 'time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','speciality_full__description']
+    search_fields = ['fee_ful__police_full__type_police','speciality','date', 'time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','speciality_full__description']
 
     def get_queryset(self):
             queryset = super().get_queryset()
@@ -108,6 +135,10 @@ class ScheduledViewSet(viewsets.ModelViewSet):
             date = self.request.query_params.get('date')
             date_origin = self.request.query_params.get('date_origin')
             insurance = self.request.query_params.get('insurance')
+            fee_full__police_full__type_police = self.request.query_params.get('fee_full__police_full__type_police')
+            if fee_full__police_full__type_police:   
+                print(f"fee_full__police_full__type_police: {fee_full__police_full__type_police}")            
+                queryset = queryset.filter(fee_full__police_full__type_police=fee_full__police_full__type_police)
             if speciality_id:
                 queryset = queryset.filter(speciality=speciality_id)
             if third_medic_id:
