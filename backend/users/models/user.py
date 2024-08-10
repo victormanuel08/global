@@ -4,4 +4,4 @@ class User(AbstractUser):
     
     """ This is our custom user model that we will use to authenticate users """
     
-    pass
+    USERNAME_FIELD = 'email'
