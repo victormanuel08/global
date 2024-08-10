@@ -284,8 +284,8 @@ class Records(models.Model):
     history = models.CharField(max_length=100,null=True, blank=True)    
     systems_review = models.CharField(max_length=100,null=True, blank=True)    
     general_exam = models.CharField(max_length=100,null=True, blank=True)         
-    types_systems_review = models.ManyToManyField(SystemsReview, null=True, blank=True)
-    types_general_exam = models.ManyToManyField(GeneralExam, null=True, blank=True)
+    types_systems_review = models.ManyToManyField(SystemsReview, blank=True)
+    types_general_exam = models.ManyToManyField(GeneralExam, blank=True)
     third_medic = models.ForeignKey(
         'Thirds',
         on_delete=models.PROTECT,
@@ -381,7 +381,7 @@ class Records(models.Model):
     glasgow_ro = models.CharField(max_length=10,choices=GLASGOW_RO_CHOICES,null=True, blank=True)
     glasgow_rv = models.CharField(max_length=10,choices=GLASGOW_RV_CHOICES,null=True, blank=True)
     glasgow_rm = models.CharField(max_length=10,choices=GLASGOW_RM_CHOICES,null=True, blank=True)
-    procedures = models.ManyToManyField(Procedures, null=True, blank=True)
+    procedures = models.ManyToManyField(Procedures, blank=True)
     procedures_others=models.CharField(max_length=300,null=True, blank=True)
 
     half = models.CharField(max_length=2,choices=HALF_CHOICES,null=True, blank=True)
@@ -428,7 +428,7 @@ class Records(models.Model):
     body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
     injuries = models.CharField(max_length=300,null=True, blank=True)    
     
-    service =models.ManyToManyField(Services, null=True, blank=True)
+    service =models.ManyToManyField(Services, blank=True)
     total_services = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
     
