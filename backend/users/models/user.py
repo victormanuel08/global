@@ -14,4 +14,8 @@ class BaseModel(models.Model):
 class User(BaseModel, AbstractUser, PermissionsMixin):
 
     def _str_(self):
-        return self.email
+        return f"{self.first_name} {self.last_name}"
+    
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
