@@ -66,3 +66,7 @@ class FeeAdmin(admin.ModelAdmin):
 class ServiceAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(Values)
+class ValueAdmin(admin.ModelAdmin):
+    pass
+

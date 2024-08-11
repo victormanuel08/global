@@ -12,6 +12,9 @@
 
 import { useRouter } from 'vue-router';
 import { jwtDecode } from "jwt-decode";
+import { useUserLogin } from '~/stores/thirds';
+
+const { userLogin } = useUserLogin();
 
 
 const router = useRouter();
@@ -43,6 +46,7 @@ onMounted(async () => {
             const decoded = jwtDecode(authState.value);
             const user_id = decoded.user_id
             user.value = await $fetch(`/api/auth/users/${user_id}/`)
+            console.log("User", user)
         } catch (error) {
             toast.add({ title: "Error en la autenticación" })
             console.log("Error en la autenticación")
@@ -69,9 +73,12 @@ const doLogin = async () => {
         const decoded = jwtDecode(response.access);
         const user_id = decoded.user_id
         user.value = await $fetch(`/api/auth/users/${user_id}/`)
+        userLogin.value = user.value
+        sessionStorage.setItem('userLoginS', JSON.stringify(user.value))
         console.log("Raw response", response, "Decoded jwt", decoded, "User", user)
         toast.add({ title: "Autenticación Exitosa" })
         router.push('/home')
+        console.log("UserLOGIN", userLogin.value)
 
         loading.value = false
     } catch (error) {

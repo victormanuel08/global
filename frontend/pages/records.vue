@@ -98,6 +98,15 @@ const newRecordDiagnose = ref({})
 const newRecordDate = ref('')
 const toast = useToast()
 const query = ref('')
+type Props = {
+  third: string
+}
+
+const props = defineProps<Props>()
+
+const querySet = {
+      third_patient: props.third
+  }
 
 const {
     data: records ,
@@ -107,10 +116,12 @@ const {
 } = usePaginatedFetch<any>("/api/records/");
 
 const fetchRecords = async () => {
+
+  
   const {
     data: records ,
     pagination,
-    search ,
+    search: querySet,
     pending,
   } = usePaginatedFetch<any>("/api/records/");
   console .log('fetchRecords',records.value)  
@@ -119,6 +130,8 @@ const fetchRecords = async () => {
     return record
   })
 }
+
+
 
 const deleteRecord = async (id: number) => {
     const message = confirm('¿Estás seguro de eliminar esta Historia Clinica?')

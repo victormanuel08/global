@@ -45,7 +45,7 @@ const loader = async () => {
     await modelValue.value
     const querySet = ref({})
     if (modelValue.value.payment_model === 'FF') {
-
+        
     }
     if (modelValue.value.payment_model === 'EV' && modelValue.value.type_police === 'SE') {
         querySet.value = {

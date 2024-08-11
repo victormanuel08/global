@@ -1,131 +1,124 @@
 <template>
     <div>
-        
+
         <div class="grid grid-cols-4  md:grid-cols-4">
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Vitaidad</label>
-                <UCheckbox 
-                    v-model="record.live" 
-                    class="border rounded p-1" 
-                    label="Esta con Vida" 
-                    @change="saveItem(record.id, 'live', record.live)"
-                />
+                <UCheckbox v-model="record.live" class="border rounded p-1" label="Esta con Vida"
+                    @change="saveItem(record.id, 'live', record.live)" />
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Hora Legada:</label>
-                <UInput 
-                    type="time" 
-                    v-model="record.time_start" 
-                    variant="outline" 
-                    placeholder="Descripcion de los Objetos" 
+                <UInput type="time" v-model="record.time_start" variant="outline"
+                    placeholder="Descripcion de los Objetos"
                     @change="saveItem(record.id, 'time_start', record.time_start)" />
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Hora Destino:</label>
-                <UInput 
-                    type="time" 
-                    v-model="record.time_end" 
-                    variant="outline" 
-                    placeholder="Descripcion de los Objetos" 
+                <UInput type="time" v-model="record.time_end" variant="outline" placeholder="Descripcion de los Objetos"
                     @change="saveItem(record.id, 'time_end', record.time_end)" />
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tipo Solicitud:</label>             
-                <SelectChoice :choiceType="'HALF_CHOICES'" v-model="record.half_full" @change="saveItem(record.id, 'half', record.half_full.id )"/>
+                <label class="block text-sm font-medium text-gray-700">Tipo Solicitud:</label>
+                <SelectChoice :choiceType="'HALF_CHOICES'" v-model="record.half_full"
+                    @change="saveItem(record.id, 'half', record.half_full.id)" />
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Clinica: <span @click="typeT='C', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'C'"  v-model="record.third_clinic_full" @change="saveItem(record.id, 'third_clinic', record.third_clinic_full.id )">
+                <label class="block text-sm font-medium text-gray-700">Tercero Clinica: <span
+                        @click="typeT = 'C', showModalThird('')">➕</span></label>
+                <SelectThird :third-type="'C'" v-model="record.third_clinic_full"
+                    @change="saveItem(record.id, 'third_clinic', record.third_clinic_full.id)">
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Conductor: <span @click="typeT='P', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'P'"  v-model="record.third_driver_full" @change="saveItem(record.id, 'third_driver', record.third_driver_full.id )" :placeholder="'Conductor'">
+                <label class="block text-sm font-medium text-gray-700">Tercero Conductor: <span
+                        @click="typeT = 'P', showModalThird('')">➕</span></label>
+                <SelectThird :third-type="'P'" v-model="record.third_driver_full"
+                    @change="saveItem(record.id, 'third_driver', record.third_driver_full.id)"
+                    :placeholder="'Conductor'">
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Medico Clinica: <span @click="typeT='M', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'M'"  v-model="record.third_medic_clinic_full" @change="saveItem(record.id, 'third_medic_clinic', record.third_medic_clinic_full.id )">
+                <label class="block text-sm font-medium text-gray-700">Tercero Medico Clinica: <span
+                        @click="typeT = 'M', showModalThird('')">➕</span></label>
+                <SelectThird :third-type="'M'" v-model="record.third_medic_clinic_full"
+                    @change="saveItem(record.id, 'third_medic_clinic', record.third_medic_clinic_full.id)">
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Poliza:  <span @click="typeT='D', showModalPolice('')">➕</span></label>
-                <SelectPolice :third-type="'E'"  v-model="record.policy_full" @change="saveItem(record.id, 'policy', record.policy_full.id )">
-                </SelectPolice>
+                <label class="block text-sm font-medium text-gray-700">Poliza: <span
+                        @click="typeT = 'E', showModalPolice('')">➕</span></label>
+                <SelectInsurance v-model="record.policy_full" class="border rounded p-1 w-96"
+                    :third="record.third_patient_full?.id"
+                    @change="saveItem(record.id, 'policy', record.policy_full?.id)"
+                    :placeholder="'Aseguradora'">
+                </SelectInsurance>
             </div>
         </div>
-        
 
 
-        <div class="grid grid-cols-2  md:grid-cols-2" v-if="record.obj" >
+
+        <div class="grid grid-cols-2  md:grid-cols-2" v-if="record.obj">
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Observaciones Traslado:</label>
-                <UTextarea
-                    v-model="record.observations"
-                    variant="outline"
-                    placeholder="Descripcion de los Objetos"
-                    @change="saveItem(record.id, 'observations', record.observations)"
-                ></UTextarea>
+                <UTextarea v-model="record.observations" variant="outline" placeholder="Descripcion de los Objetos"
+                    @change="saveItem(record.id, 'observations', record.observations)"></UTextarea>
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Condicion Accidentado:</label>
-                <UTextarea
-                    v-model="record.condition"
-                    variant="outline"
-                    placeholder="Descripcion de los Objetos"
-                    @change="saveItem(record.id, 'condition', record.condition)"
-                ></UTextarea>
+                <UTextarea v-model="record.condition" variant="outline" placeholder="Descripcion de los Objetos"
+                    @change="saveItem(record.id, 'condition', record.condition)"></UTextarea>
             </div>
-            
+
         </div>
 
-        <div class="grid grid-cols-3  md:grid-cols-3"  >
-            <div  class="border rounded p-1 m-2">
+        <div class="grid grid-cols-3  md:grid-cols-3">
+            <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgcc')">
                     📷 CEDULA
                 </button>
-                <img :src="record.imgcc"  width="60%" height="auto" v-if ="record.imgcc"/>
+                <img :src="record.imgcc" width="60%" height="auto" v-if="record.imgcc" />
             </div>
-            <div  class="border rounded p-1 m-2">
+            <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgso')">
                     📷 SOAT
                 </button>
-                <img :src="record.imgso" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgso"/>
+                <img :src="record.imgso" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgso" />
             </div>
-            <div  class="border rounded p-1 m-2">
+            <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgtp')">
                     📷 TARJETA PROPIEDAD
                 </button>
-                <img :src="record.imgtp" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgtp"/>
+                <img :src="record.imgtp" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgtp" />
             </div>
-            <div  class="border rounded p-1 m-2">
+            <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imglc')">
                     📷 LICENCIA CONDUCIR
                 </button>
-                <img :src="record.imglc" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imglc"/>
+                <img :src="record.imglc" alt="Imagen Base64" width="60%" height="auto" v-if="record.imglc" />
             </div>
-            <div  class="border rounded p-1 m-2">
+            <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgco')">
                     📷 CONSENTIMIENTO
                 </button>
-                <img :src="record.imgco" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgco"/>
+                <img :src="record.imgco" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgco" />
             </div>
-            <div  class="border rounded p-1 m-2">
+            <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgic')">
                     📷 INGRESO CLINICA
                 </button>
-                <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if ="record.imgic"/>
+                <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgic" />
             </div>
-         
+
         </div>
 
-        <div class="grid grid-cols-7  md:grid-cols-7"  >
+        <div class="grid grid-cols-7  md:grid-cols-7">
             <div></div>
             <div class="m-5">
                 <button @click="signedRecord('signed')">
                     🖋️ Firmar aqui
                 </button>
-                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed"/>
+                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
@@ -134,12 +127,13 @@
                     </p>
                 </strong>
             </div>
-            <div></div>            
+            <div></div>
             <div class="m-5">
                 <button @click="signedRecord('signed_recived')">
                     🖋️ Firmar aqui
                 </button>
-                <img :src="record.signed_recived" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_recived"/>
+                <img :src="record.signed_recived" alt="Imagen Base64" width="60%" height="auto"
+                    v-if="record.signed_recived" />
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
@@ -153,7 +147,8 @@
                 <button @click="signedRecord('signed_driver')">
                     🖋️ Firmar aqui
                 </button>
-                <img :src="record.signed_driver" alt="Imagen Base64" width="60%" height="auto" v-if ="record.signed_driver"/>
+                <img :src="record.signed_driver" alt="Imagen Base64" width="60%" height="auto"
+                    v-if="record.signed_driver" />
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
@@ -167,8 +162,8 @@
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
-    <ModalEditThird  :third="thirdSelected"   :typeT="typeT" @close="handleModalClose" v-model="isThird" />
-    <ModalNewPolice  :third="thirdSelected"   :typeT="'D'" @close="handleModalClose" v-model="isPolice" />    
+    <ModalEditThird :third="thirdSelected" :typeT="typeT" @close="handleModalClose" v-model="isThird" />
+    <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
 
 </template>
 
@@ -186,18 +181,18 @@ const isThird = ref(false)
 const isPhoto = ref(false)
 const isPolice = ref(false)
 
-const thirdSelected = ref<any>({})  
+const thirdSelected = ref<any>({})
 
 const showModalThird = (value: any) => {
-  
-    console.log('showModalThird',thirdSelected)    
+
+    console.log('showModalThird', thirdSelected)
     isThird.value = true
-    
+
 }
 
-const showModalPolice = (value: any) => {    
-    console.log('showModalThird',thirdSelected)    
-    isPolice.value = true    
+const showModalPolice = (value: any) => {
+    console.log('showModalThird', thirdSelected)
+    isPolice.value = true
 }
 
 
@@ -208,13 +203,13 @@ const modelValue = defineProps({
 const record = ref({} as any)
 
 onMounted(() => {
-    fetchRecord(modelValue.calendarEvent?.record.id)  
+    fetchRecord(modelValue.calendarEvent?.record?.id)
 });
 
 const fetchRecord = async (q: any) => {
-    const response = await $fetch<any>("api/records/" + q)    
-    record.value = response  
-    console.log('RECORDobjets',record.value)
+    const response = await $fetch<any>("api/records/" + q)
+    record.value = response
+    console.log('RECORDobjets', record.value)
     record.value.half_full = await getCHOICE(record.value.half, 'HALF_CHOICES')
 }
 
@@ -231,9 +226,11 @@ const photoRecord = async (q: string) => {
 const handleModalClose = async (value: any) => {
     isSing.value = false
     isPhoto.value = false
-    thirdSelected.value = {}
-    await fetchRecord(modelValue.calendarEvent?.record.id)    
-     
+    //thirdSelected.value = {}
+    console.log('handleModalClose', thirdSelected)
+    console.log('handleModalClose', modelValue.calendarEvent)
+    await fetchRecord(modelValue.calendarEvent?.record?.id)
+
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
@@ -243,10 +240,23 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    await fetchRecord(modelValue.calendarEvent?.record.id)  
- 
+    await fetchRecord(modelValue.calendarEvent?.record.id)
+
 };
 
+watch(isPhoto, (value) => {
+    console.log('isPhoto', isPhoto)
+    if (!value) {
+        fetchRecord(modelValue.calendarEvent?.record.id)
+    }
+});
+
+watch(isSing, (value) => {
+    console.log('isSing', isSing)
+    if (!value) {
+        fetchRecord(modelValue.calendarEvent?.record.id)
+    }
+})
 
 </script>
 

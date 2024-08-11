@@ -427,8 +427,8 @@ class Records(models.Model):
     body= ArrayField(models.CharField(max_length=300), blank=True,  null=True)  
     body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
     injuries = models.CharField(max_length=300,null=True, blank=True)    
-    
-    service =models.ManyToManyField(Services, blank=True)
+    list_injuries =  models.CharField(max_length=500,null=True, blank=True)    
+    service =models.ManyToManyField(Services, null=True, blank=True)
     total_services = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
     
@@ -452,6 +452,11 @@ class Values(models.Model):
     values=models.CharField(max_length=2,choices=VALUES_CHOICES)
     amount=models.DecimalField(max_digits=12, decimal_places=2, default=0)
     year_date=models.DateField(default=datetime(datetime.now().year, 1, 1)) 
+    
+    class Meta:
+        ordering = ['values']
+        verbose_name = 'Valor'
+        verbose_name_plural = 'Valores'
     
 
     

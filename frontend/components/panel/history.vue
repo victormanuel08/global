@@ -53,7 +53,7 @@ onMounted(() => {
     record.value = modelValue.calendarEvent   
     
 } 
-})  
+})    
 
 const saveItem = async (field: string, value: string) => {
   const response = await $fetch(`api/thirds/${record.value.id}`, {

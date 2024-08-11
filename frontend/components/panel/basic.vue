@@ -56,27 +56,7 @@
                 <label class="block text-sm font-medium text-gray-700">GLASGOW TOTAL:</label>
                 {{ glasgow }} / 15
             </div>
-        </div>
-
-        <div class="grid grid-cols-4  md:grid-cols-4 m-4">
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Entidad:  <span @click="typeT='E', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'E'"  v-model="record.third_entity_full" @change="saveItem(record.id, 'third_entity', record.third_entity_full.id )">
-                </SelectThird>
-            </div>
-
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Servicio Esp. {{ record.third_medic_full?.speciality_full.description }}</label>
-                <SelectServices v-model="record.service_full"  :third="record.third_entity_full" :specialities="record.third_medic_full?.speciality_full"   @change="saveItem(record.id, 'service', record.service_full.id )">
-                </SelectServices>
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Contrato</label>
-                <SelectFeed :third="record.third_entity_full" :specialities="record.third_medic_full?.speciality_full" :service="record.service_full"  @change="saveItem(record.id, 'fee', record.fee_full.id )">
-                </SelectFeed>
-            </div>
-            <div></div>
-        </div>
+        </div>      
 
         <div class="grid grid-cols-1  md:grid-cols-1 m-4">
 
@@ -124,7 +104,7 @@
                             record.third_medic_full?.last_name }} {{ record.third_medic_full?.second_last_name }}
                     </p>
                     <p>
-                        Esp. {{ record.third_medic_full?.speciality_full.description }}
+                        Esp. {{ record.third_medic_full?.speciality_full?.description }}
                     </p>
                 </strong>
             </div>
@@ -249,7 +229,7 @@ const saveItem = async (index: number, field: string, value: string) => {
         }),
     });
     if (field === 'glasgow_ro' || field === 'glasgow_rv' || field === 'glasgow_rm') {
-        glasgow.value = parseInt(record.value.glasgow_ro_full.id) + parseInt(record.value.glasgow_rv_full.id) + parseInt(record.value.glasgow_rm_full.id)
+        glasgow.value = parseInt(record.value.glasgow_ro_full?.id) + parseInt(record.value.glasgow_rv_full?.id) + parseInt(record.value.glasgow_rm_full?.id)
     }
 
     retrieveFromApi(index)

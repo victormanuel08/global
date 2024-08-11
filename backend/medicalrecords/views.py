@@ -1,6 +1,6 @@
 from .models import *
 from .serializers import *
-from .models import Cities, Diagnoses, Records, Specialities, Thirds, GeneralExam, SystemsReview, Scheduled, Availability
+from .models import *
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,16 +20,27 @@ class ServiceViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         amount_gt = self.request.query_params.get('amount_particular__gt')
         amount_soat_gt = self.request.query_params.get('amount_soat__gt')  # Nuevo filtro para monto SOAT
+        description = self.request.query_params.get('description')
+
         if amount_gt:
             queryset = queryset.filter(amount_particular__gt=float(amount_gt))
         if amount_soat_gt:
             queryset = queryset.filter(amount_soat__gt=float(amount_soat_gt))
+        if description:         
+            queryset = queryset.filter(category__name__icontains=description)
+
         return queryset
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicles.objects.all()
     serializer_class = VehicleSerializer
     search_fields = ['plate', 'brand']
+    
+class ValuesViewSet(viewsets.ModelViewSet):
+    queryset = Values.objects.all()
+    serializer_class = ValueSerializer
+    search_fields = ['values', 'amount', 'year_date']
+    filterset_fields=['values', 'amount', 'year_date']
     
 class PoliceViewSet(viewsets.ModelViewSet):
     queryset = Policy.objects.all()
@@ -41,8 +52,8 @@ class PoliceViewSet(viewsets.ModelViewSet):
 class FeeViewSet(viewsets.ModelViewSet):
     queryset = Fees.objects.all()
     serializer_class = FeeSerializer
-    search_fields = ['code', 'description','specialities','third_entity','service','policy']
-    filterset_fields=['code', 'description','specialities','third_entity','service','policy']
+    search_fields = [ 'description','specialities','third_entity','service','policy']
+    filterset_fields=[ 'description','specialities','third_entity','service','policy']
     
     @receiver(pre_save, sender=Fees)
     def update_description(sender, instance, **kwargs):
