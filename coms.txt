@@ -1,6 +1,6 @@
 Entorno Virtual:
 python -m env venv
-env\Scripts\activate
+env\Scripts\activ
 
 Instalaciones:
 pip install django
