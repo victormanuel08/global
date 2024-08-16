@@ -4,44 +4,46 @@
             <template #header>
                 <h2 class="font-bold">Grupo {{ group?.name }}</h2>
             </template>
-            <table class="table-auto w-full permission-table">
-                <thead>
-                    <tr>
-                        <th :class="ui.th">
-                            Entidad
-                        </th>
-                        <th :class="ui.th">
-                            Agregar
-                        </th>
-                        <th :class="ui.th">
-                            Ver
-                        </th>
-                        <th :class="ui.th">
-                            Editar
-                        </th>
-                        <th :class="ui.th">
-                            Eliminar
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="permissions, entity in permissionsByEntity" :key="entity">
-                        <td :class="ui.td">{{ entity }}</td>
-                        <td :class="ui.td">
-                            <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[0].id]" />
-                        </td>
-                        <td :class="ui.td">
-                            <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[1].id]" />
-                        </td>
-                        <td :class="ui.td">
-                            <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[2].id]" />
-                        </td>
-                        <td :class="ui.td">
-                            <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[3].id]" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div style="overflow: auto;">
+                <table class="table-auto w-full permission-table">
+                    <thead>
+                        <tr>
+                            <th :class="ui.th">
+                                Entidad
+                            </th>
+                            <th :class="ui.th">
+                                Agregar
+                            </th>
+                            <th :class="ui.th">
+                                Ver
+                            </th>
+                            <th :class="ui.th">
+                                Editar
+                            </th>
+                            <th :class="ui.th">
+                                Eliminar
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="permissions, entity in permissionsByEntity" :key="entity">
+                            <td :class="ui.td">{{ entity }}</td>
+                            <td :class="ui.td">
+                                <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[0].id]" />
+                            </td>
+                            <td :class="ui.td">
+                                <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[1].id]" />
+                            </td>
+                            <td :class="ui.td">
+                                <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[2].id]" />
+                            </td>
+                            <td :class="ui.td">
+                                <UCheckbox :class="ui.check" v-model="group.permissionsTable[permissions[3].id]" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <UButton variant="soft" block @click="saveGroupPermissions(group)" class="mt-2">Guardar</UButton>
         </UCard>
     </div>
@@ -68,8 +70,8 @@ const fetchPermissions = async () => {
 }
 
 const fetchGroups = async () => {
-    const response = await $fetch<any>('api/auth/groups?page_size=1000')   
-    for(const group of response.results){
+    const response = await $fetch<any>('api/auth/groups?page_size=1000')
+    for (const group of response.results) {
         group.permissionsTable = {}
         allPermisions.value.map((p: any) => p.id).forEach((permissionId: number) => {
             group.permissionsTable[permissionId] = group.permissions.includes(permissionId)
@@ -88,7 +90,7 @@ const saveGroupPermissions = async (group: any) => {
         permissions
     }
     saving.value = true
-    try{
+    try {
 
         await $fetch(`api/auth/groups/${group.id}/`, {
             method: 'PATCH',

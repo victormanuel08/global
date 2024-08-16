@@ -3,104 +3,110 @@
         <div class="flex flex-cols-2 gap-4 md:grid-cols-2 m-2">
             <UTabs :items="items" class="w-full" @change="onChange">
                 <template #default="{ item, index }">
-                    <div class="flex items-center gap-2 relative truncate">
-                        <UIcon :name="item.icon" class="w-4 h-4 flex-shrink-0" />
-                        <span class="truncate">{{ index + 1 }}. {{ item.label }}</span>
+                    <div :class="isActive(item) ? 'active-tab' : 'inactive-tab'">                        
+                        <Icon :name="item.icon" style="color: blue; font-size: 1.5em;" class="w-4 h-4 flex-shrink-0" />
+                        <span class="truncate "
+                            v-if="creationPanelSelected.title === item.panel" style="color: blue;">
+                              {{ item.label }}
+                        </span>                     
                     </div>
                 </template>
             </UTabs>
         </div>
-
         <div class="p-4">
-            <component :is="creationPanelSelected.component" :calendar-event="$props.calendarEvent" />
+            <component :is="creationPanelSelected.component" :calendar-event="props.calendarEvent" />
         </div>
     </UCard>
 </template>
 <script setup lang="ts">
-import { PanelBasic,  PanelThird, PanelPregnancy, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
-
+import { PanelReports, PanelBasic,  PanelThird, PanelPregnancy, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
 const props = defineProps({
     calendarEvent: Object,
 })
+onMounted(() => { 
+    console.log('onMountedce', props.calendarEvent)
+    creationPanelSelected.value = creationPanels['Third']
 
+});
+const isActive = (item:any) => { 
+  return item.panel === creationPanelSelected.value;
+};
 const creationPanels = {
-    'Third': { component: PanelThird },
-    'History': { component: PanelHistory },
-    'Records': { component: PanelRecords },
+    'Third': { component: PanelThird, title: 'Third' },
+   
+    'Records': { component: PanelRecords, title: 'Records' },
     'Basic': markRaw({
         component: PanelBasic,
-        title: 'Basic',
+        title: 'Basic'
     }),   
     'Procedures': markRaw({
         component: PanelProcedures,
-        title: 'Systems',
+        title: 'Procedures',
     }), 
-    'Pregnancy': { component: PanelPregnancy },
-    'Injuries': { component: PanelInjuries },
-    'Objects': { component: PanelObjects },
-    'Documents': { component: PanelDocuments },
+    'Pregnancy': { component: PanelPregnancy, title: 'Pregnancy' },
+    'Injuries': { component: PanelInjuries, title: 'Injuries' },
+    'Objects': { component: PanelObjects, title: 'Objects' },
+    'Documents': { component: PanelDocuments, title: 'Documents' },
+    'Reports': { component: PanelReports, title: 'Reports' },
 }
-
 const creationPanelSelected = ref(creationPanels['Third'])
-
 const items = [{
     label: 'Datos Paciente',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:user',
     panel: 'Third',
 },
-{
-    label: 'Antecedentes',
-    icon: 'i-heroicons-information-circle',
-    panel: 'History',
-},
+
 {
     label: 'Historia Medica',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:file-medical',
     panel: 'Records',
 },
 {
     label: 'Datos Evento',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:exclamation-triangle',
     panel: 'Basic',
 },
 {
     label: 'Lesiones',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:file-medical',
     panel: 'Injuries',
 },
 {
     label: 'Procedimientos',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:surgical-mask',
     panel: 'Procedures',
 }, 
 {
     label: 'Objetos',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:briefcase',
     panel: 'Objects',
 },
 {
     label: 'Documentos',
-    icon: 'i-heroicons-information-circle',
+    icon: 'uil:document',
     panel: 'Documents',
+},
+{
+    label: 'Reportes',
+    icon: 'uil:document',
+    panel: 'Reports',
 },
 ]
 
-onMounted(() => {
-
-    if (props.calendarEvent?.sex === "F") {       
-        items.splice(1, 0, {
-            label: 'Maternidad',
-            icon: 'i-heroicons-information-circle',
-            panel: 'Pregnancy',
-        });
-    }    
-});
-
-function onChange(index: any) {    
+function onChange(index: any) {   
     const item = items[index]
     creationPanelSelected.value = creationPanels[item.panel]
+    console.log('onChange', creationPanelSelected.value.title)
 }
-
 </script>
 <style scoped>
+.active-tab {
+  font-size: 16px;
+}
+.inactive-tab {
+  font-size: 16px;
+}
+.text-md {
+  font-size: 16px;
+}
 </style>

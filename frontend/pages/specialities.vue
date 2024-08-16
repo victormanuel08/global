@@ -1,18 +1,19 @@
 <template>
-    <div class="max-w-5xl mx-auto">
-      <UCard class="my-2">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <h2 class="font-bold">Especialidades</h2>
-            <div class="flex gap-3 my-3">
-                <UInput v-model="search" placeholder="Buscar" />
-                <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
-            </div>
+  <div class="max-w-5xl mx-auto">
+    <UCard class="my-2">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <h2 class="font-bold">Especialidades</h2>
+          <div class="flex gap-3 my-3">
+            <UInput v-model="search" placeholder="Buscar" />
+            <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
           </div>
-        </template>
-        <div class="flex justify-center items-center">
-          <h3 v-if="specialities.length === 0">No hay Especialidades</h3>
-        </div>        
+        </div>
+      </template>
+      <div class="flex justify-center items-center">
+        <h3 v-if="specialities.length === 0">No hay Especialidades</h3>
+      </div>
+      <div style="overflow: auto;">
         <table class="table-auto w-full permission-table">
           <thead>
             <tr>
@@ -21,26 +22,31 @@
               <th :class="ui.th">Acciones</th>
             </tr>
           </thead>
-          <tbody>            
-            
+          <tbody>
+
             <tr v-for="(speciality, index) in specialities" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="speciality.code" @blur="saveItem(index,'code',speciality.code)" class="border rounded p-1 w-14" />
+                  <UInput v-model="speciality.code" @blur="saveItem(index, 'code', speciality.code)"
+                    class="border rounded p-1 w-14" v-if="speciality.code !=='AMB'"/>
+                    <span v-else>{{speciality.code}}</span>
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="speciality.description" @blur="saveItem(index,'description',speciality.description)" class="border rounded p-1" />
+                  <UInput v-model="speciality.description" @blur="saveItem(index, 'description', speciality.description)"
+                    class="border rounded p-1" v-if="speciality.code !=='AMB'"/>
+                    <span v-else>{{speciality.description}}</span>
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="deleteSpeciality(speciality.id)" :class="ui.span" v-if = "speciality.code !== '012'">🗑️</span>
+                  <span @click="deleteSpeciality(speciality.id)" :class="ui.span"
+                    v-if="speciality.code !== 'AMB'">🗑️</span>
                 </div>
               </td>
-            </tr> 
-           
+            </tr>
+
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
@@ -54,10 +60,7 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span 
-                    @click="createSpeciality" 
-                    :class="ui.span"                    
-                  >
+                  <span @click="createSpeciality" :class="ui.span">
                     💾
                   </span>
                 </div>
@@ -65,9 +68,10 @@
             </tr>
           </tbody>
         </table>
-      </UCard>   
-    </div>
-  </template>
+      </div>
+    </UCard>
+  </div>
+</template>
 
 
 <script setup lang="ts">
@@ -78,32 +82,32 @@ const newSpecialityCode = ref('')
 //const search = ref('')
 
 const {
-    data: specialities ,
-    pagination,
-    search ,
-    pending,
+  data: specialities,
+  pagination,
+  search,
+  pending,
 } = usePaginatedFetch<any>("/api/specialities/");
 
 const fetchSpecialities = async () => {
   const {
-    data: specialities ,
+    data: specialities,
     pagination,
-    search ,
+    search,
     pending,
-  } = usePaginatedFetch<any>("/api/specialities/");  
-  
-  console .log('fetchSpecialities',specialities.value)
+  } = usePaginatedFetch<any>("/api/specialities/");
+
+  console.log('fetchSpecialities', specialities.value)
 
 }
 
 const deleteSpeciality = async (id: number) => {
-    const message = confirm('¿Estás seguro de eliminar esta Especialidad?')
-    if (message) {
-        const response = await $fetch(`api/specialities/${id}/`, {
-            method: 'DELETE'
-        })
-        fetchSpecialities()
-    }
+  const message = confirm('¿Estás seguro de eliminar esta Especialidad?')
+  if (message) {
+    const response = await $fetch(`api/specialities/${id}/`, {
+      method: 'DELETE'
+    })
+    fetchSpecialities()
+  }
 }
 
 
@@ -111,46 +115,53 @@ const deleteSpeciality = async (id: number) => {
 const saveItem = async (index: number, field: string, value: string) => {
   const speciality = specialities.value[index];
   speciality[field] = value;
+  if (field === 'code') {
+    if (value === 'AMB') {
+      alert('No puedes cambiar el código de la especialidad AMB')
+      fetchSpecialities()
+      return
+    }
+  }
   const response = await $fetch(`api/specialities/${speciality.id}`, {
     method: 'PATCH',
     body: JSON.stringify({
       [field]: value,
     }),
   });
-    fetchSpecialities();
+  fetchSpecialities();
 };
 
 const createSpeciality = async () => {
-    const message = confirm('¿Estás seguro de crear esta Especialidad?')
+  const message = confirm('¿Estás seguro de crear esta Especialidad?')
 
-    if (!message){
-        newSpecialityCode.value = ''
-        newSpecialityDescription.value = ''
-        fetchSpecialities()
-        return
-    }
-    
-    const response = await $fetch('api/specialities/', {
-        method: 'POST',
-        body: {
-            code: newSpecialityCode.value,
-            description: newSpecialityDescription.value,
-        }
-    })
-    fetchSpecialities()
+  if (!message) {
     newSpecialityCode.value = ''
     newSpecialityDescription.value = ''
+    fetchSpecialities()
+    return
+  }
+
+  const response = await $fetch('api/specialities/', {
+    method: 'POST',
+    body: {
+      code: newSpecialityCode.value,
+      description: newSpecialityDescription.value,
+    }
+  })
+  fetchSpecialities()
+  newSpecialityCode.value = ''
+  newSpecialityDescription.value = ''
 }
 
 onMounted(() => {
-   fetchSpecialities()
+  fetchSpecialities()
 })
 
 const ui = {
-    td: 'p-1 border',
-    th: 'p-2 border',
-    check: 'align-center justify-center',
-    span: 'cursor-pointer'
+  td: 'p-1 border',
+  th: 'p-2 border',
+  check: 'align-center justify-center',
+  span: 'cursor-pointer'
 }
 
 </script>

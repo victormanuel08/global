@@ -1,18 +1,19 @@
 <template>
-    <div class="max-w-5xl mx-auto">
-      <UCard class="my-2">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <h2 class="font-bold">Diagnosticos</h2>
-            <div class="flex gap-3 my-3">
-                <UInput v-model="search" placeholder="Buscar" />
-                <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
-            </div>
+  <div class="max-w-5xl mx-auto">
+    <UCard class="my-2">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <h2 class="font-bold">Diagnosticos</h2>
+          <div class="flex gap-3 my-3">
+            <UInput v-model="search" placeholder="Buscar" />
+            <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
           </div>
-        </template>
-        <div class="flex justify-center items-center">
-          <h3 v-if="diagnoses.length === 0">No hay ciudades</h3>
-        </div>        
+        </div>
+      </template>
+      <div class="flex justify-center items-center">
+        <h3 v-if="diagnoses.length === 0">No hay ciudades</h3>
+      </div>
+      <div style="overflow: auto;">
         <table class="table-auto w-full permission-table">
           <thead>
             <tr>
@@ -22,23 +23,27 @@
               <th :class="ui.th">Acciones</th>
             </tr>
           </thead>
-          <tbody>            
-            
+          <tbody>
+
             <tr v-for="(diagnose, index) in diagnoses" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="diagnose.code" @blur="saveItem(index,'code',diagnose.code)" class="border rounded p-1 w-14" />
-                  <UInput v-model="diagnose.name" @blur="saveItem(index,'name',diagnose.name)" class="border rounded p-1 " />
+                  <UInput v-model="diagnose.code" @blur="saveItem(index, 'code', diagnose.code)"
+                    class="border rounded p-1 w-14" />
+                  <UInput v-model="diagnose.name" @blur="saveItem(index, 'name', diagnose.name)"
+                    class="border rounded p-1 " />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="diagnose.description" @blur="saveItem(index,'description',diagnose.description)" class="border rounded p-1" />
+                  <UInput v-model="diagnose.description" @blur="saveItem(index, 'description', diagnose.description)"
+                    class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="diagnose.extra" @blur="saveItem(index,'extra',diagnose.extra)" class="border rounded p-1 w-auto" />
+                  <UInput v-model="diagnose.extra" @blur="saveItem(index, 'extra', diagnose.extra)"
+                    class="border rounded p-1 w-auto" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -46,8 +51,8 @@
                   <span @click="deleteDiagnose(diagnose.id)" :class="ui.span">🗑️</span>
                 </div>
               </td>
-            </tr> 
-           
+            </tr>
+
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
@@ -73,9 +78,10 @@
             </tr>
           </tbody>
         </table>
-      </UCard>   
-    </div>
-  </template>
+      </div>
+    </UCard>
+  </div>
+</template>
 
 
 <script setup lang="ts">
@@ -88,31 +94,31 @@ const newDiagnoseExtra = ref('')
 //const search = ref('')
 
 const {
-    data: diagnoses ,
-    pagination,
-    search ,
-    pending,
+  data: diagnoses,
+  pagination,
+  search,
+  pending,
 } = usePaginatedFetch<any>("/api/diagnoses/");
 
 const fetchDiagnoses = async () => {
-  
-const {
-    data: diagnoses ,
+
+  const {
+    data: diagnoses,
     pagination,
-    search ,
+    search,
     pending,
   } = usePaginatedFetch<any>("/api/diagnoses/");
-    console .log('fetchDiagnoses',diagnoses.value)
+  console.log('fetchDiagnoses', diagnoses.value)
 }
 
 const deleteDiagnose = async (id: number) => {
-    const message = confirm('¿Estás seguro de eliminar este diagnostico?')
-    if (message) {
-        const response = await $fetch(`api/diagnoses/${id}/`, {
-            method: 'DELETE'
-        })
-        fetchDiagnoses()
-    }
+  const message = confirm('¿Estás seguro de eliminar este diagnostico?')
+  if (message) {
+    const response = await $fetch(`api/diagnoses/${id}/`, {
+      method: 'DELETE'
+    })
+    fetchDiagnoses()
+  }
 }
 
 
@@ -126,46 +132,46 @@ const saveItem = async (index: number, field: string, value: string) => {
       [field]: value,
     }),
   });
-    fetchDiagnoses();
+  fetchDiagnoses();
 };
 
 const createDiagnose = async () => {
-    const message = confirm('¿Estás seguro de crear este Diagnostico?')
+  const message = confirm('¿Estás seguro de crear este Diagnostico?')
 
-    if (!message){
-        newDiagnoseCode.value = ''
-        newDiagnoseName.value = ''
-        newDiagnoseDescription.value = ''
-        newDiagnoseExtra.value = ''
-        fetchDiagnoses()
-        return
-    }
-    
-    const response = await $fetch('api/diagnoses/', {
-        method: 'POST',
-        body: {
-            code: newDiagnoseCode.value,
-            name: newDiagnoseName.value,
-            description: newDiagnoseDescription.value,
-            extra: newDiagnoseExtra.value
-        }
-    })
-    fetchDiagnoses()
+  if (!message) {
     newDiagnoseCode.value = ''
     newDiagnoseName.value = ''
     newDiagnoseDescription.value = ''
     newDiagnoseExtra.value = ''
+    fetchDiagnoses()
+    return
+  }
+
+  const response = await $fetch('api/diagnoses/', {
+    method: 'POST',
+    body: {
+      code: newDiagnoseCode.value,
+      name: newDiagnoseName.value,
+      description: newDiagnoseDescription.value,
+      extra: newDiagnoseExtra.value
+    }
+  })
+  fetchDiagnoses()
+  newDiagnoseCode.value = ''
+  newDiagnoseName.value = ''
+  newDiagnoseDescription.value = ''
+  newDiagnoseExtra.value = ''
 }
 
 onMounted(() => {
-   fetchDiagnoses()
+  fetchDiagnoses()
 })
 
 const ui = {
-    td: 'p-1 border',
-    th: 'p-2 border',
-    check: 'align-center justify-center',
-    span: 'cursor-pointer'
+  td: 'p-1 border',
+  th: 'p-2 border',
+  check: 'align-center justify-center',
+  span: 'cursor-pointer'
 }
 
 </script>

@@ -1,14 +1,12 @@
 <template>
     <h1>Lesiones</h1>
-    <div class="container">
-        <div class="grid grid-cols-2   lg:grid-cols-2  m-4">
-
+    <div class="container grid grid-cols-1   lg:grid-cols-2  m-4">
+        <div style="overflow: auto;">  
             <div class="m-2" style="width: 450px; height: 500px; position: relative;">
                 <img src="@/assets/img/body.PNG" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
                 <img src="@/assets/img/body2.PNG" alt="Imagen" v-else />
                 <div class="grid-container">
-                    <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">    
-                                     
+                    <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">   
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">                            
                             <div class="square" v-if="injurie.point === n">
                                 <div class="circle">
@@ -18,9 +16,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>  
+        </div>
 
-            <div class="m-2">
+        <div class="m-2">
                 <div class="m-2">
                     <label>Parte Principal:</label>
                     <SelectChoice :choiceType="'BODY_PART_CHOICES'" v-model="record.body_part_full" />
@@ -59,8 +58,6 @@
                     </div>
                 </div>
             </div>
-
-        </div>
     </div>
 </template>
 
@@ -77,13 +74,13 @@ const point = ref(0)
 
 const record = ref({} as any)
 
-const modelValue = defineProps({
+const props= defineProps({
     calendarEvent: Object,
 })
 
 onMounted(() => {
    
-    fetchRecord(modelValue.calendarEvent?.record.id)
+    fetchRecord(props.calendarEvent?.id)
 });
 
 type injurie = {
@@ -123,7 +120,7 @@ const saveInjuries = async (index: number, injuries: object[], body: any,injurie
             list_injuries: JSON.stringify(injuries)
         }),
     });
-    fetchRecord(modelValue.calendarEvent?.record.id);
+    fetchRecord(props.calendarEvent?.id);
 };
 
 const cleanFields = async () => {

@@ -7,9 +7,16 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const method: HTTPMethod = event.method;
     const requestHeaders = getHeaders(event);
+    const token = getCookie(event, "token")
+
+
     const headers = {
         "Content-Type": requestHeaders["content-type"] || "application/json",
         "Accept": "application/json",
+    } as any
+
+    if(token) {
+        headers["Authorization"] = `Bearer ${token}`
     }
 
     const reqOpts: Record<string, unknown> = {
@@ -30,9 +37,9 @@ export default defineEventHandler(async (event) => {
 
     try {
         let url = `${API_URL}/${route}/`;
-        console.log("Request", url, reqOpts)
+        console.log("Request", url, headers)
         const response = await $fetch(url, reqOpts);
-        console.log("Response", response)   
+        // console.log("Response", response)   
         return response;
     } catch (error) {
         console.log("Error", error)

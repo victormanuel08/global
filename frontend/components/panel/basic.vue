@@ -1,23 +1,25 @@
 <template>
     <div>
         <h1>Datos Basicos</h1>
-        <div class="grid grid-cols-6  md:grid-cols-6 m-4">
+        <div class="grid grid-cols-1  md:grid-cols-4 m-4">
+
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
-                <SelectChoice 
-                    :choiceType="'PRIORITY_CHOICES'" 
-                    v-model="record.priority_full"
+                <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
                     @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
-                    :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white': 'background-color: black'"  
-                    :color = "record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white': 'background-color: black'"  
-                    
-                    >
+                    :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
+                    :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
                 </SelectChoice>
             </div>
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
                 <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
                     @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
+            </div>
+            <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Condicion Accidentado:</label>
+                <SelectChoice :choiceType="'TYPE_ACCIDENT_CHOICES'" v-model="record.condition_full"
+                    @change="saveItem(record.id, 'condition', record.condition_full.id)" />
             </div>
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Frecuencia Cardiaca:</label>
@@ -56,7 +58,16 @@
                 <label class="block text-sm font-medium text-gray-700">GLASGOW TOTAL:</label>
                 {{ glasgow }} / 15
             </div>
-        </div>      
+            <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Coordenadas:</label>
+               
+                <UInput type="text" :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude" readonly />
+            </div>
+            <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Direccion:</label>
+                <UInput></UInput>
+            </div>
+        </div>
 
         <div class="grid grid-cols-1  md:grid-cols-1 m-4">
 
@@ -66,29 +77,29 @@
                     @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)" />
             </div>
         </div>
-        <div class="grid grid-cols-4 gap-4 md:grid-cols-4 m-4">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4 m-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700">Diagnostico Original: </label>
-                <SelectDiagnoses v-model="record.diagnosis_full" class="border rounded p-1 w-80"
+                <SelectDiagnoses v-model="record.diagnosis_full"
                     @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)" />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Diagnostico Primario: </label>
-                <SelectDiagnoses v-model="record.diagnosis_1_full" class="border rounded p-1 w-80"
+                <SelectDiagnoses v-model="record.diagnosis_1_full"
                     @change="saveItem(record.id, 'diagnosis_1', record.diagnosis_1_full?.id)" />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Diagnostico Secundario: </label>
-                <SelectDiagnoses v-model="record.diagnosis_2_full" class="border rounded p-1 w-80"
+                <SelectDiagnoses v-model="record.diagnosis_2_full"
                     @change="saveItem(record.id, 'diagnosis_2', record.diagnosis_2_full?.id)" />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Diagnostico Terceario: </label>
-                <SelectDiagnoses v-model="record.diagnosis_3_full" class="border rounded p-1 w-80"
+                <SelectDiagnoses v-model="record.diagnosis_3_full"
                     @change="saveItem(record.id, 'diagnosis_3', record.diagnosis_3_full?.id)" />
             </div>
         </div>
-        <div class="grid grid-cols-4 gap-4 md:grid-cols-4 border-solid mt-6">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4 border-solid mt-6">
             <div></div>
             <div></div>
             <div></div>
@@ -113,17 +124,41 @@
 
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="'signed'" />
-    <ModalEditThird  :third="thirdSelected"   :typeT="'E'" @close="handleModalClose" v-model="isThird" />
+    <ModalEditThird :third="thirdSelected" :typeT="'E'" @close="handleModalClose" v-model="isThird" />
 </template>
 
 <script lang="ts" setup>
 
-const modelValue = defineProps({
+const props = defineProps({
     calendarEvent: Object,
 })
 
-function getColorForPriority(priorityName:any) {
-    console.log('color',priorityName)
+const Location = ref({}as location)
+
+type location = {
+  latitude:number
+  longitude:number
+}
+
+const getLocation = () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                Location.value = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                };
+            },
+            (error) => {
+                console.error('Error al obtener la ubicación:', error.message);
+            }
+        );
+    } else {
+        console.error('Geolocalización no está disponible en este navegador.');
+    }
+}
+function getColorForPriority(priorityName: any) {
+    console.log('color', priorityName)
     switch (priorityName) {
         case 'red':
             return 'red'; // Color para alta prioridad
@@ -139,7 +174,7 @@ function getColorForPriority(priorityName:any) {
 
 
 const isThird = ref(false)
-const thirdSelected = ref<any>({})  
+const thirdSelected = ref<any>({})
 
 const detail = ref(false)
 const isSing = ref(false)
@@ -179,36 +214,39 @@ type Record = {
     glasgow_rv_full: any,
     glasgow_rm: string,
     glasgow_rm_full: any,
+    condition_full: any,
     ef_fc: string,
     ef_fr: string,
     ef_pa: string,
     ef_temp: string,
+    condition: string,
 }
 const record = ref({} as Record)
 
 const color = ref({ backgroundColor: getColorForPriority(record.value.priority_full?.name) });
 
 const signed = ref(record.value.signed)
-const qq =ref()
+const qq = ref()
 
 const retrieveFromApi = async (q: any) => {
-   
+
     if (typeof q === 'number') {
         qq.value = q
     } else {
-        qq.value =q.id
+        qq.value = q.id
     }
-    
-    
+
+
     const response = await $fetch<any>("api/records/" + qq.value)
     record.value = response
-        
+
     glasgow.value = parseInt(record.value.glasgow_ro) + parseInt(record.value.glasgow_rv) + parseInt(record.value.glasgow_rm)
     record.value.priority_full = await getCHOICE(response.priority, 'PRIORITY_CHOICES')
     record.value.external_cause_full = await getCHOICE(response.external_cause, 'EXTERNAL_CAUSE_CHOICES')
     record.value.glasgow_ro_full = await getCHOICE(response.glasgow_ro, 'GLASGOW_RO_CHOICES')
     record.value.glasgow_rv_full = await getCHOICE(response.glasgow_rv, 'GLASGOW_RV_CHOICES')
     record.value.glasgow_rm_full = await getCHOICE(response.glasgow_rm, 'GLASGOW_RM_CHOICES')
+    record.value.condition_full = await getCHOICE(record.value.condition, 'TYPE_ACCIDENT_CHOICES')
 
 }
 
@@ -218,7 +256,7 @@ const signedRecord = async () => {
 
 const handleModalClose = (value: any) => {
     isSing.value = false
-    retrieveFromApi(modelValue.calendarEvent?.record)
+    retrieveFromApi(props.calendarEvent?.id)
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
@@ -238,23 +276,19 @@ const saveItem = async (index: number, field: string, value: string) => {
 
 onMounted(() => {
 
-    if (typeof modelValue.calendarEvent?.record === 'number') {
-        qq.value = modelValue.calendarEvent?.record
-    } else {
-        qq.value =modelValue.calendarEvent?.record.id
-    }
-
-    retrieveFromApi(qq.value);
+    getLocation()
+    retrieveFromApi(props.calendarEvent?.id);
     const signed = ref(record.value.signed);
     glasgow.value = parseInt(record.value.glasgow_ro) + parseInt(record.value.glasgow_rv) + parseInt(record.value.glasgow_rm);
 });
+
 
 
 const showModalThird = (value: any) => {
     thirdSelected.value = value
 
     isThird.value = true
-    
+
 }
 
 

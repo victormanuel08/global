@@ -4,17 +4,20 @@ from django.db import models
 
 class PermissionsSet(models.Model):
     permissions = models.ManyToManyField("auth.Permission")
-    path = models.CharField(max_length=255)
+    path = models.CharField(max_length=255,null=True, blank=True)
     icon = models.CharField(max_length=255)
-    content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE)
+    order_index = models.IntegerField(default=0)
+    label = models.CharField(max_length=255, default="", blank=True)
+    content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.CASCADE,null=True, blank=True)
     groups = models.ManyToManyField('users.GroupDetails', blank=True, related_name='permissions_set')
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     
     class Meta:
         verbose_name = "Conjunto de permisos"
         verbose_name_plural = "Conjuntos de permisos"
     
     def __str__(self):
-        return f"{self.content_type.model}"
+        return f"{self.label}"
     
 class GroupDetails(Group):
     description = models.TextField(default="", blank=True)

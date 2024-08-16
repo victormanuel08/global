@@ -15,9 +15,12 @@
     "@fullcalendar/interaction": "^6.1.14",
     "@fullcalendar/timegrid": "^6.1.14",
     "@fullcalendar/vue3": "^6.1.14",
+    "@heroicons/vue": "^2.1.5",
+    "@nuxt/icon": "^1.4.5",
     "@nuxt/ui": "^2.17.0",
     "@pinia/nuxt": "^0.5.3",
     "@vueuse/core": "^10.11.0",
+    "heroicons": "^2.1.5",
     "jwt-decode": "^4.0.0",
     "nuxt": "^3.12.2",
     "pinia": "^2.2.1",
@@ -25,5 +28,8 @@
     "signature_pad": "^5.0.2",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
+  },
+  "devDependencies": {
+    "nuxt-hero-icons": "^0.0.9"
   }
 }

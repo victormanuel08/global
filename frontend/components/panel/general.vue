@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Examenes Generales</h1>
-    <div class="grid grid-cols-4 gap-4 sm:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <div v-for="(exam, index) in exams" :key="index">
         <UCheckbox
           v-model="newExams"
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-const modelValue = defineProps({
+const props = defineProps({
     calendarEvent: Object,
 })
 
@@ -38,11 +38,11 @@ const record = ref({} as any)
 
 onMounted(() => {
   fetchExams(); 
-  fetchRecord(modelValue.calendarEvent?.record)  
+  fetchRecord(props.calendarEvent?.id)  
 });
 
 const saveExams = async () => {
-  const response = await $fetch<any>(`api/records/${modelValue.calendarEvent?.record}/`, {
+  const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
     method: 'Patch',
     body: JSON.stringify({
     types_general_exam: newExams?.value,
@@ -55,7 +55,7 @@ const saveExams = async () => {
 const fetchExams = async () => {
   const response = await $fetch<any>('api/general_exam');
   exams.value = response.results;
-  newExams.value = modelValue.calendarEvent?.types_general_exam || [];
+  newExams.value = props.calendarEvent?.types_general_exam || [];
 };
 
 const fetchRecord = async (q: any) => {

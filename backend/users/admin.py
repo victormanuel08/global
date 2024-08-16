@@ -13,7 +13,8 @@ class CustomUserAdmin(UserAdmin):
 class PermissionsSetAdmin(admin.ModelAdmin):
     model = PermissionsSet
     can_delete = False
-    readonly_fields = ['permissions', 'content_type']
+    readonly_fields = ['permissions']
+    #readonly_fields = ['permissions', 'content_type']
     
 class PermissionsSetInline(admin.TabularInline):
     model = PermissionsSet.groups.through

@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-5xl mx-auto">
-    <UCard class="my-2">
+    <UCard class="m-3">
       <template #header>
         <div class="flex justify-between items-center">
           <h2 class="font-bold">Citas</h2>
@@ -13,98 +13,95 @@
       <div class="flex justify-center items-center">
         <h3 v-if="scheduleds.length === 0">No hay Citas</h3>
       </div>
-      <div>
-
-      </div>
-      <table class="table-auto w-full permission-table">
-        <thead>
-          <tr>
-            <th :class="ui.th">Fecha</th>
-            <th :class="ui.th">Especialidad</th>
-            <th :class="ui.th">Medico</th>
-            <th :class="ui.th">Paciente</th>            
-            <th :class="ui.th">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(scheduled, index) in scheduleds" :key="index">
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <span  :class="ui.span">
-                  <template v-if="scheduled.confirmed">✅</template>
-                  <template v-else>❌</template>
-                </span>
+      <div style="overflow: auto;">
+        <table class="table-auto w-full permission-table mx-2">
+          <thead>
+            <tr>
+              <th :class="ui.th">Fecha</th>
+              <th :class="ui.th">Especialidad</th>
+              <th :class="ui.th">Medico</th>
+              <th :class="ui.th">Paciente</th>
+              <th :class="ui.th">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(scheduled, index) in scheduleds" :key="index">
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <span :class="ui.span">
+                    <template v-if="scheduled.confirmed">✅</template>
+                    <template v-else>❌</template>
+                  </span>
                   {{ scheduled.date }} - {{ scheduled.time }}
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
                   {{ scheduled.speciality_full?.description }}
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">                
-                {{ scheduled.third_medic_full?.nit }} - {{ scheduled.third_medic_full?.name + ' ' + scheduled.third_medic_full?.second_name + ' ' + scheduled.third_medic_full?.last_name + ' ' + scheduled.third_medic_full?.second_last_name }}
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                {{ scheduled.third_patient_full?.nit }} - {{ scheduled.third_patient_full?.name + ' ' + scheduled.third_patient_full?.second_name + ' ' + scheduled.third_patient_full?.last_name + ' ' + scheduled.third_patient_full?.second_last_name }}
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <span @click="confirmScheduled(scheduled.id, scheduled.confirmed)" :class="ui.span" title="Confirmar o desconfirmar">
-                  <template v-if="scheduled.confirmed">❌</template>
-                  <template v-else>✅</template>
-                </span>
-                <span @click="addHistory(scheduled.id)" :class="ui.span" title="Agregar Historia Medica">📝</span>
-                <span @click="deleteScheduled(scheduled.id)" :class="ui.span" title="Eliminar">🗑️</span>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">                   
-                <SelectOptionsDate
-                  v-model="newScheduledOptions" 
-                  class="border rounded p-1 w-40"                    
-                  :third="newScheduledMedic"
-                />
-                <USelectMenu
-                  v-model="newScheduledOptionsHours" 
-                  class="border rounded p-1 w-40"
-                  :options="rangehours"
-                  option-attribute="inter"                  
-                />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-60" />
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities ="newScheduledSpeciality"
-                  v-model="newScheduledMedic">
-                </SelectThird>
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <SelectThird :third-type="'P'" class="border rounded p-1 w-28" v-model="newScheduledPatient">
-                </SelectThird>
-              </div>
-            </td>
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <span @click="createScheduled" :class="ui.span">💾</span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  {{ scheduled.third_medic_full?.nit }} - {{ scheduled.third_medic_full?.name + ' ' +
+                    scheduled.third_medic_full?.second_name + ' ' + scheduled.third_medic_full?.last_name + ' ' +
+                    scheduled.third_medic_full?.second_last_name }}
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  {{ scheduled.third_patient_full?.nit }} - {{ scheduled.third_patient_full?.name + ' ' +
+                    scheduled.third_patient_full?.second_name + ' ' + scheduled.third_patient_full?.last_name + ' ' +
+                    scheduled.third_patient_full?.second_last_name }}
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <span @click="confirmScheduled(scheduled.id, scheduled.confirmed)" :class="ui.span"
+                    title="Confirmar o desconfirmar">
+                    <template v-if="scheduled.confirmed">❌</template>
+                    <template v-else>✅</template>
+                  </span>
+                  <span @click="addHistory(scheduled.id)" :class="ui.span" title="Agregar Historia Medica">📝</span>
+                  <span @click="deleteScheduled(scheduled.id)" :class="ui.span" title="Eliminar">🗑️</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <SelectOptionsDate v-model="newScheduledOptions" class="border rounded p-1 w-40"
+                    :third="newScheduledMedic" />
+                  <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-40" :options="rangehours"
+                    option-attribute="inter" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-60" />
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities="newScheduledSpeciality"
+                    v-model="newScheduledMedic">
+                  </SelectThird>
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <SelectThird :third-type="'P'" class="border rounded p-1 w-28" v-model="newScheduledPatient">
+                  </SelectThird>
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  <span @click="createScheduled" :class="ui.span">💾</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </UCard>
   </div>
 </template>
@@ -171,7 +168,7 @@ onMounted(() => {
 })
 
 watch(newScheduledOptions, async (newVal, oldVal) => {
-  if (newVal) {    
+  if (newVal) {
     rangehours.value = newVal.rangetime; // Asigna rangetime a rangehours
   } else {
     newScheduledOptionsHours.value = {}; // Vacía el arreglo si newScheduledOptions no tiene selección
@@ -218,7 +215,7 @@ const createScheduled = async () => {
     newScheduledTime.value = getCurrentTime();
     newScheduledSpeciality.value = '';
     newScheduledPatient.value = '';
-    newScheduledMedic.value = ''; 
+    newScheduledMedic.value = '';
     newScheduledOptions.value = '';
     newScheduledOptionsHours.value = '';
   } catch (error) {

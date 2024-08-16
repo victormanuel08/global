@@ -11,6 +11,11 @@ from rest_framework_simplejwt.views import (
 from django.conf import settings
 from django.conf.urls.static import static
 
+from medicalrecords import views
+
+
+
+
 
 
 router = routers.DefaultRouter()
@@ -41,6 +46,9 @@ urlpatterns = [
     path('auth/permissions/', PermissionListView.as_view()), # Esto no es una viewset, es una vista solo de leer, no se registra en el router
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
+    path('api/pdf/<str:template_type>/<str:template_id>/', views.RecordListView.as_view(), name='template-pdf'),
+    path('api/printpdf/<str:template_type>/<int:template_id>/', views.RecordPdf.as_view(), name='print-pdf'),
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
     path('api/choices/', ChoicesAPIView.as_view(), name='choices-list'),
     path('api/choices/<str:choice_type>/<str:choice_id>/', SearchChoiceAPIView.as_view(), name='search-choice'),

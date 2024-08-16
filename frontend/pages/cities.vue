@@ -12,7 +12,8 @@
         </template>
         <div class="flex justify-center items-center">
           <h3 v-if="cities.length === 0">No hay ciudades</h3>
-        </div>        
+        </div>   
+        <div style="overflow: auto;">     
         <table class="table-auto w-full permission-table">
           <thead>
             <tr>
@@ -75,6 +76,7 @@
             </tr>
           </tbody>
         </table>
+      </div>
       </UCard>   
     </div>
   </template>

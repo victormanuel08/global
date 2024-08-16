@@ -10,8 +10,3 @@ export const useThirdObject = createGlobalState(() => {
   return { thirdObject };
 });
 
-export const useUserLogin = createGlobalState(() => {
-  const userLogin = ref(initialUser);
-  return { userLogin };
-});
-

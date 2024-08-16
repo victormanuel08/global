@@ -1,3 +1,14 @@
+
+
+import os
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import get_template
+from utils.pdf import render_to_pdf
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
+
+
 from .models import *
 from .serializers import *
 from .models import *
@@ -9,6 +20,12 @@ import base64
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.db.models import Q
+from django.views.generic import ListView,View
+from django.shortcuts import render
+
+
+
+
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Services.objects.all()
@@ -198,6 +215,8 @@ class ChoicesAPIView(APIView):
             "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,   
             "PAYMENT_MODEL_CHOICES": PAYMENT_MODEL_CHOICES,
             "TYPE_POLICE_CHOICES": TYPE_POLICE_CHOICES,
+            "TYPE_ACCIDENT_CHOICES": TYPE_ACCIDENT_CHOICES,
+            "VALUES_CHOICES": VALUES_CHOICES,
         }
         selected_choice_id = "P"
         selected_choice = self.get_choice_by_id(choices_data.get("TYPE_CHOICES", []), selected_choice_id)
@@ -251,6 +270,8 @@ class SearchChoiceAPIView(APIView):
             "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,    
             "PAYMENT_MODEL_CHOICES": PAYMENT_MODEL_CHOICES,
             "TYPE_POLICE_CHOICES": TYPE_POLICE_CHOICES,  
+            "TYPE_ACCIDENT_CHOICES": TYPE_ACCIDENT_CHOICES,
+            "VALUES_CHOICES": VALUES_CHOICES,
         }
 
         selected_choice = self.get_choice_by_id(choices_data.get(choice_type, []), choice_id)
@@ -303,3 +324,55 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(date=date)
 
         return queryset
+
+class RecordListView(ListView):
+    context_object_name = "records"
+
+    def get_queryset(self):
+        template_type = self.kwargs.get('template_type')
+        template_id = self.kwargs.get('template_id')
+
+        # Aquí puedes usar un condicional para determinar qué entidad consultar
+        if template_type == 'ambulancia':
+            model = Records
+            template_name = "record_list.html"
+            return Records.objects.filter(id=template_id)
+        elif template_type == 'thirds':
+            model = Thirds
+            template_name = "thirds_list.html"
+            return Thirds.objects.filter(id=template_id)
+        elif template_type == 'police':
+            model = Policy
+            template_name = "police_list.html"
+            return Thirds.objects.filter(id=template_id)
+        else:
+            # Si no se encuentra el tipo de plantilla, puedes devolver todos los registros
+            return Records.objects.all()  # O Thirds.objects.all() según corresponda
+
+   
+   
+class RecordPdf(View):
+    def get(self, request, *args, **kwargs):
+        template_type = self.kwargs.get('template_type')
+        template_id = self.kwargs.get('template_id')
+       
+        if template_type == 'ambulancia':
+            records = Records.objects.filter(id=template_id)
+            template_name = "record_list.html"
+        elif template_type == 'thirds':
+            records = Thirds.objects.filter(id=template_id)
+            template_name = "thirds_list.html"
+        elif template_type == 'police':
+            records = Policy.objects.filter(id=template_id)
+            template_name = "police_list.html"
+        else:
+           
+            records = Records.objects.all() 
+
+        data = {'records': records}
+        pdf = render_to_pdf('record_list.html', data)
+        return HttpResponse(pdf, content_type='application/pdf')
+
+      
+       
+

@@ -6,7 +6,7 @@
                     props.third?.last_name }} {{ props.third?.second_last_name }}</h3>
                 <h3><strong>Identificacion: </strong>{{ props.third?.nit }}</h3>
                 <h3><strong>Usuario: </strong>{{ props.third?.user }}</h3>
-                <div class="grid grid-cols-3 gap-4 md:grid-cols-3 mt-4">
+                <div class="grid grid-cols-2 gap-4 md:grid-cols-1 mt-4">
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Tipo:</label>

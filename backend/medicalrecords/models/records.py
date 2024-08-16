@@ -128,7 +128,18 @@ VALUES_CHOICES = {
     ('SM', 'SALARIO MINIMO'),
 }
     
-
+TYPE_ACCIDENT_CHOICES = (
+    ('CV', 'Conductor Vehiculo'),
+    ('PV', 'Pasajero Vehiculo'),
+    ('CM', 'Conductor Moto'),
+    ('PM', 'Pasajero Moto'),
+    ('PA', 'Peaton Mayor'),
+    ('PN', 'Peaton Menor'),
+    ('CC', 'Ciclista'),
+    ('OT', 'Otro')  
+)
+    
+    
     
 
 class Procedures(models.Model):
@@ -431,6 +442,8 @@ class Records(models.Model):
     service =models.ManyToManyField(Services, null=True, blank=True)
     total_services = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
+    number_report= models.CharField(max_length=100,null=True, blank=True)
+    condition = models.CharField(max_length=2, choices= TYPE_ACCIDENT_CHOICES, null=True, blank=True)
     
     imgcc = models.ImageField(upload_to='records/', null=True, blank=True)
     imgso= models.ImageField(upload_to='records/', null=True, blank=True)
@@ -438,6 +451,10 @@ class Records(models.Model):
     imglc= models.ImageField(upload_to='records/', null=True, blank=True)
     imgco= models.ImageField(upload_to='records/', null=True, blank=True)
     imgic= models.ImageField(upload_to='records/', null=True, blank=True)
+    
+    latitude= models.CharField(max_length=20,null=True, blank=True)
+    longitude= models.CharField(max_length=20,null=True, blank=True)
+    address= models.CharField(max_length=200,null=True, blank=True)
     
     class Meta:
         ordering = ['date_time']
@@ -449,12 +466,12 @@ class Records(models.Model):
         return f"{self.id}"
     
 class Values(models.Model):
-    values=models.CharField(max_length=2,choices=VALUES_CHOICES)
+    type_values=models.CharField(max_length=2,choices=VALUES_CHOICES, default='SE')
     amount=models.DecimalField(max_digits=12, decimal_places=2, default=0)
     year_date=models.DateField(default=datetime(datetime.now().year, 1, 1)) 
     
     class Meta:
-        ordering = ['values']
+        ordering = ['type_values']
         verbose_name = 'Valor'
         verbose_name_plural = 'Valores'
     

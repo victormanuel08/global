@@ -3,7 +3,7 @@ from medicalrecords.models import *
 from medicalrecords.serializers import *
 from .models import Thirds
 from datetime import datetime, timedelta
-from drf_extra_fields.fields import Base64ImageField
+
 
 
         

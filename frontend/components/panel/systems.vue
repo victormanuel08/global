@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-const modelValue = defineProps({
+const props = defineProps({
     calendarEvent: Object,
 })
 
@@ -37,11 +37,11 @@ const record = ref({} as any)
 
 onMounted(() => {
   fetchSystems(); 
-  fetchRecord(modelValue.calendarEvent?.record)  
+  fetchRecord(props.calendarEvent?.id)  
 });
 
 const saveSystems = async () => {
-  const response = await $fetch<any>(`api/records/${modelValue.calendarEvent?.record}/`, {
+  const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
     method: 'Patch',
     body: JSON.stringify({
       types_systems_review: newSystems?.value,
@@ -54,7 +54,7 @@ const saveSystems = async () => {
 const fetchSystems = async () => {
   const response = await $fetch<any>('api/systems_review');
   systems.value = response.results;
-  newSystems.value = modelValue.calendarEvent?.types_systems_review || [];
+  newSystems.value = props.calendarEvent?.types_systems_review || [];
 };
 
 const fetchRecord = async (q: any) => {

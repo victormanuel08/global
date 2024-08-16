@@ -1,29 +1,26 @@
 <template>
   <div>
     <h1>Procedimientos</h1>
-    <div class="grid grid-cols-4 gap-4 sm:grid-cols-4">
+    <div class="grid grid-cols-2 gap-4 md:grid-cols-5">
       <div v-for="(service, index) in services" :key="index">
-        <UCheckbox
-          v-model="newServices"
-          class="border rounded p-1"
-          :label="service.description + ' - ' + service.code + ' - ' + service.id" 
-          :value="service.id" 
-          @change="saveServices()"         
-        />
+        <UCheckbox v-model="newServices" class="border rounded p-1"
+          :label="service.description"
+          @change="saveServices()" />
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-1 m-4">
       <div>
         <label class="block text-sm font-medium text-gray-700">Otros:</label>
-        <UInput v-model="procedures_others" variant="outline" placeholder="Motivo de la Consulta" @change="saveServices()" />
+        <UInput v-model="procedures_others" variant="outline" placeholder="Motivo de la Consulta"
+          @change="saveServices()" />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const modelValue = defineProps({
-    calendarEvent: Object,
+const props = defineProps({
+  calendarEvent: Object,
 })
 
 interface Services {
@@ -42,13 +39,13 @@ const record = ref({} as any)
 const procedures_others = ref('')
 
 
-onMounted(() => {  
-  fetchServices(); 
-  fetchRecord(modelValue.calendarEvent?.record.id)  
+onMounted(() => {
+  fetchServices();
+  fetchRecord(props.calendarEvent?.id)
 });
 
 const saveServices = async () => {
-  const response = await $fetch<any>(`api/records/${modelValue.calendarEvent?.record.id}/`, {
+  const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
     method: 'Patch',
     body: JSON.stringify({
       service: newServices?.value,
@@ -58,27 +55,27 @@ const saveServices = async () => {
   console.log('Respuesta:', response);
 };
 
-const query = ref('');  
+const query = ref('');
 
 const fetchServices = async () => {
   const queryParams = {
-        search: query.value,
-        speciality: 58,        
-    }
-    
+    search: query.value,
+    speciality: 58,
+  }
+
   const response = await $fetch<any>('api/services/', {
     query: queryParams
   });
   services.value = response.results;
-  newServices.value = modelValue.calendarEvent?.record.procedures || [];  
+  newServices.value = props.calendarEvent?.procedures || [];
 };
 
 
 const fetchRecord = async (q: any) => {
-    const response = await $fetch<any>("api/records/" + q)    
-    record.value = response    
-    newServices.value = record.value.service || [];
-    procedures_others.value = record.value.procedures_others || '';
+  const response = await $fetch<any>("api/records/" + q)
+  record.value = response
+  newServices.value = record.value.service || [];
+  procedures_others.value = record.value.procedures_others || '';
 }
 
 </script>

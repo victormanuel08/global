@@ -1,12 +1,13 @@
 <template>
     <div>
 
-        <div class="grid grid-cols-4  md:grid-cols-4">
+        <div class="grid grid-cols-1  md:grid-cols-4">
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Vitaidad</label>
                 <UCheckbox v-model="record.live" class="border rounded p-1" label="Esta con Vida"
                     @change="saveItem(record.id, 'live', record.live)" />
             </div>
+
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Hora Legada:</label>
                 <UInput type="time" v-model="record.time_start" variant="outline"
@@ -25,7 +26,7 @@
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Tercero Clinica: <span
-                        @click="typeT = 'C', showModalThird('')">➕</span></label>
+                        @click="typeT = 'C', typeTA='A', showModalThird('')">➕</span></label>
                 <SelectThird :third-type="'C'" v-model="record.third_clinic_full"
                     @change="saveItem(record.id, 'third_clinic', record.third_clinic_full.id)">
                 </SelectThird>
@@ -48,31 +49,33 @@
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Poliza: <span
                         @click="typeT = 'E', showModalPolice('')">➕</span></label>
-                <SelectInsurance v-model="record.policy_full" class="border rounded p-1 w-96"
+                <SelectInsurance v-model="record.policy_full" 
                     :third="record.third_patient_full?.id"
                     @change="saveItem(record.id, 'policy', record.policy_full?.id)"
                     :placeholder="'Aseguradora'">
                 </SelectInsurance>
             </div>
+
+            <div  class="m-2">
+                <label class="block text-sm font-medium text-gray-700">N° Reporte Ingreso clinica</label>
+                <UInput v-model="record.number_report"  placeholder="N° Reporte Ingreso clinica" 
+                    @change="saveItem(record.id, 'number_report', record.number_report)" />
+            </div>
         </div>
 
 
 
-        <div class="grid grid-cols-2  md:grid-cols-2" v-if="record.obj">
+        <div class="grid grid-cols-1  md:grid-cols-1" >
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Observaciones Traslado:</label>
                 <UTextarea v-model="record.observations" variant="outline" placeholder="Descripcion de los Objetos"
                     @change="saveItem(record.id, 'observations', record.observations)"></UTextarea>
             </div>
-            <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Condicion Accidentado:</label>
-                <UTextarea v-model="record.condition" variant="outline" placeholder="Descripcion de los Objetos"
-                    @change="saveItem(record.id, 'condition', record.condition)"></UTextarea>
-            </div>
+ 
 
         </div>
 
-        <div class="grid grid-cols-3  md:grid-cols-3">
+        <div class="grid grid-cols-1  md:grid-cols-3">
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgcc')">
                     📷 CEDULA
@@ -112,8 +115,8 @@
 
         </div>
 
-        <div class="grid grid-cols-7  md:grid-cols-7">
-            <div></div>
+        <div class="grid grid-cols-1  md:grid-cols-5">
+           <div></div>
             <div class="m-5">
                 <button @click="signedRecord('signed')">
                     🖋️ Firmar aqui
@@ -122,12 +125,12 @@
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
-                        Dr(a). {{ record.third_medic_full?.name }} {{ record.third_medic_full?.second_name }} {{
-                            record.third_medic_full?.last_name }} {{ record.third_medic_full?.second_last_name }}
+                        Dr(a). {{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name }} {{
+                            record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name }}
                     </p>
                 </strong>
             </div>
-            <div></div>
+            
             <div class="m-5">
                 <button @click="signedRecord('signed_recived')">
                     🖋️ Firmar aqui
@@ -142,7 +145,7 @@
                     </p>
                 </strong>
             </div>
-            <div></div>
+            
             <div class="m-5">
                 <button @click="signedRecord('signed_driver')">
                     🖋️ Firmar aqui
@@ -157,12 +160,13 @@
                     </p>
                 </strong>
             </div>
-            <div></div>
+
+  
         </div>
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
-    <ModalEditThird :third="thirdSelected" :typeT="typeT" @close="handleModalClose" v-model="isThird" />
+    <ModalEditThird  :typeT="typeT"   v-model="isThird" />
     <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
 
 </template>
@@ -196,14 +200,14 @@ const showModalPolice = (value: any) => {
 }
 
 
-const modelValue = defineProps({
+const props = defineProps({
     calendarEvent: Object,
 })
 
 const record = ref({} as any)
 
 onMounted(() => {
-    fetchRecord(modelValue.calendarEvent?.record?.id)
+    fetchRecord(props.calendarEvent?.id)
 });
 
 const fetchRecord = async (q: any) => {
@@ -211,6 +215,7 @@ const fetchRecord = async (q: any) => {
     record.value = response
     console.log('RECORDobjets', record.value)
     record.value.half_full = await getCHOICE(record.value.half, 'HALF_CHOICES')
+
 }
 
 const signedRecord = async (q: string) => {
@@ -228,8 +233,8 @@ const handleModalClose = async (value: any) => {
     isPhoto.value = false
     //thirdSelected.value = {}
     console.log('handleModalClose', thirdSelected)
-    console.log('handleModalClose', modelValue.calendarEvent)
-    await fetchRecord(modelValue.calendarEvent?.record?.id)
+    console.log('handleModalClose', props.calendarEvent)
+    await fetchRecord(props.calendarEvent?.id)
 
 }
 
@@ -240,21 +245,21 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    await fetchRecord(modelValue.calendarEvent?.record.id)
+    await fetchRecord(props.calendarEvent?.id)
 
 };
 
 watch(isPhoto, (value) => {
     console.log('isPhoto', isPhoto)
     if (!value) {
-        fetchRecord(modelValue.calendarEvent?.record.id)
+        fetchRecord(props.calendarEvent?.id)
     }
 });
 
 watch(isSing, (value) => {
     console.log('isSing', isSing)
     if (!value) {
-        fetchRecord(modelValue.calendarEvent?.record.id)
+        fetchRecord(props.calendarEvent?.id)
     }
 })
 

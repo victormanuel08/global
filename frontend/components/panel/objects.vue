@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-5  md:grid-cols-5 mt-4" v-if="record.obj" >
+        <div class="grid grid-cols-1  md:grid-cols-3 mt-4" v-if="record.obj" >
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">
                     Tercero Toma Objetos:                     
@@ -41,8 +41,7 @@
                 <label class="block text-sm font-medium text-gray-700">Relacion con el Paciente:</label>             
                 <SelectChoice :choiceType="'RELATIONSHIP_CHOICES'" v-model="record.relationship_obj_full" @change="saveItem(record.id, 'relationship_obj', record.relationship_obj_full.id )"/>
             </div>
-            <div></div>
-            <div></div>
+            
             <div class="mt-20">
                 <button @click="signedRecord()">
                     🖋️ 
@@ -76,7 +75,7 @@ const showModalThird = (value: any) => {
     isThird.value = true
 }
 
-const modelValue = defineProps({
+const props = defineProps({
     calendarEvent: Object,
 })
 
@@ -84,7 +83,7 @@ const record = ref({} as any)
 
 
 onMounted(() => {
-    fetchRecord(modelValue.calendarEvent?.record.id)  
+    fetchRecord(props.calendarEvent?.id)  
 });
 
 
@@ -102,7 +101,7 @@ const signedRecord = async () => {
 
 const handleModalClose = (value: any) => {
     isSing.value = false
-    fetchRecord(modelValue.calendarEvent?.record?.id)  
+    fetchRecord(props.calendarEvent?.id)  
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
@@ -112,7 +111,7 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    fetchRecord(modelValue.calendarEvent?.record?.id)  
+    fetchRecord(props.calendarEvent?.id)  
 };
 
 </script>
