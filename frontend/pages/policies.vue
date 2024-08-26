@@ -17,13 +17,13 @@
         <table class="table-auto w-full permission-table">
           <thead>
             <tr>
-              <th :class="ui.th">Entidad</th>
+              <th :class="ui.th">Entidad/N°Poliza</th>
 
               <th :class="ui.th">Inicio/Fin</th>
-              <th :class="ui.th">Valor</th>
+              <th :class="ui.th">Valor Poliza/Afectado</th>
 
-              <th :class="ui.th">Forma Pago</th>
-              <th :class="ui.th">Tipo Poliza</th>
+
+              <th :class="ui.th">Tipo Pago - Poliza</th>
               <th :class="ui.th">Palntilla</th>
               <th :class="ui.th">Acciones</th>
             </tr>
@@ -32,55 +32,46 @@
 
             <tr v-for="(policy, index) in policies" :key="index">
               <td :class="ui.td">
-                <div class="grid grid-flow-row justify-center">
+                <div class="grid grid-flow-row justify-left">
+                  <span>{{ policy.third_entity_full.name }}</span>
+                  <span>N° {{ policy.description }}</span>
+                </div>
+              </td>
 
-                  <SelectThird :third-type="'E'" v-model="policy.third_entity_full"
-                    @change="saveItem(index, 'third_entity', policy.third_entity_full.id)">
-                  </SelectThird>
-                  <UInput v-model="policy.description" @blur="saveItem(index, 'description', policy.description)"
-                    class="border rounded p-1" />
+              <td :class="ui.td">
+                <div class="grid grid-flow-row justify-left">
+                  <span>Inicio: {{ policy.date_start }}</span>
+                  <span>Fin: {{ policy.date_end }}</span>
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="grid grid-flow-row justify-left">
+                  <span v-if="policy.type_police !== 'EV'">Valor: {{ policy.amount_total }}</span>
+                  <span v-if="policy.type_police === 'SE'">Afectacion:{{ policy.amount_affection }}</span>
+                </div>
+              </td>
+
+              <td :class="ui.td">
+                <div class="grid grid-flow-row justify-center">
+                  {{ policy.payment_model }} - {{ policy.type_police }}
 
                 </div>
               </td>
 
               <td :class="ui.td">
                 <div class="grid grid-flow-row justify-center">
-                  <UInput type="date" v-model="policy.date_start"
-                    @blur="saveItem(index, 'date_start', policy.date_start)" class="border rounded p-1" />
-                  <UInput type="date" v-model="policy.date_end" @blur="saveItem(index, 'date_end', policy.date_end)"
-                    class="border rounded p-1" />
+                  <span v-if="policy.template">SI</span>
+                  <span v-else>❌</span>
 
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="grid grid-flow-row justify-center">
-                  <UInput v-model="policy.amount_total" @blur="saveItem(index, 'amount_total', policy.amount_total)"
-                    class="border rounded p-1" />
-                  <UInput v-model="policy.amount_affection"
-                    @blur="saveItem(index, 'amount_affection', policy.amount_affection)" class="border rounded p-1" />
-                </div>
-              </td>
-
-              <td :class="ui.td">
-                <div class="grid grid-flow-row justify-center">
-                  <SelectChoice :choiceType="'PAYMENT_MODEL_CHOICES'" v-model="policy.payment_model_full" />
-                  <SelectChoice :choiceType="'TYPE_POLICE_CHOICES'" v-model="policy.type_policy_full" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="grid grid-flow-row justify-center">
-                  <SelectChoice :choiceType="'PAYMENT_MODEL_CHOICES'" v-model="policy.payment_model_full" />
-                  <SelectChoice :choiceType="'TYPE_POLICE_CHOICES'" v-model="policy.type_policy_full" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="grid grid-flow-row justify-center">
-                  <UCheckbox v-model="policy.template" @change="saveItem(index, 'template', policy.template)" />
                 </div>
               </td>
 
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
+                  <span  :class="ui.span"
+                    v-if="policy.type_police === 'SE' || policy.type_police === 'PA'"></span>
+                    <span @click="feePolicies(policy.id)" :class="ui.span"
+                    v-else>📎</span>
                   <span @click="deletePolicies(policy.id)" :class="ui.span" v-if="policy.code !== '012'">🗑️</span>
                 </div>
               </td>
@@ -88,44 +79,44 @@
 
             <tr>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newPoliciesEntity" placeholder="Entidad" class="border rounded p-1" />
+                <div class="grid grid-rows justify-left">
+                  <span>
+                    <SelectThird v-model="newPoliciesThirdEntity" :third-type="'E'" class="border rounded p-1" />
+                  </span>
+                  <span>
+                    <UInput v-model="newPoliciesDescription" placeholder="Descripcion" class="border rounded p-1" />
+                  </span>
                 </div>
               </td>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newPoliciesDescription" placeholder="Descripcion" class="border rounded p-1" />
+                <div class="grid grid-rows justify-left">
+                  <UInput v-model="newPoliciesDateStart" type="date" class="border rounded p-1" />
+                  <UInput v-model="newPoliciesDateEnd" type="date" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectSpecialities v-model="newPoliciesSpeciality" class="border rounded p-1 w-64">
-                  </SelectSpecialities>
+                <div class="grid grid-rows justify-left">
+                  <UInput v-model="newPoliciesAmountTotal" placeholder="$ Total" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newServiceAmountSoat" placeholder="$ Soat" class="border rounded p-1" />
+                <div class="grid grid-rows justify-left">
+                  <SelectChoice v-model="newPoliciesPaymentForm" :choice-type="'PAYMENT_MODEL_CHOICES'"
+                    class="border rounded p-1" />
+                  <SelectChoice v-model="newPoliciesTypePolice" :choice-type="'TYPE_POLICE_CHOICES'"
+                    class="border rounded p-1" />
+                </div>
+              </td>
+
+
+              <td :class="ui.td">
+                <div class="grid grid-rows justify-center">
+                  <UCheckbox v-model="newPoliciesTemplate" />
                 </div>
               </td>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newServiceAmountParticular" placeholder="$ Particular" class="border rounded p-1" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newServiceAmountParticular" placeholder="$ Particular" class="border rounded p-1" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newServiceAmountParticular" placeholder="$ Particular" class="border rounded p-1" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <span @click="createService" :class="ui.span">
+                <div class="grid grid-rows justify-center">
+                  <span @click="createPolice" :class="ui.span">
                     💾
                   </span>
                 </div>
@@ -145,17 +136,16 @@ import { get } from '@vueuse/core';
 
 
 //const cities = ref([] as any[])
-const newPoliciesEntity = ref({})
+const newPoliciesThirdEntity = ref({})
 const newPoliciesDescription = ref('')
+
 const newPoliciesDateStart = ref('')
 const newPoliciesDateEnd = ref('')
 const newPoliciesAmountTotal = ref('')
-const newPoliciesAmountAffectation = ref('')
+const newPoliciesTypePolice = ref('')
 const newPoliciesPaymentForm = ref('')
+const newPoliciesTemplate = ref(false)
 
-
-
-//const search = ref('')
 
 const {
   data: policies,
@@ -164,12 +154,10 @@ const {
   pending,
 } = usePaginatedFetch<any>("/api/polices/");
 
-
-policies.value.map(async (policy) => ({
-  ...policy,
-  type_police_full: await getCHOICE(policy.type_police, 'TYPE_POLICE_CHOICES'),
-  payment_model_full: await getCHOICE(policy.payment_model, 'PAYMENT_MODEL_CHOICES'),
-}))
+const getChoice = async (value: string, choiceType: string) => {
+  const response = await getCHOICE(value, choiceType)
+  return response.id
+}
 
 
 
@@ -181,17 +169,7 @@ const fetchPolicies = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/polices/");
 
-
-  policies.value.map(async (policy) => ({
-    ...policy,
-    type_police_full: await getCHOICE(policy.type_police, 'TYPE_POLICE_CHOICES'),
-    payment_model_full: await getCHOICE(policy.payment_model, 'PAYMENT_MODEL_CHOICES'),
-  }))
-
-  console.log('fetchPolicies', policies.value)
-
 }
-
 
 
 
@@ -221,11 +199,11 @@ const saveItem = async (index: number, field: string, value: string) => {
   fetchPolicies();
 };
 
-const createPolicy = async () => {
+const createPolice = async () => {
   const message = confirm('¿Estás seguro de crear este Contrato?')
 
   if (!message) {
-    newPolicyCode.value = ''
+    
 
     fetchPolicies()
     return
@@ -234,7 +212,14 @@ const createPolicy = async () => {
   const response = await $fetch('api/polices/', {
     method: 'POST',
     body: {
-      code: newPolicyCode.value,
+      third_entity: newPoliciesThirdEntity.value.id,
+      description: newPoliciesDescription.value,
+      date_start: newPoliciesDateStart.value,
+      date_end: newPoliciesDateEnd.value,
+      amount_total: newPoliciesAmountTotal.value,
+      type_police: newPoliciesTypePolice.value,
+      payment_model: newPoliciesPaymentForm.value,
+      template: newPoliciesTemplate.value
 
     }
   })

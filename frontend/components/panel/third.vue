@@ -13,7 +13,7 @@
                 record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Tercero: </label>
+            <label class="block text-sm font-medium text-gray-700">Tercero: <span @click="showModalThird('')">➕</span></label>
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
                 @change="saveItem(record.id, 'third_patient', record.third_patient_full?.id)" />
         </div>

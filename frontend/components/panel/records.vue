@@ -84,7 +84,7 @@ const {
     pagination,
     search,
     pending,
-  } =  usePaginatedFetch<any>(`/api/records/?search&third_patient=${record.value.third_patient_full.id}`);
+  } =  usePaginatedFetch<any>(`/api/records/?search&third_patient__nit=${record.value.third_patient_full.nit}`);
 
   records.value = records.value.map((record: any) => {
     record.date_time = formatDateTime(record.date_time)

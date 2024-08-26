@@ -57,6 +57,8 @@ class VehicleSerializer(serializers.ModelSerializer):
         
 class PolicySerializer(serializers.ModelSerializer):
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+  
+    
     class Meta:
         model = Policy
         fields = '__all__'
