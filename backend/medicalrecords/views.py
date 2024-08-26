@@ -51,13 +51,14 @@ class ServiceViewSet(viewsets.ModelViewSet):
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicles.objects.all()
     serializer_class = VehicleSerializer
-    search_fields = ['plate', 'brand']
-    
+    search_fields = ['plate', 'brand','vehicle_type','third_driver__nit','third_driver__name','third_driver__second_name','third_driver__last_name','third_driver__second_last_name']
+    filterset_fields=['plate', 'brand','vehicle_type','third_driver__nit','third_driver__name','third_driver__second_name','third_driver__last_name','third_driver__second_last_name']
+       
 class ValuesViewSet(viewsets.ModelViewSet):
     queryset = Values.objects.all()
     serializer_class = ValueSerializer
-    search_fields = ['values', 'amount', 'year_date']
-    filterset_fields=['values', 'amount', 'year_date']
+    search_fields = ['type_values', 'amount', 'year_date']
+    filterset_fields=['type_values', 'amount', 'year_date']
     
 class PoliceViewSet(viewsets.ModelViewSet):
     queryset = Policy.objects.all()
@@ -102,8 +103,8 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordSerializer
-    search_fields = ['third_patient', 'third_patient__nit','policy'] 
-    filterset_fields = ['third_patient', 'third_patient__nit','policy']# Otras búsquedas   
+    search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
+    search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):
@@ -216,6 +217,7 @@ class ChoicesAPIView(APIView):
             "PAYMENT_MODEL_CHOICES": PAYMENT_MODEL_CHOICES,
             "TYPE_POLICE_CHOICES": TYPE_POLICE_CHOICES,
             "TYPE_ACCIDENT_CHOICES": TYPE_ACCIDENT_CHOICES,
+           
             "VALUES_CHOICES": VALUES_CHOICES,
         }
         selected_choice_id = "P"
@@ -271,6 +273,7 @@ class SearchChoiceAPIView(APIView):
             "PAYMENT_MODEL_CHOICES": PAYMENT_MODEL_CHOICES,
             "TYPE_POLICE_CHOICES": TYPE_POLICE_CHOICES,  
             "TYPE_ACCIDENT_CHOICES": TYPE_ACCIDENT_CHOICES,
+         
             "VALUES_CHOICES": VALUES_CHOICES,
         }
 

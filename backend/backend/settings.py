@@ -30,9 +30,9 @@ SECRET_KEY = 'django-insecure-osn$fgn(52k75zea4mns%_8l(r%b^jj8x927p#gu04&!)q66x^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
-
+CORS_ALLOW_ALL_ORIGINS = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'medicalrecords',    
     'users',
     'django_filters',
+    'corsheaders',
     'rest_framework_simplejwt', # La dependencia que usaremos para la autenticación JWT.
 ]
 
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'

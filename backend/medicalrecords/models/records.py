@@ -43,6 +43,7 @@ EXTERNAL_CAUSE_CHOICES = (
 )
 
 VEHICLE_TYPE_CHOICES = (
+    ('AM', 'AMBULANCIA'),
     ('AU', 'AUTOMOVIL'),
     ('MO', 'MOTO'),
     ('CA', 'CAMIONETA'),
@@ -432,6 +433,7 @@ class Records(models.Model):
         null=True,
         blank=True,
     )
+    vehicle=models.ForeignKey('Vehicles', on_delete=models.PROTECT, null=True, blank=True)
     signed_obj=models.TextField(null=True,blank=True)  
     relationship_obj = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES,null=True, blank=True)
     observations = models.CharField(max_length=200,null=True, blank=True)    

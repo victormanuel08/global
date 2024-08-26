@@ -59,6 +59,9 @@
   };
 
   export const getCHOICE = async (value: string, choices: string) => {
+    if (!value) {
+      return [];
+    }
     const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);
 
     return response;

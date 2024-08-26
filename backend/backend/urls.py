@@ -5,18 +5,12 @@ from rest_framework import routers
 from users.views import GroupViewSet, PermissionListView, UserViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
-    TokenRefreshView,
+    TokenRefreshView, 
 )
 
 from django.conf import settings
 from django.conf.urls.static import static
-
 from medicalrecords import views
-
-
-
-
-
 
 router = routers.DefaultRouter()
 router.register('cities', CityViewSet)
@@ -26,8 +20,10 @@ router.register('records_details', RecordDetailViewSet)
 router.register('specialities', SpecialityViewSet)
 router.register('thirds', ThirdViewSet)
 router.register('scheduleds', ScheduledViewSet)
+
 router.register('auth/groups', GroupViewSet)
 router.register('auth/users', UserViewSet)
+
 router.register('general_exam', GeneralExamViewSet)
 router.register('procedures', ProceduresViewSet)
 router.register('systems_review', SystemsReviewViewSet)
@@ -37,9 +33,6 @@ router.register('polices', PoliceViewSet)
 router.register('fees', FeeViewSet)
 router.register('services', ServiceViewSet)
 router.register('values', ValuesViewSet)
-
-
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),

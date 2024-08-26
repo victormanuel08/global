@@ -43,6 +43,7 @@ const choices = {
     PAYMENT_MODEL_CHOICES: [] as choice[],
     TYPE_POLICE_CHOICES: [] as choice[],
     TYPE_ACCIDENT_CHOICES: [] as choice[],
+
     VALUES_CHOICES: [] as choice[],
 } 
        
@@ -91,6 +92,7 @@ const fetchChoices = async () => {
             PAYMENT_MODEL_CHOICES,
             TYPE_POLICE_CHOICES,
             TYPE_ACCIDENT_CHOICES,
+        
             VALUES_CHOICES,
     } = response;
 
@@ -126,6 +128,7 @@ const fetchChoices = async () => {
     choices.PAYMENT_MODEL_CHOICES = mapToChoice(PAYMENT_MODEL_CHOICES);
     choices.TYPE_POLICE_CHOICES = mapToChoice(TYPE_POLICE_CHOICES);
     choices.TYPE_ACCIDENT_CHOICES = mapToChoice(TYPE_ACCIDENT_CHOICES);
+    choices.VEHICLE_TYPE_CHOICES = mapToChoice(VEHICLE_TYPE_CHOICES);
     choices.VALUES_CHOICES = mapToChoice(VALUES_CHOICES);
     options.value = choices[props.choiceType];
   } catch (error) {

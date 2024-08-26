@@ -1,6 +1,6 @@
 import type { H3Event, HTTPMethod } from "h3";
 import { FetchError } from "ofetch";
-const API_URL = "http://127.0.0.1:8000"
+const API_URL = "http://localhost:8000" // This should be an enviromenten variable 
 
 export default defineEventHandler(async (event) => {
     const route = event.context.params?._;

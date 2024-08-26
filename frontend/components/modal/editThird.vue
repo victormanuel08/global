@@ -126,6 +126,11 @@
                         @change="saveItem(thirdSelected.id, 'occupation', thirdSelected.occupation_full.id)" />
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700">Vehiculo:</label>
+                    <SelectVehicle v-model="thirdSelected.vehicle_full"
+                        @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)" />
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700">Telefono:</label>
                     <UInput v-model="thirdSelected.phone"
                         @change="saveItem(thirdSelected.id, 'phone', thirdSelected.phone)" />
@@ -217,7 +222,7 @@ const typeThird = ref(props.typeT)
 const query = ref("")
 
 const clear = () => {
-    thirdSelected.value=''
+    thirdSelected.value = ''
 
 }
 
@@ -319,7 +324,7 @@ const createThird = async () => {
     if (typeThird.value === 'E' || typeThird.value === 'C') {
         newThirdDocument.value.id = 'NI'
         newThirdType.value = await getCHOICE(typeThird.value, 'TYPE_CHOICES')
-    } 
+    }
 
 
     const response = await $fetch('api/thirds/', {
@@ -356,7 +361,7 @@ onMounted(async () => {
     console.log('third?¿', thirdSelected.value)
     if (props.typeT === 'E' || props.typeT === 'C') {
         newThirdDocument.value = await getCHOICE('NI', 'TYPE_DOCUMENT_CHOICES')
-       
+
     } else {
         newThirdDocument.value = await getCHOICE('CC', 'TYPE_DOCUMENT_CHOICES')
         newThirdSex.value = await getCHOICE('M', 'SEX_CHOICES')

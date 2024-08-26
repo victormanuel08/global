@@ -5,7 +5,8 @@
       <div v-for="(service, index) in services" :key="index">
         <UCheckbox v-model="newServices" class="border rounded p-1"
           :label="service.description"
-          @change="saveServices()" />
+          @change="saveServices()" 
+          :value="service.id"/>
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-1 m-4">
@@ -45,6 +46,7 @@ onMounted(() => {
 });
 
 const saveServices = async () => {
+  console.log('Guardando', newServices.value + ' ' + procedures_others.value);
   const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
     method: 'Patch',
     body: JSON.stringify({

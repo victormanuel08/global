@@ -15,7 +15,7 @@ ETNIAS_CHOICES = (
 SEX_CHOICES = (("M", "Masculino"), ("F", "Femenino"), ("O", "Otros"))
 
 TYPE_CHOICES = (
-    ('P', 'Paciente'),
+    ('P', 'Paciente / Otros'),
     ('M', 'Medico'),
     ('E', 'Entidad'),
     ('C', 'Clinica')
@@ -144,6 +144,7 @@ class Thirds(models.Model):
     liquids_foods = models.CharField(max_length=200, null=True, blank=True)    
     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, blank=True)
     policys = models.ManyToManyField(Policy, null=True, blank=True)
+    vehicle = models.ForeignKey('Vehicles', on_delete=models.PROTECT, null=True, blank=True)
  
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -57,28 +57,28 @@ thirds_to_create = [
         "id": "8",
         "nit":"900241448-4",
         "name":"CARDIOLOGIA DIAGNOSTICA DEL NORTE S.A.S.",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
         "id": "9",
         "nit":"807001041-4",
         "name":"CENTRO MEDICO LA SAMARITANA",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
         "id": "10",
         "nit":"890503532",
         "name":"CLINICA LOS ANDES LTDA",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
         "id": "11",
         "nit":"890500060-7",
         "name":"CLINICA SANTA ANA S.A",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
@@ -91,8 +91,8 @@ thirds_to_create = [
     {
         "id": "13",
         "nit":"890500675-6",
-        "name":"COMFAORIENTE EPSS",
-        "type":"E",
+        "name":"COMFAORIENTE EPS",
+        "type":"C",
         "type_document":"NI"
     },
     {
@@ -113,7 +113,7 @@ thirds_to_create = [
         "id": "16",
         "nit":"900226715-3",
         "name":"COOSALUD ENTIDAD PROMOTORA DE SALUD S.A.",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
@@ -197,64 +197,28 @@ thirds_to_create = [
         "id": "28",
         "nit":"901097473-5",
         "name":"MEDIMAS EPS S.A.S -SUBSIDIADO",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
         "id": "29",
         "nit":"900874437-1",
         "name":"MEDMOVIL SAS",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
         "id": "30",
         "nit":"900178724-3",
         "name":"MEDPLUS MEDICINA PREPAGADA SAS",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {
         "id": "31",
         "nit":"900156264-2",
         "name":"NUEVA EMPRESA PROMOTORA DE SALUD S.A.",
-        "type":"E",
-        "type_document":"NI"
-    },
-    {
-        "id": "32",
-        "nit":"554842158",
-        "name":"PARTICULAR",
-        "type":"E",
-        "type_document":"NI"
-    },
-    {
-        "id": "33",
-        "nit":"0000000000-1",
-        "name":"PARTICULAR-CARE",
-        "type":"E",
-        "type_document":"NI"
-    },
-    {
-        "id": "34",
-        "nit":"PARTICULAR",
-        "name":"PARTICULAR-GOLD",
-        "type":"E",
-        "type_document":"NI"
-        
-    },
-    {
-        "id": "35",
-        "nit":"00000000-3",
-        "name":"PARTICULAR-SILVER",
-        "type":"E",
-        "type_document":"NI"
-    },
-    {
-        "id": "36",
-        "nit":"00000000-0",
-        "name":"PARTICULAR-VIP",
-        "type":"E",
+        "type":"C",
         "type_document":"NI"
     },
     {

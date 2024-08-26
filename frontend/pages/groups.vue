@@ -137,6 +137,7 @@ const saveName = async (index: number) => {
 
 const fetchPermissions = async () => {
   const response = await $fetch<any>('api/auth/permissions?page_size=1000')
+  console.log('PERSIMOSIOSN',response)
   allPermisions.value = response.results
   response.results.forEach((permission: any) => {
     const entity_name = permission.entity_name

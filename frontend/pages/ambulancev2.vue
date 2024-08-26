@@ -10,7 +10,10 @@ const create = async (value: any) => {
             method: 'POST',
             body: {
                 third_patient: value,
-                third_medic: authUserStorage.value.third.id
+                third_medic: authUserStorage?.value?.third?.id,
+                vehicle: authUserStorage?.value?.third?.vehicle,
+                third_driver: authUserStorage?.value?.third?.vehicle_full?.id
+                
             },
         })
         console.log('response', response)

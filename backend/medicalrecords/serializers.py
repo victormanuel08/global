@@ -4,21 +4,6 @@ from medicalrecords.serializers import *
 from .models import Thirds
 from datetime import datetime, timedelta
 
-
-
-        
-
-
-class VehicleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vehicles
-        fields = '__all__'
-        
-
-        
-
-
-
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Cities
@@ -41,10 +26,17 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Services
         fields = '__all__'
         
+class VehicleOnlySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Vehicles
+        fields = '__all__'
+        
 class ThirdSerializer(serializers.ModelSerializer):    
     speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)    
     city_birth_full = CitySerializer(source = 'city_birth', read_only=True)   
     city_full = CitySerializer(source = 'city', read_only=True) 
+    vehicle_full = VehicleOnlySerializer(source = 'vehicle', read_only=True)
     namenit = serializers.SerializerMethodField()
 
     def get_namenit(self, obj):
@@ -56,6 +48,12 @@ class ThirdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thirds
         fields = '__all__'    
+        
+class VehicleSerializer(serializers.ModelSerializer):
+    third_driver_full = ThirdSerializer(source = 'third_driver', read_only=True)
+    class Meta:
+        model = Vehicles
+        fields = '__all__'
         
 class PolicySerializer(serializers.ModelSerializer):
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)

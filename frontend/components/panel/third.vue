@@ -135,13 +135,14 @@ const props = defineProps({
 const record = ref<any>({})
 
 const fetchRecord = async (q: any) => {
+    if (!q) return
     const response = await $fetch<any>("api/records/" + q)
     record.value = response   
 }
 
 onMounted(() => {
     console.log('onMountedce2', props.calendarEvent)
-    record.value = props.calendarEvent
+  //  record.value = props.calendarEvent
     fetchRecord(props.calendarEvent?.id)
 })
 

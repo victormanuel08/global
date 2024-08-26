@@ -21,10 +21,10 @@
           <thead>
             <tr>
               <th :class="ui.th">Fecha</th>
-
+              <th :class="ui.th">Identificacion</th>
               <th :class="ui.th">Paciente</th>
               <th :class="ui.th">Diagnostico</th>
-              <th :class="ui.th">Firma</th>
+            
               <th :class="ui.th">Acciones</th>
             </tr>
           </thead>
@@ -33,43 +33,32 @@
             <tr v-for="(record, index) in records" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  {{ (record.date_time) }}
+                  {{ formatDateYYYYMMDD(record.date_time) }}
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  Movil: {{ record.third_patient_full?.nit }}
+                </div>
+                <div class="flex items-center justify-center">
+                  Clinica: {{ record.third_patient_full?.number_report }}
                 </div>
               </td>
 
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'P'" v-model="record.third_patient_full" disabled>
-                  </SelectThird>
+
+                  {{ record.third_patient_full?.name }} {{
+                    record.third_patient_full?.last_name }}
                 </div>
               </td>
               <td :class="ui.td">
+
                 <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'M'" v-model="record.third_medic_full">
-                  </SelectThird>
-                </div>
-                <div class="flex items-center justify-center">
-                  <SelectDiagnoses class=" w-72" v-model="record.diagnosis_full">
-                  </SelectDiagnoses>
+                  {{ record.diagnosis_full?.description }}
                 </div>
               </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <button v-if="!record.signed" @click="signedRecord(record.id)">
-                    🖋️
-                  </button>
-                  <img v-else :src="record.signed" alt="Imagen Base64" width="60%" height="auto" />
-                </div>
-                <div class="flex items-center justify-center">
-                  <strong>
-                    <hr style="border: 1px solid black; font-weight: bold;">
-                    <p>
-                      {{ record.third_patient_full?.name }} {{ record.third_patient_full?.second_name }} {{
-                        record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
-                    </p>
-                  </strong>
-                </div>
-              </td>
+    
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <span @click="showModalRecord(record.id)" :class="ui.span">📝</span>

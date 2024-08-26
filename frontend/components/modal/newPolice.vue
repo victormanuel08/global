@@ -25,8 +25,8 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Vehiculo: <span
-                                @click="showModalVehicle('SE')">➕</span></label>
-                        <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="newVehicle" />
+                                @click="showModalVehicle('SE')"></span></label>
+                        <SelectVehicle v-model="newVehicle"  />
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4" v-if="newTypePolice.id === 'SE'">
@@ -129,12 +129,14 @@ const validate = async () => {
             if (newThirdEntity.value = props.third) {
                 newThirdEntity.value = ''
                 newDescriptionNumber.value = ''
+                newVehicle.value = ''
             }
         } else if (newTypePolice.value.id === "PA") {
             newThirdEntity.value = props.third
             newDescriptionNumber.value = props.third?.nit
             newDateStart.value = getCurrentDate()
             newDateEnd.value = formatDateYYYYMMDD('2050-12-31')
+
         } else {
             alert('Solo puede crear polizas Particular y Soat')
             newTypePolice.value = ''
@@ -149,6 +151,7 @@ const validate = async () => {
 
         newThirdEntity.value = ''
         newDescriptionNumber.value = ''
+        newVehicle.value = ''
 
     }
 
