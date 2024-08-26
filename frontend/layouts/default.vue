@@ -3,7 +3,7 @@
         <!-- Barra lateral -->
         <div class="w-48 bg-gray-100 hidden md:block  ">  
             <div class="py-5 text-center">
-                <img src="@/assets/img/GLOBALIPS.PNG" alt="GLOBAL" class="object-contain w-full md:w-1/1 lg:w-1/1">
+                <img src="@/assets/img/GLOBALIPS.png" alt="GLOBAL" class="object-contain w-full md:w-1/1 lg:w-1/1">
             </div>
             <div v-for="(item, index) in menuItems" :key="item.path" class="my-4">
                 <UButton  class="rounded-full"  @click="toggleChilds(index)"

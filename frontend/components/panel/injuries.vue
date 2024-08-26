@@ -3,8 +3,8 @@
     <div class="container grid grid-cols-1   lg:grid-cols-2  m-4">
         <div style="overflow: auto;">  
             <div class="m-2" style="width: 450px; height: 500px; position: relative;">
-                <img src="@/assets/img/body.PNG" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
-                <img src="@/assets/img/body2.PNG" alt="Imagen" v-else />
+                <img src="@/assets/img/body.png" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
+                <img src="@/assets/img/body2.png" alt="Imagen" v-else />
                 <div class="grid-container">
                     <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">   
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">                            

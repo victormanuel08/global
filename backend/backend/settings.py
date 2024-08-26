@@ -91,7 +91,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "globalsafe", # Esto debería estar en un archivo .envs
         "HOST": "127.0.0.1",
-        "PASSWORD": "postgres",
+        "PASSWORD": "Bce2024.",
         "USER": "postgres"
     }
 }
@@ -133,6 +133,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR /  'staticfiles'
 
 MEDIA_URL = '/media/'
 
