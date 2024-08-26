@@ -90,7 +90,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "globalsafe", # Esto debería estar en un archivo .envs
-        "HOST": "127.0.0.1",
+        "HOST": "198.7.113.197",
         "PASSWORD": "Bce2024.",
         "USER": "postgres"
     }
