@@ -17,7 +17,7 @@ thirds_to_create = [
         "last_name": "N",
         "second_last_name": "N",
         "type": "P",
-        "type_document": "CC"
+        "type_document": "AS"
     },
     {
         "nit": "860011153-6",

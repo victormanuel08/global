@@ -39,7 +39,7 @@ specialities_to_create = [
 	},
 	{
 		"code": "009",
-		"description": "NEUROCIRUG A"
+		"description": "NEUROCIRUGIA"
 	},
 	{
 		"code": "010",
@@ -233,18 +233,7 @@ specialities_to_create = [
 		"code": "SLP",
 		"description": "SALA DE PROCEDIMIENTOS"
 	},
-	{
-		"code": "GOLD",
-		"description": "PAQUETE GOLD"
-	},
-	{
-		"code": "CARE",
-		"description": "PAQUETE CARE"
-	},
-	{
-		"code": "SILVE",
-		"description": "PAQUETE SILVER"
-	}
+
 ]
 
 for specialities_data in specialities_to_create:

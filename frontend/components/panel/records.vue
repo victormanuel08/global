@@ -3,7 +3,9 @@
     <UCard class="my-2">
       <template #header>
         <div class="flex justify-between items-center">
-          <h2 class="font-bold">Historia Clinica - {{ record.third_patient_full.name }} {{ record.third_patient_full.second_name }} {{ record.third_patient_full.last_name }} {{ record.third_patient_full.second_last_name }}</h2>
+          <h2 class="font-bold">Historia Clinica - {{ record.third_patient_full.name }} {{
+            record.third_patient_full.second_name }} {{ record.third_patient_full.last_name }} {{
+              record.third_patient_full.second_last_name }}</h2>
           <div class="flex gap-3 my-3">
             <UInput v-model="search" placeholder="Buscar" />
             <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
@@ -17,44 +19,45 @@
 
       </div>
       <div style="overflow: auto;  width: auto ; text-align: center; min-height: 0;">
-     
-      <table class="table-auto w-full permission-table">
-        <thead>
-          <tr>
-            <th :class="ui.th">Fecha</th>
 
-            <th :class="ui.th">Medico</th>
-            <th :class="ui.th">Diagnostico</th>
-           
-          </tr>
-        </thead>
-        <tbody>
+        <table class="table-auto w-full permission-table">
+          <thead>
+            <tr>
+              <th :class="ui.th">Fecha</th>
 
-          <tr v-for="(record, index) in records" :key="index">
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                {{ formatDateYYYYMMDD(record.date_time) }}
-              </div>
-            </td>
+              <th :class="ui.th">Medico</th>
+              <th :class="ui.th">Diagnostico</th>
 
-            <td :class="ui.td">
-              <div class="flex items-center justify-center">
-     
-                {{ record.third_medic_full.name }} {{ record.third_medic_full.last_name }}  {{ record.third_medic_full.second_last_name }}
-              </div>
-            </td>
-            <td :class="ui.td">
+            </tr>
+          </thead>
+          <tbody>
 
-              <div class="flex items-center justify-center">
+            <tr v-for="(record, index) in records" :key="index">
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+                  {{ formatDateYYYYMMDD(record.date_time) }}
+                </div>
+              </td>
 
-                {{ record.diagnosis_full?.description }} 
-              </div>
-            </td>
-     
-           
-          </tr>
-        </tbody>
-      </table>
+              <td :class="ui.td">
+                <div class="flex items-center justify-center">
+
+                  {{ record.third_medic_full?.name }} {{ record.third_medic_full?.last_name }} {{
+                    record.third_medic_full?.second_last_name }}
+                </div>
+              </td>
+              <td :class="ui.td">
+
+                <div class="flex items-center justify-center">
+
+                  {{ record.diagnosis_full?.description }}
+                </div>
+              </td>
+
+
+            </tr>
+          </tbody>
+        </table>
       </div>
     </UCard>
   </div>
@@ -80,16 +83,16 @@ const fetchRecord = async (q: any) => {
 }
 await fetchRecord(props.calendarEvent?.id);
 const {
-    data: records = [] as any,
-    pagination,
-    search,
-    pending,
-  } =  usePaginatedFetch<any>(`/api/records/?search&third_patient__nit=${record.value.third_patient_full.nit}`);
+  data: records = [] as any,
+  pagination,
+  search,
+  pending,
+} = usePaginatedFetch<any>(`/api/records/?search&third_patient__nit=${record.value.third_patient_full.nit}`);
 
-  records.value = records.value.map((record: any) => {
-    record.date_time = formatDateTime(record.date_time)
-    record
-  })
+records.value = records.value.map((record: any) => {
+  record.date_time = formatDateTime(record.date_time)
+  record
+})
 
 
 

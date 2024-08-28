@@ -73,6 +73,13 @@
     return response;
   };
 
+  export const getAddress = async (value: string) => {
+    const response = await $fetch<any>(`https://api-v2.distancematrix.ai/maps/api/geocode/json?latlng=${value}&key=UdVE1delQ39PrAppo8MJUpK2K6xpAC6m5dginSwYckjTBf6nyn04VQd0uoWSDTZ4`);
+     
+    return response;
+  } 
+
+
   export const getVALUE = async (val: string, year: string) => {
 
     const response = await $fetch<any>(`/api/values/`, {

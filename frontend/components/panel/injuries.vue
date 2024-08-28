@@ -121,6 +121,7 @@ const saveInjuries = async (index: number, injuries: object[], body: any,injurie
         }),
     });
     fetchRecord(props.calendarEvent?.id);
+    alert('Lesiones guardadas correctamente')
 };
 
 const cleanFields = async () => {
@@ -168,6 +169,7 @@ const createListInjuries = async (body_part: any, body_part_side: any, injurie: 
     }
 
     cleanFields();
+    alert('Lesion agregada correctamente, recuerde grabar usando el boton salvar para guardar los cambios')
 };
 
 

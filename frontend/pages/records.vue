@@ -1,4 +1,5 @@
 <template>
+  <ModalEditRecordAmbulance :calendarEvent="recordObject" v-if="isAmbulance" />
   <div class="max-w-5xl mx-auto">
     <UCard class="my-2">
       <template #header>
@@ -61,7 +62,7 @@
     
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="showModalRecord(record.id)" :class="ui.span">📝</span>
+                  <span @click="showModalRecord(record)" :class="ui.span">📝</span>
                   <span @click="deleteRecord(record.id)" :class="ui.span">🗑️</span>
                 </div>
               </td>
@@ -77,6 +78,8 @@
 <script setup lang="ts">
 
 //const cities = ref([] as any[])
+const recordObject = ref<any>(null)
+const isAmbulance = ref(false)
 const newRecordPatient = ref({})
 const newRecordMedic = ref({})
 const newRecordDiagnose = ref({})
@@ -165,8 +168,9 @@ const createRecord = async () => {
   newRecordDiagnose.value = ''
 }
 
-const showModalRecord = async (id: number) => {
-
+const showModalRecord = async (record: object) => {
+  recordObject.value = record
+  isAmbulance.value = true
 }
 
 onMounted(() => {

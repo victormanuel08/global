@@ -1,28 +1,33 @@
 <template>
-  <ModalEditRecordAmbulance :calendarEvent="thirdObject" v-if="isAmbulance" />
-  <ModalEditThird :third="thirdSelected" :typeT="'P'" @close="modalClosedHandler(thirdSelected)"
-    v-model="isThird" />
+  <ModalEditRecordAmbulance :calendarEvent="recordObject" v-if="isAmbulance" />
 </template>
 <script lang="ts" setup>
-import { useThirdObject } from '~/stores/thirds';
-const { thirdObject } = useThirdObject();
-const props = defineProps({
-  calendarEvent: Object,
-  third: Object,
-})
+const authUserStorage = useAuthUserStorage()
 const isAmbulance = ref(false)
-const thirdSelected = ref<any>({})
-const isThird = ref(false)
-onMounted(() => {
-  isThird.value = true
-})
-const modalClosedHandler = async (thirdSelected: any) => {
-   if (thirdObject.value.id > 0) {
-    //thirdSelected.value  = thirdObject.value
-    isThird.value = false
-    isAmbulance.value = true
-  }
+const recordObject = ref<any>(null)
+const create = async (value: any) => {
+  const response = await  $fetch('api/records/', {
+            method: 'POST',
+            body: {
+                third_patient: value,
+                third_medic: authUserStorage?.value?.third?.id,
+                vehicle: authUserStorage?.value?.third?.vehicle,
+                third_driver: authUserStorage?.value?.third?.vehicle_full?.id
+                
+            },
+        })
+        console.log('response', response)
+        recordObject.value = response
+        console.log('recordObject', recordObject.value)
 }
-
+onMounted(() => {
+  const message = confirm('¿Estás seguro de crear un Rgeistro de Ambulancia?')
+  if (message) {
+    create(2)
+    isAmbulance.value = true
+  }else{
+    return
+  } 
+})
 </script>
 <style></style>

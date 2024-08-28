@@ -1,4 +1,5 @@
 <template>
+  <ModalEditFeePolicie :calendarEvent="policeObject" v-if="isFee" />
   <div class="max-w-5xl mx-auto">
     <UCard class="my-2">
       <template #header>
@@ -70,7 +71,7 @@
                 <div class="flex items-center justify-center">
                   <span  :class="ui.span"
                     v-if="policy.type_police === 'SE' || policy.type_police === 'PA'"></span>
-                    <span @click="feePolicies(policy.id)" :class="ui.span"
+                    <span @click="feePolicies(policy)" :class="ui.span"
                     v-else>📎</span>
                   <span @click="deletePolicies(policy.id)" :class="ui.span" v-if="policy.code !== '012'">🗑️</span>
                 </div>
@@ -96,7 +97,7 @@
               </td>
               <td :class="ui.td">
                 <div class="grid grid-rows justify-left">
-                  <UInput v-model="newPoliciesAmountTotal" placeholder="$ Total" class="border rounded p-1" />
+                  <UInput v-model="newPoliciesAmountTotal" placeholder="$ Total" class="border rounded p-1"  />
                 </div>
               </td>
               <td :class="ui.td">
@@ -141,11 +142,13 @@ const newPoliciesDescription = ref('')
 
 const newPoliciesDateStart = ref('')
 const newPoliciesDateEnd = ref('')
-const newPoliciesAmountTotal = ref('')
+const newPoliciesAmountTotal = ref('0')
 const newPoliciesTypePolice = ref('')
 const newPoliciesPaymentForm = ref('')
 const newPoliciesTemplate = ref(false)
 
+const policeObject = ref ({})
+const isFee = ref(false)
 
 const {
   data: policies,
@@ -214,11 +217,11 @@ const createPolice = async () => {
     body: {
       third_entity: newPoliciesThirdEntity.value.id,
       description: newPoliciesDescription.value,
-      date_start: newPoliciesDateStart.value,
-      date_end: newPoliciesDateEnd.value,
+      date_start: formatDateYYYYMMDD(newPoliciesDateStart.value),
+      date_end: formatDateYYYYMMDD(newPoliciesDateEnd.value),
       amount_total: newPoliciesAmountTotal.value,
-      type_police: newPoliciesTypePolice.value,
-      payment_model: newPoliciesPaymentForm.value,
+      type_police: newPoliciesTypePolice.value.id,
+      payment_model: newPoliciesPaymentForm.value.id,
       template: newPoliciesTemplate.value
 
     }
@@ -232,6 +235,12 @@ const createPolice = async () => {
 onMounted(() => {
   fetchPolicies()
 })
+
+const feePolicies = (policy: any) => {
+  policeObject.value = policy
+  isFee.value = true
+  console.log('feePolicies', policy)
+}
 
 const ui = {
   td: 'p-1 border',

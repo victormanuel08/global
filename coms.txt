@@ -21,7 +21,7 @@ python manage.py migrate
 Correr Servidor:
 python manage.py runserver
 
-Script DB
+Script DB 
 
 Get-Content .\medicalrecords\scripts\make_citys.py | & python manage.py shell 
 Get-Content .\medicalrecords\scripts\make_diagnoses.py | & python manage.py shell
@@ -35,6 +35,11 @@ exec(open('.\medicalrecords\scripts\make_services.py').read())
 
 python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_services.py').read())"
 
-python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_users.py').read())"
+python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_diagnoses.py','r', encoding='utf-8').read())"
+
+
+ubuntu 
+
+python manage.py shell -c "exec(open('./medicalrecords/scripts/make_users.py').read())"
 
 
