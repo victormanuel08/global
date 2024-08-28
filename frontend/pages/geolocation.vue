@@ -2,13 +2,17 @@
   <div>
     <h1>Mi Ubicación</h1>
     <p v-if="Location">{{ Location.latitude }},{{ Location.longitude }}</p>
-
     <p v-else>No se pudo obtener la ubicación.</p>
+    <p v-if="address">{{ address }}</p>
+    <USelectMenu :options="address" v-model="modelValue" @click="clickHandler"/>
+
+    
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { get } from '@vueuse/core';
+
 
 
 
@@ -22,15 +26,16 @@ const address = ref<any>()
 type location = {
   latitude:number
   longitude:number
+
 }
 
-const getLocation = () => {
+const getLocation = async () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 Location.value = {
                     latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
+                    longitude: position.coords.longitude,                  
                 };
             },
             (error) => {
@@ -43,10 +48,14 @@ const getLocation = () => {
     }
 
 }
-watch(Location, (newLocation, oldLocation) => {
+
+watch(Location, async (newLocation, oldLocation) => {
   if (newLocation.latitude && newLocation.longitude) {
-    const ll = newLocation.latitude + ',' + newLocation.longitude;
-    address.value =  getAddress(ll)    
+   // const response = await $fetch<any>(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLocation.latitude}&lon=${newLocation.longitude}&zoom=18&addressdetails=1`)
+   // address.value = response.display_name
+    address.value = await getAddress(newLocation.latitude + ', ' + newLocation.longitude)
+
   }
 })
+
 </script>

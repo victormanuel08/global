@@ -14,6 +14,9 @@ from medicalrecords import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.urls import path
+
+
 
 
 
@@ -45,6 +48,8 @@ urlpatterns = [
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
+    path('geocode/', GeocodeView.as_view(), name='geocode'),
+
     path('api/pdf/<str:template_type>/<str:template_id>/', views.RecordListView.as_view(), name='template-pdf'),
     path('api/printpdf/<str:template_type>/<int:template_id>/', views.RecordPdf.as_view(), name='print-pdf'),
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),

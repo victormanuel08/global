@@ -58,14 +58,20 @@
                 <label class="block text-sm font-medium text-gray-700">GLASGOW TOTAL:</label>
                 {{ glasgow }} / 15
             </div>
+           
+        </div>
+        <div class="grid grid-cols-1  md:grid-cols-4 m-4">
             <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Coordenadas:</label>
-               
                 <UInput type="text" :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude" readonly />
             </div>
             <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Sugerencias:</label>
+                <SelectAddress :coordinates="coordinates" v-model="addressOption" @change="record.address=addressOption.formatted_address"/>  
+            </div>
+            <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Direccion:</label>
-                <UInput></UInput>
+                <UTextarea variant="outline" v-model="record.address" @change="saveItem(record.id, 'address', record.address)" />
             </div>
         </div>
 
@@ -134,11 +140,27 @@ const props = defineProps({
 })
 
 const Location = ref({}as location)
+const coordinates = ref("")
+const addressOption = ref<any>({})
 
 type location = {
   latitude:number
   longitude:number
 }
+
+const address = ref<any>()
+
+watch(Location, async (newLocation, oldLocation) => {  
+    // && record.value.address === ''
+  if (newLocation.latitude && newLocation.longitude ) {
+   // const response = await $fetch<any>(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLocation.latitude}&lon=${newLocation.longitude}&zoom=18&addressdetails=1`)
+   // address.value = response.display_name
+
+   // 
+    coordinates.value = newLocation.latitude + ', ' + newLocation.longitude
+ 
+  }
+});
 
 const getLocation = () => {
     if (navigator.geolocation) {
@@ -157,6 +179,7 @@ const getLocation = () => {
         console.error('Geolocalización no está disponible en este navegador.');
     }
 }
+
 function getColorForPriority(priorityName: any) {
     console.log('color', priorityName)
     switch (priorityName) {
@@ -220,6 +243,7 @@ type Record = {
     ef_pa: string,
     ef_temp: string,
     condition: string,
+    address: string,
 }
 const record = ref({} as Record)
 
