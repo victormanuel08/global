@@ -69,15 +69,17 @@
 
   export const getBODYPART = async (value: number, choices: string, field: string) => {
     const response = await $fetch<any>(`/api/api/choices/${choices}/${value}/${field}`);
-
+    
     return response;
   };
 
-  export const getAddress = async (value: string) => {
-    const response = await $fetch<any>(`https://api-v2.distancematrix.ai/maps/api/geocode/json?latlng=${value}&key=UdVE1delQ39PrAppo8MJUpK2K6xpAC6m5dginSwYckjTBf6nyn04VQd0uoWSDTZ4`);
-     
+
+  export const getAddress = async (lat: string): Promise<string> => {
+    const response = await $fetch<any>(`/api/geocode/?coordinates=${lat}`);
+    const response2 = await $fetch<any>(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLocation.latitude}&lon=${newLocation.longitude}&zoom=18&addressdetails=1`)
+   // address.value = response.display_name
     return response;
-  } 
+  };
 
 
   export const getVALUE = async (val: string, year: string) => {

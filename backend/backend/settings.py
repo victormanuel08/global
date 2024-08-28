@@ -82,6 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 AUTH_USER_MODEL = "users.User"
+DISTANCE_MATRIX_API_KEY = "UdVE1delQ39PrAppo8MJUpK2K6xpAC6m5dginSwYckjTBf6nyn04VQd0uoWSDTZ4"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

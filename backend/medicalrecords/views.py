@@ -22,9 +22,7 @@ from django.dispatch import receiver
 from django.db.models import Q
 from django.views.generic import ListView,View
 from django.shortcuts import render
-
-
-
+import requests
 
 
 class ServiceViewSet(viewsets.ModelViewSet):
@@ -335,7 +333,7 @@ class RecordListView(ListView):
         template_type = self.kwargs.get('template_type')
         template_id = self.kwargs.get('template_id')
 
-        # Aquí puedes usar un condicional para determinar qué entidad consultar
+        # Condicional para determinar qué entidad consultar
         if template_type == 'ambulancia':
             model = Records
             template_name = "record_list.html"
@@ -375,7 +373,53 @@ class RecordPdf(View):
         data = {'records': records}
         pdf = render_to_pdf('record_list.html', data)
         return HttpResponse(pdf, content_type='application/pdf')
+  
+  
 
-      
-       
 
+class GeocodeView(APIView):
+    def get(self, request, *args, **kwargs):
+        coordinates_str = request.query_params.get("coordinates")
+        try:
+            lat, lng = map(float, coordinates_str.split(","))
+        except ValueError:
+            return Response({"error": "Coordenadas inválidas"}, status=400)
+
+        api_key = settings.DISTANCE_MATRIX_API_KEY
+        distance_matrix_url = f"https://api-v2.distancematrix.ai/maps/api/geocode/json?latlng={lat},{lng}&key={api_key}"
+        nominatim_url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=18&addressdetails=1"
+
+        response_data = []
+
+        try:
+            distance_matrix_response = requests.get(distance_matrix_url)
+            distance_matrix_data = distance_matrix_response.json()
+            response_data.append({
+                "formatted_address": distance_matrix_data["result"][0]["formatted_address"],
+                "address_components": distance_matrix_data["result"][0]["address_components"],
+            })
+        except requests.RequestException as e:
+           
+            pass
+
+        try:
+            nominatim_response = requests.get(nominatim_url)
+            nominatim_data = nominatim_response.json()
+            response_data.append({
+                "formatted_address": nominatim_data["display_name"],
+                "address_components": {
+                    "road": nominatim_data["address"]["road"],
+                    "neighbourhood": nominatim_data["address"]["neighbourhood"],
+                    "city_district": nominatim_data["address"]["city_district"],
+                    "city": nominatim_data["address"]["city"],
+                    "county": nominatim_data["address"]["county"],
+                    "state": nominatim_data["address"]["state"],
+                    "postcode": nominatim_data["address"]["postcode"],
+                    "country": nominatim_data["address"]["country"],
+                },
+            })
+        except requests.RequestException as e:
+           
+            pass
+
+        return Response(response_data)
