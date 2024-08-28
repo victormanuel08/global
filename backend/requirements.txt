@@ -10,3 +10,4 @@ pillow
 drf-extra-fields
 weasyprint
 xhtml2pdf
+django-cors-headers
