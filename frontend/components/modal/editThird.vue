@@ -325,7 +325,18 @@ const createThird = async () => {
         newThirdDocument.value.id = 'NI'
         newThirdType.value = await getCHOICE(typeThird.value, 'TYPE_CHOICES')
     }
+    validateNit()
+    const consult = await $fetch('api/thirds/', {
+        query: {
+            nit: newThirdNit.value,
+            type_document: newThirdDocument.value.id
+        }
+    })
 
+    if (consult.results.length > 0) {
+        alert('El tercero ya existe')
+        return
+    }
 
     const response = await $fetch('api/thirds/', {
         method: 'POST',

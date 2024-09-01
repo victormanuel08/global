@@ -8,14 +8,14 @@
             </div>
             <div class="flex flex-cols-4 justify-center border-solid mt-4 mb-4">
                 <div>
-                    <label class="font-bold">Paciente</label>
+                    <label class="font-bold">Paciente: <span @click="typeT = 'P', showModalThird('')">➕</span></label>
                     <SelectThird :third-type="'P'" class="border rounded p-1 w-64" v-model="newScheduledPatient"
                         @change="saveItem(selectedEventId, 'third_patient', newScheduledPatient.id)">
                     </SelectThird>
                 </div>
                 <div v-if="newScheduledPatient">
                     <label class="font-bold">
-                        Polizas:<span @click="typeT='E', showModalPolice()">➕</span>
+                        Polizas:<span @click="typeT = 'E', showModalPolice()">➕</span>
                     </label>
                     <SelectInsurance v-model="newScheduledInsurance" class="border rounded p-1 w-96"
                         :third="newScheduledPatient.id"
@@ -33,16 +33,17 @@
                 -->
                 <div v-if="newScheduledInsurance">
                     <label class="font-bold">Especialidad</label>
-                    <SelectSpecialities v-model="newScheduledSpeciality" :specialities= "newScheduledInsurance.specialities" class="border rounded p-1 w-64"
+                    <SelectSpecialities v-model="newScheduledSpeciality"
+                        :specialities="newScheduledInsurance.specialities" class="border rounded p-1 w-64"
                         @change="console.log(newScheduledSpeciality)">
                     </SelectSpecialities>
                 </div>
-                <div v-if="newScheduledSpeciality.code==='012'">
+                <div v-if="newScheduledSpeciality.code === '012'">
                     <label class="font-bold">Historia (Consultas)</label>
                     <SelectInsuranceHistory v-model="newScheduledInsuranceHistory" class="border rounded p-1 w-96"
-                        :third="newScheduledPatient.id"                        
+                        :third="newScheduledPatient.id"
                         @change="saveItem(selectedEventId, 'insurance', newScheduledInsurance.id)"
-                        :placeholder="'Aseguradora'"/>
+                        :placeholder="'Aseguradora'" />
                 </div>
             </div>
 
@@ -50,7 +51,8 @@
                 <div v-if="newScheduledSpeciality">
                     <label class="font-bold">Servicios</label>
                     <SelectServices v-model="newScheduledService" :third="newScheduledEntity"
-                        class="border rounded p-1 w-72" :specialities="newScheduledSpeciality" :services="newScheduledInsurance.services"
+                        class="border rounded p-1 w-72" :specialities="newScheduledSpeciality"
+                        :services="newScheduledInsurance.services"
                         @change="saveItem(selectedEventId, 'service', newScheduledService.id)">
                     </SelectServices>
                 </div>
@@ -81,10 +83,8 @@
                 </div>
                 <div v-if="newScheduledMedic">
                     <label class="font-bold">Disponibilidad</label>
-                    <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-64" :class="{
-                        'border rounded p-1 w-64': newScheduledSpeciality.code === '012',
-                        'border rounded p-1 w-64': newScheduledSpeciality.code !== '012'
-                    }" :options="rangehours" option-attribute="inter"
+                    <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-64"
+                        :options="rangehours" option-attribute="inter"
                         @change="saveItem(selectedEventId, 'time', newScheduledOptionsHours.time_start)"
                         :placeholder="'Hora'" v-if="newScheduledOptions" />
                 </div>
@@ -103,7 +103,8 @@
             <FullCalendar :options="calendarOptions" />
         </UCard>
     </div>
-    <ModalNewPolice  :third="newScheduledPatient"   :typeT="'C'" @close="handleModalClose" v-model="isPolice" />   
+    <ModalNewPolice :third="newScheduledPatient" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
+    <ModalEditThird :typeT="typeT" v-model="isThird" />
 </template>
 
 <script setup lang="ts">
@@ -117,6 +118,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 
 const newScheduledSpeciality = ref<any>('');
 const isEdit = ref(false);
+const isThird = ref(false);
 const typeT = ref('')
 const isPolice = ref(false)
 const newScheduledMedic = ref<any>('');
@@ -140,6 +142,13 @@ const calendarInitialView = ref('dayGridMonth');//timeGridDay);dayGridMonth
 const isOpen = ref(false)
 const eventsToShow = ref<any[]>([
 ]);
+
+
+const showModalThird = (value: any) => {
+
+    isThird.value = true
+
+}
 
 const calendarOptions = computed(() => ({
     plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
@@ -273,7 +282,7 @@ const createScheduled = async () => {
                 speciality: newScheduledSpeciality.value.id, //???
                 third_patient: newScheduledPatient.value.id,
                 third_medic: newScheduledMedic.value.id,
-                record:newScheduledInsuranceHistory.value?.record,
+                record: newScheduledInsuranceHistory.value?.record,
                 confirmed: false,
                 insurance: newScheduledInsurance.value.insurance,
                 date_origin: newScheduledInsuranceHistory.value?.date_origin, // Se agrega el campo date_origin si lo tiene newScheduledInsurance
@@ -388,7 +397,7 @@ const editRecord = async (record: any) => {
 
 };
 
-const showModalPolice = () => {  
+const showModalPolice = () => {
 
     isPolice.value = true
 }
