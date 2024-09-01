@@ -169,6 +169,15 @@ class Vehicles(models.Model):
         null=True,
         blank=True,
     )  
+    third_entity = models.ForeignKey(
+        'Thirds',
+        on_delete=models.PROTECT,
+        verbose_name="Empresa",
+        related_name="thirds_entity_vehicle",
+        #limit_choices_to={"thirds__name": "Paciente"},
+        null=True,
+        blank=True,
+    ) 
     
     class Meta:
         ordering = ['brand']

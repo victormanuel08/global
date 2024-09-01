@@ -59,6 +59,7 @@ class ThirdSerializer(serializers.ModelSerializer):
         
 class VehicleSerializer(serializers.ModelSerializer):
     third_driver_full = ThirdSerializer(source = 'third_driver', read_only=True)
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
     class Meta:
         model = Vehicles
         fields = '__all__'

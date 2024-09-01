@@ -273,10 +273,11 @@ const createScheduled = async () => {
                 speciality: newScheduledSpeciality.value.id, //???
                 third_patient: newScheduledPatient.value.id,
                 third_medic: newScheduledMedic.value.id,
+                record:newScheduledInsuranceHistory.value?.record,
                 confirmed: false,
                 insurance: newScheduledInsurance.value.insurance,
-                date_origin: newScheduledInsurance.value?.date, // Se agrega el campo date_origin si lo tiene newScheduledInsurance
-                third_entity: newScheduledInsurance.value?.third_entity,   /// ok
+                date_origin: newScheduledInsuranceHistory.value?.date_origin, // Se agrega el campo date_origin si lo tiene newScheduledInsurance
+                third_entity: newScheduledInsuranceHistory.value?.third_entity,   /// ok
                 service: newScheduledService.value?.id,
                 fee: newScheduledFee.value?.id,
                 policy: newScheduledInsurance.value?.id,   //???ok

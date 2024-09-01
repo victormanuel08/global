@@ -30,19 +30,19 @@
 
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="value.type_values" @change="saveItem(index,'type_values',value.type_values.id)" class="border rounded p-1 w-32" />
+                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="value.type_values" @change="saveItem(index,'type_values',value.type_values.id)" class="border rounded p-1 w-36" />
                 </div>
               </td>    
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <UInput v-model="value.amount" @blur="saveItem(index, 'code', value.amount)"
-                    class="border rounded p-1 w-14" />
+                    class="border rounded p-1 w-36" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="value.year_date" @blur="saveItem(index, 'year_date', value.year_date)"
-                    class="border rounded p-1" />
+                  <UInput type="date" v-model="value.year_date" @blur="saveItem(index, 'year_date', value.year_date)"
+                    class="border rounded p-1 w-36" />
                 </div>
               </td>    
     
@@ -56,17 +56,17 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="newValuesType" class="border rounded p-1 w-32" />
+                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="newValuesType" class="border rounded p-1 w-36" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="newValuesValue" placeholder="Valor" class="border rounded p-1 " />
+                  <UInput v-model="newValuesValue" placeholder="Valor" class="border rounded p-1 w-36 " />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="newValuesYear" placeholder="Nombre" class="border rounded p-1" />
+                  <UInput type="date" v-model="newValuesYear" placeholder="Nombre" class="border rounded p-1 w-36"  @change="toggleValues"/>
                 </div>
               </td>
 
@@ -102,6 +102,9 @@ const {
   pending,
 } = usePaginatedFetch<any>("/api/values/");
 
+const toggleValues = (value: string) => {
+  newValuesYear.value = formatDateYYYY0101(value)  
+}
 const fetchValues = async () => {
   const {
     data: values,
@@ -115,7 +118,7 @@ const fetchValues = async () => {
 }
 
 const deleteValue = async (id: number) => {
-  const message = confirm('¿Estás seguro de eliminar este Servicio?')
+  const message = confirm('¿Estás seguro de eliminar este Valor?')
   if (message) {
     const response = await $fetch(`api/values/${id}/`, {
       method: 'DELETE'
@@ -139,6 +142,22 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 const createValue = async () => {
+  const consult = await $fetch('api/values/', {
+    query: {
+      search: newValuesType.value.id,
+      year_date: newValuesYear.value
+    }
+  })
+
+  if (consult.results.length > 0) {
+    alert('Ya existe un valor con este tipo y año')
+    newValuesType.value = ''
+    newValuesValue.value = ''
+    newValuesYear.value = ''
+    return
+  }
+
+
   const message = confirm('¿Estás seguro de crear este Valor?')
 
   if (!message) {
@@ -152,7 +171,7 @@ const createValue = async () => {
   const response = await $fetch('api/values/', {
     method: 'POST',
     body: {
-      values: newValuesType.value.id,
+      type_values: newValuesType.value.id,
       amount: newValuesValue.value,
       year_date: newValuesYear.value
     }

@@ -27,16 +27,18 @@
             <tr v-for="(speciality, index) in specialities" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
+                  <span v-if="speciality.code ==='AMB' || speciality.code==='012'">{{speciality.code}}</span>
                   <UInput v-model="speciality.code" @blur="saveItem(index, 'code', speciality.code)"
-                    class="border rounded p-1 w-14" v-if="speciality.code !=='AMB'"/>
-                    <span v-else>{{speciality.code}}</span>
+                    class="border rounded p-1 w-14" v-else/>
+                  
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="speciality.description" @blur="saveItem(index, 'description', speciality.description)"
-                    class="border rounded p-1" v-if="speciality.code !=='AMB'"/>
-                    <span v-else>{{speciality.description}}</span>
+                  
+                    <span v-if="speciality.code ==='AMB' || speciality.code==='012'">{{speciality.description}}</span>
+                    <UInput v-model="speciality.description" @blur="saveItem(index, 'description', speciality.description)"
+                    class="border rounded p-1" v-else/>
                 </div>
               </td>
               <td :class="ui.td">
@@ -116,8 +118,15 @@ const saveItem = async (index: number, field: string, value: string) => {
   const speciality = specialities.value[index];
   speciality[field] = value;
   if (field === 'code') {
-    if (value === 'AMB') {
-      alert('No puedes cambiar el código de la especialidad AMB')
+    if (value === 'AMB' || value === 'O12') {
+      alert('No puedes cambiar el código de la especialidad ')
+      fetchSpecialities()
+      return
+    }
+  }
+  if (field === 'description') {
+    if (value === 'AMBULANCIA' || value === 'TERAPIA FISICA') {
+      alert('No puedes cambiar el código de la especialidad ')
       fetchSpecialities()
       return
     }

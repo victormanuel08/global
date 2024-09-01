@@ -1,4 +1,5 @@
 <template>
+
   <div class="max-w-5xl mx-auto">
     <UCard class="my-2">
       <template #header>
@@ -17,9 +18,9 @@
         <thead>
           <tr>
             <th :class="ui.th">Usuario</th>
-            <th :class="ui.th">Activo</th>
-            <th :class="ui.th">Staff</th>
-            <th :class="ui.th">SuperUser</th>
+            <th :class="ui.th"><span title="Indica si el usuario debe ser tratado como activo. Desmarque esta opción en lugar de borrar la cuenta." >Activo</span></th>
+            <th :class="ui.th"><span title="Indica si el usuario puede entrar en este sitio de Super Administración de Backend.">Staff</span></th>
+            <th :class="ui.th"><span title="Indica que este usuario tiene todos los permisos sin asignárselos explícitamente.">SuperUser</span></th>
             <th :class="ui.th">Acciones</th>
           </tr>
         </thead>

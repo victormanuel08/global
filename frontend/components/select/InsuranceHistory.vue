@@ -21,7 +21,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const clickHandler = () => {    
+
     retrieveFromApi()
+    
 }
 
 const retrieveFromApi = async () => {
@@ -30,6 +32,8 @@ const retrieveFromApi = async () => {
         third_patient: props.third,   
         speciality: '13', //quemada terapuia fisica   
         date_origin: "1999-01-01",
+        confirmed: true,
+        
     };
     console.log('QUERY PARAMSHISTORY', queryParams)
     try {
@@ -50,7 +54,6 @@ const retrieveFromApi = async () => {
                 concat: `${scheduled.date} ${scheduled.speciality_full.description} ${scheduled.service_full?.description} ${scheduled.policy_full?.third_entity_full?.name}`,
             })),
         ];
-            
 
     } catch (error) {
         console.error("Error al obtener los datos de la API:", error);
