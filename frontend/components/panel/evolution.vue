@@ -38,8 +38,8 @@
                         </td>
                         <td :class="ui.td" style="overflow: hidden; width:15%">
                             <div>
-                                Dr(a){{ modelValue.calendarEvent?.medic.name }} {{
-                                    modelValue.calendarEvent?.medic.last_name }}
+                                Dr(a){{ modelValue.calendarEvent?.third_medic.name }} {{
+                                    modelValue.calendarEvent?.third_medic.last_name }}
                             </div>
                         </td>
                         <td :class="ui.td" style="overflow: hidden; width: 50%">
@@ -57,8 +57,8 @@
                                 <strong>
                                     <hr style="border: 1px solid black; font-weight: bold;">
                                     <p>
-                                        Dr(a). {{ modelValue.calendarEvent?.medic.name }} {{
-                                            modelValue.calendarEvent?.medic.last_name }}
+                                        Dr(a). {{ modelValue.calendarEvent?.third_medic.name }} {{
+                                            modelValue.calendarEvent?.third_medic.last_name }}
                                     </p>
                                 </strong>
                             </div>
@@ -73,8 +73,8 @@
                         </td>
                         <td :class="ui.td" style="overflow: hidden; width:15%">
                             <div>
-                                Dr(a){{ modelValue.calendarEvent?.medic.name }} {{
-                                    modelValue.calendarEvent?.medic.last_name }}
+                                Dr(a){{ modelValue.calendarEvent?.third_medic.name }} {{
+                                    modelValue.calendarEvent?.third_medic.last_name }}
                             </div>
                         </td>
                         <td :class="ui.td" style="overflow: hidden; width: 50%">
@@ -94,8 +94,8 @@
                                 <strong>
                                     <hr style="border: 1px solid black; font-weight: bold;">
                                     <p>
-                                        Dr(a). {{ modelValue.calendarEvent?.medic.name }} {{
-                                            modelValue.calendarEvent?.medic.last_name }}
+                                        Dr(a). {{ modelValue.calendarEvent?.third_medic.name }} {{
+                                            modelValue.calendarEvent?.third_medic.last_name }}
                                     </p>
                                 </strong>
                             </div>
@@ -151,7 +151,7 @@ const {
     pagination,
     search,
     pending,
-} = usePaginatedFetch<any>("/api/records/" + modelValue.calendarEvent?.record + "/records_details/");
+} = usePaginatedFetch<any>("/api/records/" + modelValue.calendarEvent?.id + "/records_details/");
 
 
 const fetchRecord = async () => {
@@ -160,7 +160,7 @@ const fetchRecord = async () => {
         pagination,
         search,
         pending,
-    } = usePaginatedFetch<any>("/api/records/" + modelValue.calendarEvent?.record + "/records_details/");
+    } = usePaginatedFetch<any>("/api/records/" + modelValue.calendarEvent?.id + "/records_details/");
     
 }
 
@@ -177,7 +177,7 @@ const createRecordDetail = async () => {
         method: 'POST',
         body: {
             observation: newObservation.value,
-            record: modelValue.calendarEvent?.record
+            record: modelValue.calendarEvent?.id
         }
     })
     fetchRecord()

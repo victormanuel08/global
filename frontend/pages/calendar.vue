@@ -23,27 +23,38 @@
                         :placeholder="'Aseguradora'">
                     </SelectInsurance>
                 </div>
+                <!--
                 <div v-if="newScheduledInsurance.insurance === 1">
                     <label class="font-bold">Entidad</label>
                     <SelectThird v-model="newScheduledEntity" :third-type="'E'" class="border rounded p-1 w-64"
                         @change="saveItem(selectedEventId, 'third_entity', newScheduledEntity.id)">
                     </SelectThird>
                 </div>
+                -->
                 <div v-if="newScheduledInsurance">
                     <label class="font-bold">Especialidad</label>
-                    <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-64"
-                        @change="saveItem(selectedEventId, 'speciality', newScheduledSpeciality.id)">
+                    <SelectSpecialities v-model="newScheduledSpeciality" :specialities= "newScheduledInsurance.specialities" class="border rounded p-1 w-64"
+                        @change="console.log(newScheduledSpeciality)">
                     </SelectSpecialities>
                 </div>
+                <div v-if="newScheduledSpeciality.code==='012'">
+                    <label class="font-bold">Historia (Consultas)</label>
+                    <SelectInsuranceHistory v-model="newScheduledInsuranceHistory" class="border rounded p-1 w-96"
+                        :third="newScheduledPatient.id"                        
+                        @change="saveItem(selectedEventId, 'insurance', newScheduledInsurance.id)"
+                        :placeholder="'Aseguradora'"/>
+                </div>
             </div>
+
             <div class="flex grid-cols-4 justify-center border-solid mt-4 mb-4">
                 <div v-if="newScheduledSpeciality">
                     <label class="font-bold">Servicios</label>
                     <SelectServices v-model="newScheduledService" :third="newScheduledEntity"
-                        class="border rounded p-1 w-72" :specialities="newScheduledSpeciality"
+                        class="border rounded p-1 w-72" :specialities="newScheduledSpeciality" :services="newScheduledInsurance.services"
                         @change="saveItem(selectedEventId, 'service', newScheduledService.id)">
                     </SelectServices>
                 </div>
+                <!--
                 <div v-if="newScheduledService && newScheduledInsurance.insurance === 1">
                     <label class="font-bold">Contrato</label>
                     <div class="border rounded p-1 w-64">
@@ -53,6 +64,7 @@
                         </SelectFeed>
                     </div>
                 </div>
+                -->
                 <div v-if="newScheduledFee || newScheduledService">
                     <label class="font-bold">Medico</label>
                     <SelectThird class="border rounded p-1 w-64" :third-type="'M'"
@@ -102,6 +114,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 
 
 
+
 const newScheduledSpeciality = ref<any>('');
 const isEdit = ref(false);
 const typeT = ref('')
@@ -110,6 +123,7 @@ const newScheduledMedic = ref<any>('');
 const newScheduledOptions = ref<any>('');
 const newScheduledOptionsHours = ref<any>('');
 const newScheduledDate = ref<any>(getCurrentDate());
+const newScheduledInsuranceHistory = ref<any>({});
 const newScheduledTime = ref<any>(getCurrentTime());
 const newScheduledPatient = ref<any>('');
 const newScheduledInsurance = ref<any>(0);
@@ -150,7 +164,7 @@ const calendarOptions = computed(() => ({
         if (info.event.extendedProps.record) {
             newScheduledRecord.value = info.event.extendedProps.record;
             calendarEvent.value = info.event.extendedProps;
-            editRecord(calendarEvent.value)
+            console.log('calendarEvent', calendarEvent.value)
         } else {
             selectedEventId.value = info.event.extendedProps.scheduled;
             newScheduledPatient.value = info.event.extendedProps.patient;
@@ -256,16 +270,16 @@ const createScheduled = async () => {
             body: {
                 date: newScheduledOptions.value.date,
                 time: newScheduledOptionsHours.value.time_start,
-                speciality: newScheduledSpeciality.value.id,
+                speciality: newScheduledSpeciality.value.id, //???
                 third_patient: newScheduledPatient.value.id,
                 third_medic: newScheduledMedic.value.id,
                 confirmed: false,
                 insurance: newScheduledInsurance.value.insurance,
                 date_origin: newScheduledInsurance.value?.date, // Se agrega el campo date_origin si lo tiene newScheduledInsurance
-                third_entity: newScheduledEntity.value?.id,
+                third_entity: newScheduledInsurance.value?.third_entity,   /// ok
                 service: newScheduledService.value?.id,
                 fee: newScheduledFee.value?.id,
-                policy: newScheduledFee.value.policy_full?.id,
+                policy: newScheduledInsurance.value?.id,   //???ok
             },
         });
         await fetchScheduleds();

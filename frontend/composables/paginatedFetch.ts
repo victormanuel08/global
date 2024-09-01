@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export type Pagination = {
   page: number; // Acá se guarda el número de página actual
   pageSize: number; // Acá se guarda la cantidad de resultados por página
@@ -23,7 +25,7 @@ export const usePaginatedFetch = <T>(url: string | Ref<string>, filters=ref({}) 
   const { page, pageSize, resultsCount } = toRefs(pagination);
 
   const sanitizedFilters = computed(() => (filters.value, (value: any) => Boolean(value)));
-  // const sanitizedFilters = computed(() => usePickBy(filters.value, (value: any) => Boolean(value)));
+  //const sanitizedFilters = computed(() => usePickBy(filters.value, (value: any) => Boolean(value)));
   const query = computed(() => {
     return {
       page: page.value,

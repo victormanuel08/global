@@ -3,12 +3,11 @@
         <div class="flex flex-cols-2 gap-4 md:grid-cols-2 m-2">
             <UTabs :items="items" class="w-full" @change="onChange">
                 <template #default="{ item, index }">
-                    <div :class="isActive(item) ? 'active-tab' : 'inactive-tab'">                        
+                    <div :class="isActive(item) ? 'active-tab' : 'inactive-tab'">
                         <Icon :name="item.icon" style="color: blue; font-size: 1.5em;" class="w-4 h-4 flex-shrink-0" />
-                        <span class="truncate "
-                            v-if="creationPanelSelected.title === item.panel" style="color: blue;">
-                              {{ item.label }}
-                        </span>                     
+                        <span v-if="creationPanelSelected.title === item.panel" style="color: blue;">
+                            {{ item.label }}
+                        </span>
                     </div>
                 </template>
             </UTabs>
@@ -19,30 +18,30 @@
     </UCard>
 </template>
 <script setup lang="ts">
-import { PanelReports, PanelBasic,  PanelThird, PanelPregnancy, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
+import { PanelReports, PanelBasic, PanelThird, PanelPregnancy, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
 const props = defineProps({
     calendarEvent: Object,
 })
-onMounted(() => { 
+onMounted(() => {
     console.log('onMountedce', props.calendarEvent)
     creationPanelSelected.value = creationPanels['Third']
 
 });
-const isActive = (item:any) => { 
-  return item.panel === creationPanelSelected.value;
+const isActive = (item: any) => {
+    return item.panel === creationPanelSelected.value;
 };
 const creationPanels = {
     'Third': { component: PanelThird, title: 'Third' },
-   
+
     'Records': { component: PanelRecords, title: 'Records' },
     'Basic': markRaw({
         component: PanelBasic,
         title: 'Basic'
-    }),   
+    }),
     'Procedures': markRaw({
         component: PanelProcedures,
         title: 'Procedures',
-    }), 
+    }),
     'Pregnancy': { component: PanelPregnancy, title: 'Pregnancy' },
     'Injuries': { component: PanelInjuries, title: 'Injuries' },
     'Objects': { component: PanelObjects, title: 'Objects' },
@@ -75,7 +74,7 @@ const items = [{
     label: 'Procedimientos',
     icon: 'uil:surgical-mask',
     panel: 'Procedures',
-}, 
+},
 {
     label: 'Objetos',
     icon: 'uil:briefcase',
@@ -93,7 +92,7 @@ const items = [{
 },
 ]
 
-function onChange(index: any) {   
+function onChange(index: any) {
     const item = items[index]
     creationPanelSelected.value = creationPanels[item.panel]
     console.log('onChange', creationPanelSelected.value.title)
@@ -101,12 +100,14 @@ function onChange(index: any) {
 </script>
 <style scoped>
 .active-tab {
-  font-size: 16px;
+    font-size: 16px;
 }
+
 .inactive-tab {
-  font-size: 16px;
+    font-size: 16px;
 }
+
 .text-md {
-  font-size: 16px;
+    font-size: 16px;
 }
 </style>

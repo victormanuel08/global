@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const clickHandler = () => {
     options.value = []
+    
     retrieveFromApi()
 }
 
@@ -41,46 +42,83 @@ const retrieveFromApi = async () => {
     }
 };
 
+const isFee = ref(false)
+const uniqueSpecialities = []as any;
+
 const loader = async () => {
     await modelValue.value
     const querySet = ref({})
     if (modelValue.value.payment_model === 'FF') {
-        
+        isFee.value = true
     }
     if (modelValue.value.payment_model === 'EV' && modelValue.value.type_police === 'SE') {
         querySet.value = {
             amount_soat__gt: 0.1
         }
+        isFee.value = false
     }
     if (modelValue.value.payment_model === 'EV' && modelValue.value.type_police === 'PA') {
         querySet.value = {
             amount_particular__gt: 0.1
         }
+        isFee.value = false
     }
-    const response = await $fetch<any>('api/services/', {
+
+
+    if (!isFee.value) {
+        modelValue.value.services = [];
+        modelValue.value.specialities = [];
+        const response = await $fetch<any>('api/services/', {
             method: 'GET',
             params: querySet.value
         });
-        modelValue.value.services = response.results        
-        specialitiesSet.clear()
-        for (const service of modelValue.value.services) {
-            specialitiesSet.add(service.speciality)
+        
+        uniqueSpecialities.length = 0;
+        for (const fee of response.results) {
+          
+            modelValue.value.services.push(fee);
+            const especialidadExistente = uniqueSpecialities.find(
+                (especialidad: { id: any; }) => especialidad.id === fee.speciality_full.id
+            );
+
+            if (!especialidadExistente) {
+                uniqueSpecialities.push(fee.speciality_full);
+            }
         }
-        specialities.value = Array.from(specialitiesSet)
-        modelValue.value.specialities = []
-        for (const speciality of specialities.value) {
-            const querySet = {
-                id: speciality
-            }    
-            const response = await $fetch<any>('api/specialities/', {
-                method: 'GET',
-                params: querySet
-            });
-            modelValue.value.specialities = response.results
+        
+        modelValue.value.specialities = uniqueSpecialities;
+
+    } else {
+        modelValue.value.services = [];
+        modelValue.value.specialities = [];
+        uniqueSpecialities.length = 0;
+        const feeResponse = await $fetch<any>(`/api/fees/?search&policy=${modelValue.value.id}`, {
+            method: 'GET'
+        });
+     
+
+        for (const fee of feeResponse.results) {
+            fee.service_full.amount = fee.amount;
+            modelValue.value.services.push(fee.service_full);
+            const especialidadExistente = uniqueSpecialities.find(
+                (especialidad: { id: any; }) => especialidad.id === fee.service_full.speciality_full.id
+            );
+
+            if (!especialidadExistente) {
+                uniqueSpecialities.push(fee.service_full.speciality_full);
+            }
         }
-        console.log('modelValue', modelValue.value)
+        
+        modelValue.value.specialities = uniqueSpecialities;
+
     }
-      
+
+ console.log(modelValue.value.description,modelValue.value)
+}
+
+
+
+
 
 
 watch(

@@ -4,24 +4,6 @@
         <div class="grid grid-cols-1  md:grid-cols-4 m-4">
 
             <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
-                <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
-                    @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
-                    :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
-                    :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
-                </SelectChoice>
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
-                <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
-                    @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Condicion Accidentado:</label>
-                <SelectChoice :choiceType="'TYPE_ACCIDENT_CHOICES'" v-model="record.condition_full"
-                    @change="saveItem(record.id, 'condition', record.condition_full.id)" />
-            </div>
-            <div class="mr-2">
                 <label class="block text-sm font-medium text-gray-700">Frecuencia Cardiaca:</label>
                 <UInput v-model="record.ef_fc" @change="saveItem(record.id, 'ef_fc', record.ef_fc)" />
             </div>
@@ -39,41 +21,9 @@
             </div>
 
 
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Respuesta Ocular:</label>
-                <SelectChoice :choiceType="'GLASGOW_RO_CHOICES'" v-model="record.glasgow_ro_full"
-                    @change="saveItem(record.id, 'glasgow_ro', record.glasgow_ro_full.id)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Respuesta Verbal:</label>
-                <SelectChoice :choiceType="'GLASGOW_RV_CHOICES'" v-model="record.glasgow_rv_full"
-                    @change="saveItem(record.id, 'glasgow_rv', record.glasgow_rv_full.id)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Respuest Motora:</label>
-                <SelectChoice :choiceType="'GLASGOW_RM_CHOICES'" v-model="record.glasgow_rm_full"
-                    @change="saveItem(record.id, 'glasgow_rm', record.glasgow_rm_full.id)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">GLASGOW TOTAL:</label>
-                {{ glasgow }} / 15
-            </div>
            
         </div>
-        <div class="grid grid-cols-1  md:grid-cols-4 m-4">
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Coordenadas:</label>
-                <UInput type="text" :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude" readonly />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Sugerencias:</label>
-                <SelectAddress :coordinates="coordinates" v-model="addressOption" @change="validate(record.id)"/>  
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Direccion:</label>
-                <UTextarea variant="outline" v-model="record.address" @change="saveItem(record.id, 'address', record.address)" />
-            </div>
-        </div>
+  
 
         <div class="grid grid-cols-1  md:grid-cols-1 m-4">
 

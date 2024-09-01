@@ -35,11 +35,18 @@ exec(open('.\medicalrecords\scripts\make_services.py').read())
 
 python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_services.py').read())"
 
-python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_diagnoses.py','r', encoding='utf-8').read())"
+python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_specilities.py','r', encoding='utf-8').read())"
 
 
 ubuntu 
 
 python manage.py shell -c "exec(open('./medicalrecords/scripts/make_users.py').read())"
 
-
+✅ (para “aceptar”)
+❌ (para “rechazar”)
+⏩ (para “entrar”)
+⏪ (para “salir”)
+🚑 (para “ambulancia”)
+🏥 (para “consultorio médico”)
+📝 (para “editar”)
+🗑️ (para “borrar”)

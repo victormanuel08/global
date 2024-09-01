@@ -136,8 +136,8 @@ class ThirdViewSet(viewsets.ModelViewSet):
     serializer_class = ThirdSerializer
     # search_fields = ['name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
     #filterset_fields = ['type','type_document','speciality','name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
-    search_fields = ['type','name','last_name','second_name','second_last_name', 'nit', 'type_document']
-    filterset_fields = ['type','name','last_name','second_name','second_last_name', 'nit','type_document']
+    search_fields = ['type','name','last_name','second_name','second_last_name', 'nit', 'type_document','speciality']
+    filterset_fields = ['type','name','last_name','second_name','second_last_name', 'nit','type_document','speciality']
     
 class GeneralExamViewSet(viewsets.ModelViewSet):
     queryset = GeneralExam.objects.all()

@@ -123,11 +123,11 @@ TYPE_POLICE_CHOICES = (
     ('VI', 'VINCULADOS'),
 )
 
-VALUES_CHOICES = {
+VALUES_CHOICES = (
     ('SE', 'SOAT'),
     ('FO', 'FOSIGA-ECAT'),
     ('SM', 'SALARIO MINIMO'),
-}
+)
     
 TYPE_ACCIDENT_CHOICES = (
     ('CV', 'Conductor Vehiculo'),
@@ -198,6 +198,7 @@ class Policy(models.Model):
    
     template= models.BooleanField(default=False)
     template_origin= models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
+  
     
     class Meta:
         ordering = ['description']
@@ -238,6 +239,63 @@ def create_fees_for_policy(sender, instance, created, **kwargs):
                 )   
 
 
+class Specialities(models.Model):
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=20)
+    description = models.TextField(max_length=300)    
+    
+    class Meta:
+        ordering = ['description']
+        verbose_name = 'Especialidad'
+        verbose_name_plural = 'Especialidades'
+        
+    def __str__(self):
+        return self.description
+    
+class Services(models.Model):
+    id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=20)
+    description = models.TextField(max_length=300)
+    speciality = models.ForeignKey(Specialities, on_delete=models.CASCADE)
+    amount_soat = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount_particular = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
+    class Meta:
+        ordering = ['description']
+        verbose_name = 'Servicio'
+        verbose_name_plural = 'Servicios'
+        
+    def __str__(self):
+        return self.description
+
+    
+    
+class Fees(models.Model):
+    id = models.AutoField(primary_key=True)    
+    description = models.TextField(max_length=300, null=True, blank=True)
+    service = models.ForeignKey(Services, on_delete=models.CASCADE)
+    specialities = models.ForeignKey(Specialities, on_delete=models.CASCADE)
+    third_entity = models.ForeignKey(
+        'Thirds',
+        on_delete=models.PROTECT,
+        verbose_name="Entidad",
+        related_name="thirds_entity_fee",
+        #limit_choices_to={"thirds__name": "Paciente"},
+        null=True,
+        blank=True,
+    )  
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    policy= models.ForeignKey('Policy', on_delete=models.CASCADE, null=True, blank=True)
+    
+    
+    class Meta:
+        ordering = ['description']
+        verbose_name = 'Honorario'
+        verbose_name_plural = 'Honorarios'
+        
+    def __str__(self):
+        return self.description
+    
 
 class SystemsReview(models.Model):
     code = models.CharField(max_length=2, unique=True)
@@ -467,10 +525,15 @@ class Records(models.Model):
     def __str__(self): 
         return f"{self.id}"
     
+    
+def defaultGetDate():
+    return datetime(datetime.now().year, 1, 1)
+    
 class Values(models.Model):
-    type_values=models.CharField(max_length=2,choices=VALUES_CHOICES, default='SE')
+    type_values=models.CharField(max_length=2,choices=VALUES_CHOICES)
     amount=models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    year_date=models.DateField(default=datetime(datetime.now().year, 1, 1)) 
+    year_date=models.DateField(default=defaultGetDate)
+    #year_date=models.DateField(default=datetime(datetime.now().year, 1, 1)) 
     
     class Meta:
         ordering = ['type_values']

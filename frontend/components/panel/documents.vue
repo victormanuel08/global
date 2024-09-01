@@ -49,7 +49,8 @@
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Poliza: <span
                         @click="typeT = 'E', showModalPolice('')">➕</span></label>
-                <SelectInsurance v-model="record.policy_full" 
+                <SelectInsurance 
+                    :v-model="record.policy_full" 
                     :third="record.third_patient_full?.id"
                     @change="saveItem(record.id, 'policy', record.policy_full?.id)"
                     :placeholder="'Aseguradora'">

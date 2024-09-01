@@ -96,6 +96,19 @@
     return response;
   }
 
+  export const getuser = async (val: string) => {
+      
+      const response = await $fetch<any>(`/api/user/`, {
+        method: 'GET',
+        query: {
+          value: val,
+        }
+  
+      });
+  
+      return response;
+    }
+
   export const listDaysOptions = (date: any, enddate: any) => {
     const options = [];
 
