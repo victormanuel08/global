@@ -1,10 +1,11 @@
 <template>
   <ModalEditRecordAmbulance :calendarEvent="recordObject" v-if="isAmbulance" />
+  <ModalEditRecord :calendarEvent="recordObject" v-if="isMedicalOffice" />
   <div class="max-w-5xl mx-auto">
     <UCard class="my-2">
       <template #header>
         <div class="flex justify-between items-center">
-          <h2 class="font-bold">Historias Clinicas</h2>
+          <h2 class="font-bold" ><span @click="isAmbulance = false, isMedicalOffice= false">Historias Clinicas</span></h2>
           <div class="flex gap-3 my-3">
             <UInput v-model="search" placeholder="Buscar" />
             <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
@@ -23,8 +24,7 @@
             <tr>
               <th :class="ui.th">Fecha</th>
               <th :class="ui.th">Identificacion</th>
-              <th :class="ui.th">Paciente</th>
-              <th :class="ui.th">Diagnostico</th>
+              <th :class="ui.th">Paciente / Diagnostico</th>    
             
               <th :class="ui.th">Acciones</th>
             </tr>
@@ -34,15 +34,15 @@
             <tr v-for="(record, index) in records" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  {{ formatDateYYYYMMDD(record.date_time) }}
+                     <span v-if="record.number_report" title="Ambulancia"> 🚑  </span><span v-else title="Consultorio Medico"> 🏥  </span><span>{{ formatDateYYYYMMDD(record.date_time) }}</span>
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   Movil: {{ record.third_patient_full?.nit }}
                 </div>
-                <div class="flex items-center justify-center">
-                  Clinica: {{ record.third_patient_full?.number_report }}
+                <div class="flex items-center justify-center" v-if="record.number_report">
+                  Clinica: {{ record.number_report }}
                 </div>
               </td>
 
@@ -52,13 +52,11 @@
                   {{ record.third_patient_full?.name }} {{
                     record.third_patient_full?.last_name }}
                 </div>
-              </td>
-              <td :class="ui.td">
-
                 <div class="flex items-center justify-center">
                   {{ record.diagnosis_full?.description }}
                 </div>
               </td>
+    
     
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
@@ -80,6 +78,7 @@
 //const cities = ref([] as any[])
 const recordObject = ref<any>(null)
 const isAmbulance = ref(false)
+const isMedicalOffice = ref(false)
 const newRecordPatient = ref({})
 const newRecordMedic = ref({})
 const newRecordDiagnose = ref({})
@@ -168,9 +167,25 @@ const createRecord = async () => {
   newRecordDiagnose.value = ''
 }
 
-const showModalRecord = async (record: object) => {
-  recordObject.value = record
-  isAmbulance.value = true
+const showModalRecord = async (val: object) => {
+  console.log('record', val) 
+  isAmbulance.value = false
+  isMedicalOffice.value = false
+  if (val.number_report) {
+    const message = confirm('¿Estás seguro de editar este Registro Medico de Ambulancia?')
+    if (message) {
+      recordObject.value = val
+      isAmbulance.value = true
+    }
+  }else{
+
+    const message = confirm('¿Estás seguro de editar este Registro Medico de Consultorio?')
+    if (message) {
+      recordObject.value = val
+      isMedicalOffice.value = true
+    }
+  }
+
 }
 
 onMounted(() => {

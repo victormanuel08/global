@@ -3,7 +3,7 @@
       <UCard class="my-2">
         <template #header>
           <div class="flex justify-between items-center">
-            <h2 class="font-bold">Disponibilidad Especilistas</h2>
+            <h2 class="font-bold">Disponibilidad Vehicular</h2>
             <div class="flex gap-3 my-3">
                 <UInput v-model="search" placeholder="Buscar" />
                 <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
@@ -22,7 +22,7 @@
             <tr>
               <th :class="ui.th">Medico</th>
               <th :class="ui.th">Fecha</th>
-              <th :class="ui.th">Dia(s)-Sobrecupo / Tiempo Consulta-Cuota</th>
+              <th :class="ui.th">Conductor/Vehiculo</th>
               <th :class="ui.th">Horario</th>
               <th :class="ui.th">Acciones</th>
             </tr>

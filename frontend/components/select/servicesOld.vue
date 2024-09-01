@@ -1,7 +1,7 @@
 <template>
-    <USelectMenu v-model="modelValue" option-attribute="namenit" :options="options" :searchable="true" v-model:query="query"
+    <USelectMenu v-model="modelValue" option-attribute="description" :options="options" :searchable="true" v-model:query="query"
         :clearSearchOnClose="true" @click="clickHandler"
-        :placeholder="props.thirdType === 'P' ? 'Paciente' : props.thirdType === 'M' ? 'Médico' : props.thirdType === 'E' ? 'Entidad' : 'Clínica'"
+        placeholder="Servicios"
         >
     </USelectMenu>
 
@@ -15,21 +15,14 @@ const modelValue = defineModel<any>({ default: () => ({}) }) //Esto es para que 
 
 
 type Props = {
-    third?: object
     thirdType?: string
     specialities?: string | number
-    policeType?: string
 }
 
-
 const props = withDefaults(defineProps<Props>(), {
-    third: {},
     thirdType: '',
-    specialities: '',
-    policeType: ''
+    specialities: ''
 })
-
-console.log('stprops', props)
 
 const clickHandler = () => {
     retrieveFromApi()
@@ -38,27 +31,19 @@ const clickHandler = () => {
 const retrieveFromApi = async () => {
     const queryParams = {
         search: query.value,
-        type: props.thirdType,
+        //type: props.thirdType,
     }
 
     if (props.specialities) {
         queryParams.speciality = props.specialities?.id;
-
     }
 
-
-
-    const response = await $fetch<any>("api/thirds", {
+    const response = await $fetch<any>("api/services", {
         query: queryParams
     })
 
-    if (props.third && props.thirdType === 'SE') {
-        console.log('props.thirdapi', props.third)
-        response.results.push(props.third)
-    }
-
     options.value = response.results
-    console.log('optionsTQP', options.value)
+
    
 }
 

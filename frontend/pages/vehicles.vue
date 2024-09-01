@@ -17,10 +17,9 @@
         <table class="table-auto w-full permission-table">
           <thead>
             <tr>
-              <th :class="ui.th">Placa</th>
-              <th :class="ui.th">Marca</th>
+              <th :class="ui.th">Datos Vehiculo</th>
               <th :class="ui.th">Tipo</th>
-              <th :class="ui.th">Conductor</th>
+              <th :class="ui.th">Conductor/Empresa</th>
               <th :class="ui.th">Acciones</th>
             </tr>
           </thead>
@@ -28,35 +27,43 @@
 
             <tr v-for="(vehicle, index) in vehicles" :key="index">
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="vehicle.plate" @blur="saveItem(index, 'plate', vehicle.name)"
-                    class="border rounded p-1 " />
-
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="vehicle.brand" @blur="saveItem(index, 'brand', vehicle.brand)"
-                    class="border rounded p-1" />
-
+                <div class="grid grid-row justify-center">
+                  <div>
+                    <UInput v-model="vehicle.plate" @blur="saveItem(index, 'plate', vehicle.name)"
+                      class="border rounded p-1 w-32" placeholder="Placa" />
+                  </div>
+                  <div>
+                    <UInput v-model="vehicle.brand" @blur="saveItem(index, 'brand', vehicle.brand)"
+                      class="border rounded p-1 w-32" placeholder="Marca" />
+                  </div>
                 </div>
               </td>
               <td :enter-class="ui.td">
-                <SelectChoice :choiceType="'VEHICLE_TYPE_CHOICES'" v-model="vehicle.vehicle_type"
-                  @change="saveItem(vehicle.id, 'vehicle_type', vehicle.vehicle_type)" />
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'P'" v-model="vehicle.third_driver_full" :placeholder="'Conductor'"
-                    @change="saveItem(vehicle.id, 'third_driver', vehicle.third_driver_full.id)">
-                  </SelectThird>
+                <div class="grid grid-row justify-center">
+                  <SelectChoice :choiceType="'VEHICLE_TYPE_CHOICES'" v-model="vehicle.vehicle_type"
+                    @change="saveItem(vehicle.id, 'vehicle_type', vehicle.vehicle_type)"
+                    class="border rounded p-1 w-32" />
                 </div>
-
               </td>
-
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-    
+                <div class="grid grid-row justify-center">
+                  <div>
+                    <SelectThird :third-type="'P'" v-model="vehicle.third_driver_full" :placeholder="'Conductor'"
+                      @change="saveItem(vehicle.id, 'third_driver', vehicle.third_driver_full.id)"
+                      class="border rounded p-1 w-72">
+                    </SelectThird>
+                  </div>
+                  <div>
+                    <SelectThird :third-type="'E'" v-model="vehicle.third_entity_full" :placeholder="'Empresar'"
+                      @change="saveItem(vehicle.id, 'third_entity', vehicle.third_entity_full.id)"
+                      class="border rounded p-1 w-72">
+                    </SelectThird>
+                  </div>
+                </div>
+              </td>
+              <td :class="ui.td">
+                <div class="grid grid-row justify-center">
+
                   <span @click="deleteVehicle(vehicle.id)" :class="ui.span">🗑️</span>
                 </div>
               </td>
@@ -64,24 +71,31 @@
 
             <tr>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newVehiclePlate" placeholder="Ciudad" class="border rounded p-1" />
+                <div class="grid grid-row justify-center">
+                  <div>
+                    <UInput v-model="newVehiclePlate" placeholder="Placa" class="border rounded p-1" />
+                  </div>
+                  <div>
+                    <UInput v-model="newVehicleBrand" placeholder="Modelo" class="border rounded p-1" />
+                  </div>
                 </div>
               </td>
+
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <UInput v-model="newVehicleBrand" placeholder="Ciudad" class="border rounded p-1" />
-                </div>
+                <SelectChoice :choiceType="'VEHICLE_TYPE_CHOICES'" v-model="newVehicleType" />
               </td>
               <td :class="ui.td">
-                <SelectChoice :choiceType="'VEHICLE_TYPE_CHOICES'" v-model="newVehicleType"
-                 />
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'P'" v-model="newVehicleThird" :placeholder="'Conductor'"
-                   >
-                  </SelectThird>
+                <div class="grid grid-row justify-center">
+                  <div>
+                    <SelectThird :third-type="'P'" v-model="newVehicleThird" :placeholder="'Conductor'"
+                      class="border rounded p-1" />
+
+                  </div>
+                  <div>
+                    <SelectThird :third-type="'E'" v-model="newVehicleEntity" :placeholder="'Empresa'"
+                      class="border rounded p-1" />
+
+                  </div>
                 </div>
               </td>
 
@@ -106,6 +120,7 @@ const newVehiclePlate = ref('')
 const newVehicleBrand = ref('')
 const newVehicleType = ref('')
 const newVehicleThird = ref({})
+const newVehicleEntity = ref({})
 //const search = ref('')
 
 
@@ -161,6 +176,7 @@ const createVehicle = async () => {
     newVehicleBrand.value = ''
     newVehicleType.value = ''
     newVehicleThird.value = ''
+    newVehicleEntity.value = ''
     fetchVehicles()
     return
   }
@@ -171,7 +187,8 @@ const createVehicle = async () => {
       plate: newVehiclePlate.value,
       brand: newVehicleBrand.value,
       vehicle_type: newVehicleType.value.id,
-      third_driver: newVehicleThird.value.id
+      third_driver: newVehicleThird.value.id,
+      third_entity: newVehicleEntity.value.id
     }
   })
   fetchVehicles()
@@ -179,6 +196,7 @@ const createVehicle = async () => {
   newVehicleBrand.value = ''
   newVehicleType.value = ''
   newVehicleThird.value = ''
+  newVehicleEntity.value = ''
 
 }
 

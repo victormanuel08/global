@@ -4,7 +4,7 @@
     <UCard class="my-2">
       <template #header>
         <div class="flex justify-between items-center">
-          <h2 class="font-bold">Contratos</h2>
+          <h2 class="font-bold"><span @click="isFee = false">Contratos</span></h2>
           <div class="flex gap-3 my-3">
             <UInput v-model="search" placeholder="Buscar" />
             <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
@@ -237,6 +237,7 @@ onMounted(() => {
 })
 
 const feePolicies = (policy: any) => {
+  isFee.value = false
   policeObject.value = policy
   isFee.value = true
   console.log('feePolicies', policy)

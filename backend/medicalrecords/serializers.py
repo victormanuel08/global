@@ -3,6 +3,8 @@ from medicalrecords.models import *
 from medicalrecords.serializers import *
 from .models import Thirds
 from datetime import datetime, timedelta
+from users.models import User
+
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,11 +34,17 @@ class VehicleOnlySerializer(serializers.ModelSerializer):
         model = Vehicles
         fields = '__all__'
         
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+        
 class ThirdSerializer(serializers.ModelSerializer):    
     speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)    
     city_birth_full = CitySerializer(source = 'city_birth', read_only=True)   
     city_full = CitySerializer(source = 'city', read_only=True) 
     vehicle_full = VehicleOnlySerializer(source = 'vehicle', read_only=True)
+    user_full = CustomUserSerializer(source='user', read_only=True) 
     namenit = serializers.SerializerMethodField()
 
     def get_namenit(self, obj):
@@ -51,13 +59,15 @@ class ThirdSerializer(serializers.ModelSerializer):
         
 class VehicleSerializer(serializers.ModelSerializer):
     third_driver_full = ThirdSerializer(source = 'third_driver', read_only=True)
+    third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
     class Meta:
         model = Vehicles
         fields = '__all__'
         
 class PolicySerializer(serializers.ModelSerializer):
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
-  
+
+
     
     class Meta:
         model = Policy
@@ -68,7 +78,7 @@ class FeeSerializer(serializers.ModelSerializer):
     service_full = ServiceSerializer(source = 'service', read_only=True)
     speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
-    policy_full = PolicySerializer(source = 'policy', read_only=True)
+    
     
     class Meta:
         model = Fees
@@ -129,10 +139,12 @@ class ProcedureSerializer(serializers.ModelSerializer):
 class PoliceSerializer(serializers.ModelSerializer):
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
     vehicle_full = VehicleSerializer(source = 'vehicle', read_only=True)
+    fees = FeeSerializer(many=True, read_only=True)     
 
     class Meta:
         model = Policy
-        fields = '__all__'        
+        fields = '__all__'     
+    
         
 
 class RecordSerializer(serializers.ModelSerializer):    
@@ -167,8 +179,11 @@ class ScheduledSerializer(serializers.ModelSerializer):
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
     third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)
     speciality_full = SpecialitySerializer(source = 'speciality', read_only=True)
+    
     fee_full = FeeSerializer(source = 'fee', read_only=True)
     policy_full = PolicySerializer(source = 'policy', read_only=True)
+    service_full = ServiceSerializer(source = 'service', read_only=True)
+    
     class Meta:
         model = Scheduled
         fields = '__all__'

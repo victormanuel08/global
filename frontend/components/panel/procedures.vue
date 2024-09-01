@@ -62,7 +62,7 @@ const query = ref('');
 const fetchServices = async () => {
   const queryParams = {
     search: query.value,
-    speciality: 58,
+    speciality: props.calendarEvent?.third_medic_full?.speciality_full?.id,
   }
 
   const response = await $fetch<any>('api/services/', {

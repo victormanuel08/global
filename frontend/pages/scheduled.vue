@@ -1,4 +1,5 @@
 <template>
+  <ModalEditRecord :calendarEvent="recordObject" v-if="isMedicalOffice" />
   <div class="max-w-5xl mx-auto">
     <UCard class="m-3">
       <template #header>
@@ -57,48 +58,16 @@
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <span @click="confirmScheduled(scheduled.id, scheduled.confirmed)" :class="ui.span"
-                    title="Confirmar o desconfirmar">
+                    title="Confirmar o desconfirmar" v-if="!scheduled.record">
                     <template v-if="scheduled.confirmed">❌</template>
                     <template v-else>✅</template>
                   </span>
-                  <span @click="addHistory(scheduled.id)" :class="ui.span" title="Agregar Historia Medica">📝</span>
-                  <span @click="deleteScheduled(scheduled.id)" :class="ui.span" title="Eliminar">🗑️</span>
+                  <span @click="addHistory(scheduled)" :class="ui.span" title="Agregar Historia Medica">📝</span>
+                  <span @click="deleteScheduled(scheduled.id)" :class="ui.span" title="Eliminar"v-if="!scheduled.record">🗑️</span>
                 </div>
               </td>
             </tr>
-            <tr>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectOptionsDate v-model="newScheduledOptions" class="border rounded p-1 w-40"
-                    :third="newScheduledMedic" />
-                  <USelectMenu v-model="newScheduledOptionsHours" class="border rounded p-1 w-40" :options="rangehours"
-                    option-attribute="inter" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectSpecialities v-model="newScheduledSpeciality" class="border rounded p-1 w-60" />
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird class="border rounded p-1 w-28" :third-type="'M'" :specialities="newScheduledSpeciality"
-                    v-model="newScheduledMedic">
-                  </SelectThird>
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <SelectThird :third-type="'P'" class="border rounded p-1 w-28" v-model="newScheduledPatient">
-                  </SelectThird>
-                </div>
-              </td>
-              <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  <span @click="createScheduled" :class="ui.span">💾</span>
-                </div>
-              </td>
-            </tr>
+        
           </tbody>
         </table>
       </div>
@@ -108,6 +77,11 @@
 
 
 <script setup lang="ts">
+import type Records from './records.vue';
+
+const authUserStorage = useAuthUserStorage()
+const recordObject = ref<any>(null)
+const isMedicalOffice = ref(false)
 
 const newScheduledSpeciality = ref({})
 const newScheduledPatient = ref({})
@@ -174,6 +148,45 @@ watch(newScheduledOptions, async (newVal, oldVal) => {
     newScheduledOptionsHours.value = {}; // Vacía el arreglo si newScheduledOptions no tiene selección
   }
 });
+
+const addHistory =async (value: any) => {
+
+ if (value.record) {
+    alert('Esta Cita ya tiene Historia Medica')
+    const response =await  $fetch(`api/records/${value.record}/`)
+    console.log('responseQ', response)
+    recordObject.value = response
+    isMedicalOffice.value = true
+    return
+  }
+  const message = confirm('¿Estás seguro de agregar Historia Medica?. Esto normalmente se hace al iniiar la consulta')
+
+  if (message) {
+    const response = await  $fetch('api/records/', {
+            method: 'POST',
+            body: {
+                third_patient: value.third_patient,
+                third_medic: value.third_medic,    
+            },
+        })
+        if (response) {
+          const responseUpdated  = await $fetch(`api/scheduleds/${value.id}/`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+              record: response.id,
+              confirmed: true
+            }),
+          })
+          if (responseUpdated) {
+            fetchScheduleds()
+            alert('Historia Medica Agregada, Cita Confirmada')
+          }
+          
+          
+        }
+  
+      }
+}
 
 
 const ui = {

@@ -13,7 +13,8 @@
                 record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Tercero: <span @click="showModalThird('')">➕</span></label>
+            <label class="block text-sm font-medium text-gray-700">Tercero: <span
+                    @click="showModalThird('')">➕</span></label>
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
                 @change="saveItem(record.id, 'third_patient', record.third_patient_full?.id)" />
         </div>
@@ -50,6 +51,22 @@
             <label class="block text-sm font-medium text-gray-700">Sexo: </label>
             {{ record.third_patient_full?.sex_full?.name }}
         </div>
+        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+            <label class="block text-sm font-medium text-gray-700">Amamantamiento Complemntario: </label>
+            {{ record.maternity_complementary_full?.name }}
+        </div>
+        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+            <label class="block text-sm font-medium text-gray-700">Amaamantamiento extendido: </label>
+            {{ record.third_patient_full?.maternity_extend_full?.name }}
+        </div>
+        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+            <label class="block text-sm font-medium text-gray-700">Embarazo</label>
+            {{ record.third_patient_full?.maternity_pregnancy_full?.name }}
+        </div>
+        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+            <label class="block text-sm font-medium text-gray-700">Violencia :</label>
+            {{ record.third_patient_full?.maternity_violance_full?.name }}
+        </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Zona: </label>
             {{ record.third_patient_full?.zone_full?.name }}
@@ -70,7 +87,8 @@
             {{ record.third_patient_full?.email }}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Edicion Tercero:  <span @click="showModalThird('')">➕</span></label>
+            <label class="block text-sm font-medium text-gray-700">Edicion Tercero: <span
+                    @click="showModalThird('')">➕</span></label>
 
 
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
@@ -85,7 +103,7 @@
             <div class="m-2 g-4">
                 <label class="block text-sm font-medium">Alergias: {{ record.third_patient_full?.allergies }}. {{
                     newRecordAllergies
-                }}</label>
+                    }}</label>
                 <UTextarea v-model="newRecordAllergies" variant="outline" />
             </div>
             <div class="m-2 g-4">
@@ -137,31 +155,54 @@ const record = ref<any>({})
 const fetchRecord = async (q: any) => {
     if (!q) return
     const response = await $fetch<any>("api/records/" + q)
-    record.value = response   
+    record.value = response
 }
 
 onMounted(() => {
-    console.log('onMountedce2', props.calendarEvent)
-  //  record.value = props.calendarEvent
-    fetchRecord(props.calendarEvent?.id)
+    fetchProps()
+    record.value = props.calendarEvent
+
+    //fetchRecord(props.calendarEvent?.id)
 })
 
-await record.value;
+//await record.value;
 
 const showModalThird = (value: any) => {
     thirdSelectedThird.value = value
     isThird.value = true
 }
 
+const fetchProps = async () => {
+
+    props.calendarEvent.third_patient_full.type_full = await getCHOICE(props.calendarEvent.third_patient_full.type, 'TYPE_CHOICES')
+    props.calendarEvent.third_patient_full.sex_full = await getCHOICE(props.calendarEvent.third_patient_full.sex, "SEX_CHOICES")
+    props.calendarEvent.third_patient_full.blood_full = await getCHOICE(props.calendarEvent.third_patient_full.blood_type, "BLOOD_CHOICES")
+    props.calendarEvent.third_patient_full.etnia_full = await getCHOICE(props.calendarEvent.third_patient_full.ethnicity, "ETNIAS_CHOICES")
+    props.calendarEvent.third_patient_full.zone_full = await getCHOICE(props.calendarEvent.third_patient_full.zone, "ZONE_CHOICES")
+    props.calendarEvent.third_patient_full.occupation_full = await getCHOICE(props.calendarEvent.third_patient_full.occupation, "OCCUPATION_CHOICES")
+    props.calendarEvent.third_patient_full.maternity_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_breasfeeding, "MATERNITY_CHOICES")
+    props.calendarEvent.third_patient_full.maternity_complementary_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
+    props.calendarEvent.third_patient_full.maternity_extend_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")
+    props.calendarEvent.third_patient_full.maternity_pregnancy_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
+    props.calendarEvent.third_patient_full.maternity_violance_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
+    props.calendarEvent.third_patient_full.type_document_full = await getCHOICE(props.calendarEvent.third_patient_full.type_document, "TYPE_DOCUMENT_CHOICES")
+
+}
 
 
 const saveItem = async (index: number, field: string, value: string) => {
+
     const response = await $fetch(`api/records/${index}`, {
         method: 'PATCH',
         body: JSON.stringify({
             [field]: value,
         }),
     });
+    if (field === 'third_patient') {
+        alert('Tercero Actualizado')
+        props.calendarEvent.third_patient_full = response.third_patient_full
+        props.calendarEvent.third_patient = response.third_patient
+    }
 
 
 };

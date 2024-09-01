@@ -33,13 +33,13 @@
                         <tr v-for="(fee, index) in fees" :key="index">
                             <td :class="ui.td">
                                 <div class="grid grid-flow-row justify-left">
-                                    <span>{{ fee.specialities }}</span>
+                                    <span>{{ fee.service_full.speciality_full.description }}</span>
                                 </div>
                             </td>
 
                             <td :class="ui.td">
                                 <div class="grid grid-flow-row justify-left">
-                                    <span>{{ fee.service }}</span>
+                                    <span>{{ fee.service_full.description }}</span>
                                 </div>
                             </td>
 
@@ -124,7 +124,7 @@ const fetchFees = async () => {
         pagination,
         search,
         pending,
-    } = usePaginatedFetch<any>("/api/fees/");
+    } = usePaginatedFetch<any>(`/api/fees/?search&policy=${props.calendarEvent?.id}`);
 }
 
 const deleteFees = async (id: number) => {
@@ -141,26 +141,40 @@ onMounted(() => {
   fetchFees()
 })
 
-
 const createFee = async () => {
     const response = await $fetch<any>("/api/fees/", {
         method: "POST",
         body: {
-            speciality: newFeeSpeciality.value.id,
+            specialities: newFeeSpeciality.value.id,
             service: newFeeService.value.id,
             amount: newFeeAmount.value,
-            policy: props.calendarEvent?.id,
             third_entity: props.calendarEvent?.third_entity_full.id
         }
-    })
+    });
 
     if (response) {
-        fees.value.push(response)
-        newFeeSpeciality.value = {}
-        newFeeService.value = {}
-        newFeeAmount.value = '0'
+       
+        const policiesResponse = await $fetch<any>(`api/polices/${props.calendarEvent?.id}`, {
+            method: "GET"
+        });
+
+        if (policiesResponse) {
+            const updatedFees = [...policiesResponse.fees, response.id];
+            await $fetch(`api/polices/${props.calendarEvent?.id}`, {
+                method: "PATCH",
+                body: {
+                    fees: updatedFees
+                }
+            });
+        }
+
+        fees.value.push(response);
+        newFeeSpeciality.value = {};
+        newFeeService.value = {};
+        newFeeAmount.value = '0';
     }
-}
+};
+
 
 const ui = {
     td: 'p-1 border',

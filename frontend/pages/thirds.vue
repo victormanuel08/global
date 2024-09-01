@@ -67,8 +67,7 @@
                 </td>
                 <td :class="ui.td">
                   <div class="flex items-center justify-center">
-                    <span @click="showModalRecordAmbulance(third)" :class="ui.span"
-                      title="Agregar Historia Medica Ambulancia">📝</span>
+                 
                     <span @click="showModalThird(third)" :class="ui.span">🖊️</span>
                     <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
                   </div>
@@ -124,6 +123,8 @@
 
 
 <script setup lang="ts">
+import { getUniqueDomId } from '@fullcalendar/core/internal';
+
 
 
 
@@ -149,6 +150,7 @@ const type_list = ref({})
 const isThird = ref(false)
 const isAmbulance = ref(false)
 const thirdSelected = ref({})
+const user_full = ref({})
 
 const close = defineEmits(['close'])
 
@@ -167,10 +169,13 @@ const fetchThirds = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/thirds/");
 
+
+
 }
 
 const fetchChoices = async () => {
   const response = await $fetch<any>('api/api/choices/')
+
   blood_list.value = response.BLOOD_CHOICES
   etnias_list.value = response.ETNIAS_CHOICES
   maternity_breasfeeding_list.value = response.MATERNITY_BREASTFEEDING_CHOICES
@@ -221,6 +226,7 @@ const createThird = async () => {
     newThirdType.value = ''
     newThirdSex.value = ''
     newThirdBlood.value = ''
+    newThirdUser.value = ''
     fetchThirds()
     return
   }
@@ -236,7 +242,8 @@ const createThird = async () => {
       second_last_name: newThirdSecondLastName.value,
       type: newThirdType.value,
       blood_type: newThirdBlood.value,
-      sex: newThirdSex.value
+      sex: newThirdSex.value,
+      user: newThirdUser.value.id
 
     },
   })
