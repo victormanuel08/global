@@ -1,4 +1,4 @@
-from medicalrecords.models.specialities import Services
+from medicalrecords.models.specialities import *
 
 
 services_to_create = [
@@ -23,7 +23,7 @@ services_to_create = [
 # Creación de objetos Procedures
 for services_data in services_to_create: # esto
     try:
-        services = Services.objects.create(**services_data)
+        services = services.objects.create(**services_data)
         print("Created Servicios:", services)
     except Exception as e:
         print("Error creating Servicios:", e)
