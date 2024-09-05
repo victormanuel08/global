@@ -26,10 +26,15 @@
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Tercero Clinica: <span
-                        @click="typeT = 'C', typeTA='A', showModalThird('')">➕</span></label>
+                        @click="typeT = 'C', typeTA = 'A', showModalThird('')">➕</span></label>
                 <SelectThird :third-type="'C'" v-model="record.third_clinic_full"
                     @change="saveItem(record.id, 'third_clinic', record.third_clinic_full.id)">
                 </SelectThird>
+            </div>
+            <div class="m-2">
+                <label class="block text-sm font-medium text-gray-700">Ambulancia:</label>
+                <SelectVehicle v-model="thirdSelected.vehicle_full"
+                    @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)" :vehicleType="'AM'" />
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Tercero Conductor: <span
@@ -49,30 +54,32 @@
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Poliza: <span
                         @click="typeT = 'E', showModalPolice('')">➕</span></label>
-                <SelectInsurance 
-                    :v-model="record.policy_full" 
-                    :third="record.third_patient_full?.id"
-                    @change="saveItem(record.id, 'policy', record.policy_full?.id)"
-                    :placeholder="'Aseguradora'">
+                <SelectInsurance :v-model="record.policy_full" :third="record.third_patient_full?.id"
+                    @change="saveItem(record.id, 'policy', record.policy_full?.id)" :placeholder="'Aseguradora'">
                 </SelectInsurance>
             </div>
+            <div class="m-2">
+                <label class="block text-sm font-medium text-gray-700">Tipo Identificacion</label>
+                <UInput v-model="record.number_report_id" placeholder="TI. Reporte Clinica"
+                    @change="saveItem(record.id, 'number_report_id', record.number_report)" />
+            </div>
 
-            <div  class="m-2">
-                <label class="block text-sm font-medium text-gray-700">N° Reporte Ingreso clinica</label>
-                <UInput v-model="record.number_report"  placeholder="N° Reporte Ingreso clinica" 
+            <div class="m-2">
+                <label class="block text-sm font-medium text-gray-700">N° Id. Reporte Ingreso clinica</label>
+                <UInput v-model="record.number_report" placeholder="N° Id. Reporte Ingreso clinica"
                     @change="saveItem(record.id, 'number_report', record.number_report)" />
             </div>
         </div>
 
 
 
-        <div class="grid grid-cols-1  md:grid-cols-1" >
+        <div class="grid grid-cols-1  md:grid-cols-1">
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Observaciones Traslado:</label>
                 <UTextarea v-model="record.observations" variant="outline" placeholder="Descripcion de los Objetos"
                     @change="saveItem(record.id, 'observations', record.observations)"></UTextarea>
             </div>
- 
+
 
         </div>
 
@@ -116,8 +123,8 @@
 
         </div>
 
-        <div class="grid grid-cols-1  md:grid-cols-5">
-           <div></div>
+        <div class="grid grid-cols-1  md:grid-cols-6">
+            <div></div>
             <div class="m-5">
                 <button @click="signedRecord('signed')">
                     🖋️ Firmar aqui
@@ -126,12 +133,14 @@
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
-                        Dr(a). {{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name }} {{
-                            record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name }}
+                        Dr(a). {{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name
+                        }} {{
+                            record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name
+                        }}
                     </p>
                 </strong>
             </div>
-            
+
             <div class="m-5">
                 <button @click="signedRecord('signed_recived')">
                     🖋️ Firmar aqui
@@ -146,7 +155,7 @@
                     </p>
                 </strong>
             </div>
-            
+
             <div class="m-5">
                 <button @click="signedRecord('signed_driver')">
                     🖋️ Firmar aqui
@@ -161,13 +170,27 @@
                     </p>
                 </strong>
             </div>
+            <div class="m-5">
+                <button @click="signedRecord('signed_patient')">
+                    🖋️ Firmar aqui
+                </button>
+                <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
+                    v-if="record.signed_patient" />
+                <strong>
+                    <hr style="border: 1px solid black; font-weight: bold;">
+                    <p>
+                        Paciente: {{ record.third_patient_full?.name }} {{ record.third_patient_full?.second_name }} {{
+                            record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
+                    </p>
+                </strong>
+            </div>
+            <div></div>
 
-  
         </div>
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
-    <ModalEditThird  :typeT="typeT"   v-model="isThird" />
+    <ModalEditThird :typeT="typeT" v-model="isThird" />
     <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
 
 </template>

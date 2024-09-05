@@ -383,7 +383,8 @@ class Records(models.Model):
         null=True,
         blank=True,
     )  
-    date_time = models.DateTimeField(auto_now_add=True)   
+    date_time = models.DateTimeField(auto_now_add=True)  
+    diagnosis_multiple=models.ManyToManyField('Diagnoses', blank=True) 
     diagnosis = models.ForeignKey(
         "Diagnoses",
         on_delete=models.PROTECT,
@@ -462,7 +463,7 @@ class Records(models.Model):
     glasgow_rm = models.CharField(max_length=10,choices=GLASGOW_RM_CHOICES,null=True, blank=True)
     procedures = models.ManyToManyField(Procedures, blank=True)
     procedures_others=models.CharField(max_length=300,null=True, blank=True)
-
+    descript_procedures=models.CharField(max_length=300,null=True, blank=True)
     half = models.CharField(max_length=2,choices=HALF_CHOICES,null=True, blank=True)
     time_start = models.TimeField( null=True, blank=True)
     time_end = models.TimeField( null=True, blank=True)
@@ -479,9 +480,11 @@ class Records(models.Model):
     live = models.BooleanField(null=True, blank=True)
     signed_driver=models.TextField(null=True,blank=True)
     signed_recived=models.TextField(null=True,blank=True)  
+    signed_patient=models.TextField(null=True,blank=True)
     # signed_profesional_send=models.TextField(null=True,blank=True)  
     obj= models.BooleanField(null=True, blank=True)
     value_obj=models.CharField(max_length=200,null=True, blank=True) 
+    obs_value_obj=models.CharField(max_length=200,null=True, blank=True)
     third_obj = models.ForeignKey(
         'Thirds',
         on_delete=models.PROTECT,
@@ -500,6 +503,15 @@ class Records(models.Model):
         null=True,
         blank=True,
     )
+    third_buddy = models.ForeignKey(
+        'Thirds',
+        on_delete=models.PROTECT,
+        verbose_name="Acompañante",
+        related_name="thirds_buddy",
+        #limit_choices_to={"thirds__name": "Medico"},
+        null=True,
+        blank=True,
+    )
     vehicle=models.ForeignKey('Vehicles', on_delete=models.PROTECT, null=True, blank=True)
     signed_obj=models.TextField(null=True,blank=True)  
     relationship_obj = models.CharField(max_length=2,choices=RELATIONSHIP_CHOICES,null=True, blank=True)
@@ -512,6 +524,7 @@ class Records(models.Model):
     total_services = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
     number_report= models.CharField(max_length=100,null=True, blank=True)
+    number_report_id= models.CharField(max_length=10,null=True, blank=True)
     condition = models.CharField(max_length=2, choices= TYPE_ACCIDENT_CHOICES, null=True, blank=True)
     
     imgcc = models.ImageField(upload_to='records/', null=True, blank=True)
