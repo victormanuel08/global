@@ -26,6 +26,15 @@
                     @change="saveItem(record.id, 'value_obj', record.value_obj)"
                 ></UTextarea>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Observaciones Inherentes al Paciente:</label>
+                <UTextarea
+                    v-model="record.obs_value_obj"
+                    variant="outline"
+                    placeholder="Onservaciones Inherentes al Paciente"
+                    @change="saveItem(record.id, 'obs_value_obj', record.obs_value_obj)"
+                ></UTextarea>
+            </div>
         </div>
 
         <div class="grid grid-cols-1  md:grid-cols-3 mt-4" v-if="record.obj" >

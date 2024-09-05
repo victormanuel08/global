@@ -34,7 +34,7 @@
                   </div>
                   <div>
                     <UInput v-model="vehicle.brand" @blur="saveItem(index, 'brand', vehicle.brand)"
-                      class="border rounded p-1 w-32" placeholder="Marca" />
+                      class="border rounded p-1 w-32" placeholder="Marca / Movil" />
                   </div>
                 </div>
               </td>
@@ -76,7 +76,7 @@
                     <UInput v-model="newVehiclePlate" placeholder="Placa" class="border rounded p-1" />
                   </div>
                   <div>
-                    <UInput v-model="newVehicleBrand" placeholder="Modelo" class="border rounded p-1" />
+                    <UInput v-model="newVehicleBrand" placeholder="Modelo /  Movil" class="border rounded p-1" />
                   </div>
                 </div>
               </td>

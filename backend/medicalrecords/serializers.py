@@ -60,6 +60,11 @@ class ThirdSerializer(serializers.ModelSerializer):
 class VehicleSerializer(serializers.ModelSerializer):
     third_driver_full = ThirdSerializer(source = 'third_driver', read_only=True)
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    placamovil = serializers.SerializerMethodField()
+
+    def get_placamovil(self, obj):
+        return f"{obj.plate} - {obj.brand}"
+        
     class Meta:
         model = Vehicles
         fields = '__all__'
@@ -152,6 +157,7 @@ class RecordSerializer(serializers.ModelSerializer):
     third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)    
     third_medic_clinic_full = ThirdSerializer(source = 'third_medic_clinic', read_only=True)    
     third_entity_full = ThirdSerializer(source = 'third_entity', read_only=True)
+    third_buddy_full = ThirdSerializer(source = 'third_buddy', read_only=True)
     # third_relationship_full = ThirdSerializer(source = 'third_relationship', read_only=True)
     third_clinic_full = ThirdSerializer(source = 'third_clinic', read_only=True)
     third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
