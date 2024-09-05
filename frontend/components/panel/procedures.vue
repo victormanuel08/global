@@ -3,10 +3,8 @@
     <h1>Procedimientos</h1>
     <div class="grid grid-cols-2 gap-4 md:grid-cols-5">
       <div v-for="(service, index) in services" :key="index">
-        <UCheckbox v-model="newServices" class="border rounded p-1"
-          :label="service.description"
-          @change="saveServices()" 
-          :value="service.id"/>
+        <UCheckbox v-model="newServices" class="border rounded p-1" :label="service.description"
+          @change="saveServices()" :value="service.id" />
       </div>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-1 m-4">
@@ -15,7 +13,13 @@
         <UInput v-model="procedures_others" variant="outline" placeholder="Motivo de la Consulta"
           @change="saveServices()" />
       </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Descripcion del Procedimiento:</label>
+        <UTextarea v-model="record.descript_procedures" variant="outline" placeholder="Descripcion del Procedimiento"
+          @change="saveItem(record.id, 'descript_procedures', record.descript_procedures)"></UTextarea>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -55,6 +59,16 @@ const saveServices = async () => {
     })
   });
   console.log('Respuesta:', response);
+};
+
+const saveItem = async (index: number, field: string, value: string) => {
+    const response = await $fetch(`api/records/${index}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            [field]: value,
+        }),
+    });
+    fetchRecord(props.calendarEvent?.id)  
 };
 
 const query = ref('');

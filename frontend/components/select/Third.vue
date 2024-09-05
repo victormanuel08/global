@@ -1,16 +1,16 @@
 <template>
-    <USelectMenu v-model="modelValue" option-attribute="namenit" :options="options" :searchable="true" v-model:query="query"
-        :clearSearchOnClose="true" @click="clickHandler"
-        :placeholder="props.thirdType === 'P' ? 'Paciente' : props.thirdType === 'M' ? 'Médico' : props.thirdType === 'E' ? 'Entidad' : 'Clínica'"
-        >
+    <USelectMenu v-model="modelValue" option-attribute="namenit" :options="options" :searchable="true"
+        v-model:query="query" :clearSearchOnClose="true" @click="clickHandler"
+        :placeholder="props.thirdType === 'P' ? 'Paciente' : props.thirdType === 'M' ? 'Médico' : props.thirdType === 'E' ? 'Entidad' : 'Clínica'">
     </USelectMenu>
 
 </template>
 <script setup lang="ts">
 
 const options = ref<any[]>([])
-const typeThird = ref('asasasa')
 const query = ref("")
+const typeThird = ref('asasasa')
+
 const modelValue = defineModel<any>({ default: () => ({}) }) //Esto es para que el componente pue1da ser usado con v-model
 
 
@@ -59,7 +59,7 @@ const retrieveFromApi = async () => {
 
     options.value = response.results
     console.log('optionsTQP', options.value)
-   
+
 }
 
 

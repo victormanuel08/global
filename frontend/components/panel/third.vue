@@ -18,6 +18,12 @@
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
                 @change="saveItem(record.id, 'third_patient', record.third_patient_full?.id)" />
         </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Tercero Acompañante: <span
+                    @click="showModalThird('')">➕</span></label>
+            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_buddy_full"
+                @change="saveItem(record.id, 'third_buddy', record.third_buddy_full?.id)" />
+        </div>
     </div>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4" v-if="record.third_patient_full?.type_document !== 'AS'">
         <div>
@@ -56,7 +62,7 @@
             {{ record.maternity_complementary_full?.name }}
         </div>
         <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
-            <label class="block text-sm font-medium text-gray-700">Amaamantamiento extendido: </label>
+            <label class="block text-sm font-medium text-gray-700">Amamantamiento extendido: </label>
             {{ record.third_patient_full?.maternity_extend_full?.name }}
         </div>
         <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
@@ -94,6 +100,12 @@
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
                 @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)" />
 
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Tercero Acompañante: <span
+                    @click="showModalThird('')">➕</span></label>
+            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_buddy_full"
+                @change="saveItem(record.id, 'third_buddy', record.third_buddy_full?.id)" />
         </div>
 
     </div>
