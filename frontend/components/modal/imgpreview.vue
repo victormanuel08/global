@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { VueImageZoomer } from 'vue-image-zoomer';
+// import { VueImageZoomer } from 'vue-image-zoomer';
 
 export default {
 
@@ -18,9 +18,9 @@ export default {
         imgRoute: String,
     },
     defineEmits: ['close'],
-    components: {
-        VueImageZoomer,
-    },
+    //components: {
+    //    VueImageZoomer,
+    //},
 };
 </script>
 
