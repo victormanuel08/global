@@ -1,9 +1,9 @@
 module.exports = {
   apps : [
     {
-      name:"Global",
+      name:"GlobalSafeIPS",
       script: ".output/server/index.mjs",
-      port: 3001
+      port: 3005
     }
   ]
 }
