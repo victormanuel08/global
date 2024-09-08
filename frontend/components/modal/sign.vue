@@ -2,9 +2,7 @@
     <UModal :record="record" :close="close" :detail="detail">
         <div class="signature-box border rounded">
             <div class="signature-content border rounded">
-
                 <canvas ref="signatureCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
-
             </div>
             <div class="buttons mb-2">
                 <UButton variant="soft" @click="clearSignature">Iniciar</UButton>
@@ -18,11 +16,7 @@
 <script>
 
 import SignaturePad from "signature_pad";
-
-
-
 export default {
-
     props: {
         record: Object,
         detail: Boolean,
@@ -32,19 +26,16 @@ export default {
     methods: {
         data() {
             return {
-                canvasWidth: 500, // Ancho del lienzo (en px)
-                canvasHeight: 200, // Alto del lienzo (en px)
+                canvasWidth: 500, 
+                canvasHeight: 200, 
             };
         },
         mounted() {
             const canvas = this.$refs.signatureCanvas;
             const signaturePad = new SignaturePad(canvas);
-
-            // Configura opciones adicionales si es necesario
+ 
             signaturePad.penColor = 'blue';
-            // ...
-
-            // Puedes acceder a la firma como base64
+       
             const signatureData = signaturePad.toDataURL();
             console.log('Firma en base64:', signatureData);
         },
@@ -74,23 +65,22 @@ export default {
                     }),
                 });
             }
-            //como imprimo aca la prop record que viene de la tabla de records.vue);
-
             this.$emit('close', false);
         },
     },
 };
+
 </script>
+
 <style scoped>
+
 .signature-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
     border: 2px double blue;
-
     border-radius: 20px;
-
 }
 
 .signature-content {
@@ -104,4 +94,5 @@ export default {
     display: flex;
     gap: 1rem;
 }
+
 </style>

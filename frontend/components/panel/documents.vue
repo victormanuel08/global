@@ -101,42 +101,48 @@
                 <button @click="photoRecord('imgtp')">
                     📷 TARJETA PROPIEDAD
                 </button>
-                <img :src="record.imgtp" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgtp" />
+                <img :src="record.imgtp" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgtp"
+                    @click="imgPreview(record.imgtp)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imglc')">
                     📷 LICENCIA CONDUCIR
                 </button>
-                <img :src="record.imglc" alt="Imagen Base64" width="60%" height="auto" v-if="record.imglc" />
+                <img :src="record.imglc" alt="Imagen Base64" width="60%" height="auto" v-if="record.imglc"
+                    @click="imgPreview(record.imglc)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgco')">
                     📷 CONSENTIMIENTO
                 </button>
-                <img :src="record.imgco" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgco" />
+                <img :src="record.imgco" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgco"
+                    @click="imgPreview(record.imgco)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgic')">
                     📷 INGRESO CLINICA
                 </button>
-                <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgic" />
+                <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgic"
+                    @click="imgPreview(record.imgic)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imghd')">
                     📷 Huella Original
                 </button>
-                <img :src="record.imghd" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghd" />
-                <a :href="record.imghd" download="huella_original.jpg" v-if="record.imghd">
+                <img :src="record.imghd" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghd"
+                    @click="imgPreview(record.imghd)" />
+                <!--<a :href="record.imghd" download="huella_original.jpg" v-if="record.imghd">
                     Descargar imagen
                 </a>
+                -->
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="RegenerateHD(record.id)">
                     📷 Huella ProcesadaBeta
                 </button>
-                <img :src="record.imghdr" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghdr" />
+                <img :src="record.imghdr" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghdr"
+                    @click="imgPreview(record.imghdr)" />
             </div>
-
         </div>
 
         <div class="grid grid-cols-1  md:grid-cols-5">
@@ -187,21 +193,15 @@
                 </strong>
             </div>
             <div class="m-5">
-                <div class="flex flex-column-3">
-                    <span @click="signedRecord('signed_patient')">
-                        🖋️ Firmar
-                    </span>
-                    <span @click="photoRecord('imghd')">
-                        📷 Huellar
-                    </span>
-
-                </div>
-                <div class="grid grid-cols-2">
+                <button @click="signedRecord('signed_patient')">
+                    🖋️ Firmar
+                </button>
+                <span class="flex grid-flow-col">
                     <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
                         v-if="record.signed_patient" />
-                    <img :src="record.imghdr" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghdr"
+                    <img :src="record.imghdr" alt="Imagen Base64" width="40%" height="auto" v-if="record.imghdr"
                         class="rotated-image-transform" />
-                </div>
+                </span>
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
@@ -216,16 +216,18 @@
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
     <ModalEditThird :typeT="typeT" v-model="isThird" />
     <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
-   
+    <ModalImgpreview :imgRoute="imgRoute" @close="handleModalClose" v-model="isPreview" />
 
 </template>
 
 <script lang="ts" setup>
 
 const typeSing = ref('')
+const imgRoute = ref('')
 
 const typeImg = ref('')
 const isSing = ref(false)
+const isPreview = ref(false)
 
 const detail = ref(false)
 const typeT = ref('')
@@ -242,6 +244,11 @@ const showModalThird = (value: any) => {
     console.log('showModalThird', thirdSelected)
     isThird.value = true
 
+}
+
+const imgPreview = (value: any) => {
+    imgRoute.value = value
+    isPreview.value = true
 }
 
 const showModalPolice = (value: any) => {
@@ -265,7 +272,10 @@ const fetchRecord = async (q: any) => {
     record.value = response
     console.log('RECORDobjets', record.value)
     record.value.half_full = await getCHOICE(record.value.half, 'HALF_CHOICES')
-
+    if (typeImg.value === 'imghd') {
+        RegenerateHD(record.value.id)
+        typeImg.value = ''
+    }
 }
 
 const signedRecord = async (q: string) => {
@@ -302,6 +312,7 @@ const handleModalClose = async (value: any) => {
     console.log('handleModalClose', thirdSelected)
     console.log('handleModalClose', props.calendarEvent)
     await fetchRecord(props.calendarEvent?.id)
+
 
 }
 

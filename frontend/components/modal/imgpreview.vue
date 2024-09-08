@@ -1,96 +1,38 @@
 <template>
-    <UModal :record="record" :close="close" :detail="detail">
+    <UModal :img:close="close">
         <div class="signature-box border rounded">
             <div class="signature-content border rounded">
-
-                <canvas ref="signatureCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
-
-            </div>
-            <div class="buttons mb-2">
-                <UButton variant="soft" @click="clearSignature">Iniciar</UButton>
-                <UButton variant="soft" @click="saveSignature">Guardar</UButton>
-
+                <!--<vue-image-zoomer :regular="imgRoute"  />  :zoom="imgRoute" -->
+                <img :src="imgRoute" alt="Imagen" />
             </div>
         </div>
     </UModal>
 </template>
 
 <script>
-
-import SignaturePad from "signature_pad";
-
-
+import { VueImageZoomer } from 'vue-image-zoomer';
 
 export default {
 
     props: {
-        record: Object,
-        detail: Boolean,
-        typeThird: String,
+        imgRoute: String,
     },
     defineEmits: ['close'],
-    methods: {
-        data() {
-            return {
-                canvasWidth: 500, // Ancho del lienzo (en px)
-                canvasHeight: 200, // Alto del lienzo (en px)
-            };
-        },
-        mounted() {
-            const canvas = this.$refs.signatureCanvas;
-            const signaturePad = new SignaturePad(canvas);
-
-            // Configura opciones adicionales si es necesario
-            signaturePad.penColor = 'blue';
-            // ...
-
-            // Puedes acceder a la firma como base64
-            const signatureData = signaturePad.toDataURL();
-            console.log('Firma en base64:', signatureData);
-        },
-        clearSignature() {
-            const signaturePad = new SignaturePad(this.$refs.signatureCanvas);
-            signaturePad.clear();
-        },
-        saveSignature() {
-            const signatureData = this.$refs.signatureCanvas.toDataURL('image/png');
-            console.log('Firma guardada:', signatureData);
-            console.log('Firma guardadaen modal:', this.record)
-            if (this.detail) {
-                console.log('PROPMODALRECORD:', this.record);
-                const response = $fetch(`api/records_details/${this.record}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({
-                        [this.typeThird]: signatureData,
-                    }),
-                });
-            } else {
-                console.log('typeThrodSigned:', this.typeThird);
-                console.log('singasasasas1111111:', this.record.id);
-                const response = $fetch(`api/records/${this.record.id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({
-                        [this.typeThird]: signatureData,
-                    }),
-                });
-            }
-            //como imprimo aca la prop record que viene de la tabla de records.vue);
-
-            this.$emit('close', false);
-        },
+    components: {
+        VueImageZoomer,
     },
 };
 </script>
+
 <style scoped>
+
 .signature-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
     border: 2px double blue;
-
     border-radius: 20px;
-
 }
 
 .signature-content {
@@ -104,4 +46,5 @@ export default {
     display: flex;
     gap: 1rem;
 }
+
 </style>
