@@ -38,11 +38,11 @@
                 </div>
               </td>
               <td :class="ui.td">
-                <div class="flex items-center justify-center">
-                  Movil: {{ record.third_patient_full?.nit }}
+                <div class="flex items-center justify-start">
+                  Movil:  {{ record.third_patient_full?.type_document }}. {{ record.third_patient_full?.nit }}
                 </div>
-                <div class="flex items-center justify-center" v-if="record.number_report">
-                  Clinica: {{ record.number_report }}
+                <div class="flex items-center justify-start" v-if="record.number_report">
+                  Clinica: {{ record.number_report_id }}. {{ record.number_report }}
                 </div>
               </td>
 

@@ -69,7 +69,8 @@ const loader = (path: string) => {
    // useRouter().push(path)
 }
 
-const showChilds = ref(menuItems.value.map(() => false))
+const showChilds = ref(menuItems.value ? menuItems.value.map(() => false) : []);
+
 
 const toggleChilds = (index: number) => {
 // aca 

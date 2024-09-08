@@ -127,6 +127,9 @@ VALUES_CHOICES = (
     ('SE', 'SOAT'),
     ('FO', 'FOSIGA-ECAT'),
     ('SM', 'SALARIO MINIMO'),
+    ('EO', 'EMAIL ORIGEN (Gmail)'),
+    ('ED', 'EMAIL DESTINO (Gmail)'),
+    ('EP', "CLAVE APP EMAIL ORIGEN (Gmail)"),
 )
     
 TYPE_ACCIDENT_CHOICES = (
@@ -481,6 +484,7 @@ class Records(models.Model):
     signed_driver=models.TextField(null=True,blank=True)
     signed_recived=models.TextField(null=True,blank=True)  
     signed_patient=models.TextField(null=True,blank=True)
+    signed_dactilar=models.TextField(null=True,blank=True)
     # signed_profesional_send=models.TextField(null=True,blank=True)  
     obj= models.BooleanField(null=True, blank=True)
     value_obj=models.CharField(max_length=200,null=True, blank=True) 
@@ -533,6 +537,8 @@ class Records(models.Model):
     imglc= models.ImageField(upload_to='records/', null=True, blank=True)
     imgco= models.ImageField(upload_to='records/', null=True, blank=True)
     imgic= models.ImageField(upload_to='records/', null=True, blank=True)
+    imghd= models.ImageField(upload_to='records/', null=True, blank=True)
+    imghdr= models.ImageField(upload_to='records/', null=True, blank=True)
     
     latitude= models.CharField(max_length=20,null=True, blank=True)
     longitude= models.CharField(max_length=20,null=True, blank=True)
@@ -554,6 +560,7 @@ def defaultGetDate():
 class Values(models.Model):
     type_values=models.CharField(max_length=2,choices=VALUES_CHOICES)
     amount=models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    val= models.CharField(max_length=100,null=True, blank=True)
     year_date=models.DateField(default=defaultGetDate)
     #year_date=models.DateField(default=datetime(datetime.now().year, 1, 1)) 
     

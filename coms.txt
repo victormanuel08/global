@@ -35,12 +35,12 @@ exec(open('.\medicalrecords\scripts\make_services.py').read())
 
 python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_services.py').read())"
 
-python manage.py shell -c "exec(open('.\medicalrecords\scripts\make_specilities.py','r', encoding='utf-8').read())"
+python manage.py shell -c "exec(open('./medicalrecords/scripts/make_services.py','r', encoding='utf-8').read())"
 
 
 ubuntu 
 
-python manage.py shell -c "exec(open('./medicalrecords/scripts/make_users.py').read())"
+python manage.py shell -c "exec(open('./medicalrecords/scripts/make_citys.py').read())"
 
 ✅ (para “aceptar”)
 ❌ (para “rechazar”)
@@ -50,3 +50,46 @@ python manage.py shell -c "exec(open('./medicalrecords/scripts/make_users.py').r
 🏥 (para “consultorio médico”)
 📝 (para “editar”)
 🗑️ (para “borrar”)
+
+Citas Médicas:
+📅 uil:file-alt Programar citas
+🕒 uil:file-alt Horarios de atención
+🚑 uil:file-alt Urgencias médicas
+📝 uil:file-alt Historial de citas
+👤 uil:file-alt Pacientes
+Consultorio Médico:
+🏥 uil:file-alt Información del consultorio
+👨‍⚕️ uil:file-alt Médicos y especialistas
+📋 uil:file-alt Expedientes médicos
+📅 uil:file-alt Horarios de consultas
+📞 uil:file-alt Contacto
+Calendario:
+🗓️ uil:file-alt Planificación de eventos
+⏰ uil:file-alt Recordatorios
+📅 uil:file-alt Citas programadas
+🌞 uil:file-alt Disponibilidad
+📆 uil:file-alt Eventos especiales
+Vehículos:
+🚗 uil:file-alt Registro de vehículos
+🚑 uil:file-alt Ambulancias
+🛠️ uil:file-alt Mantenimiento
+📝 uil:file-alt Seguros
+📍 uil:file-alt Ubicación
+Valores:
+🩺 uil:file-alt Signos vitales
+🌡️ uil:file-alt Temperatura
+💉 uil:file-alt Análisis de sangre
+📊 uil:file-alt Gráficos de salud
+📈 uil:file-alt Tendencias
+
+Ícono de una “i” (Información): ℹ️
+Ícono de un “alista” (Checklist): ☑️
+Ícono de un “lápiz” (Pencil): ✏️
+Ícono de un “disquete” (Guardar): 💾
+Ícono de un “corazón” (Me gusta): ❤️
+Ícono de un “ojo” (Visión): 👁️
+Ícono de un “rayo” (Rayo): ⚡️
+Ícono de un “sol” (Sol): ☀️
+Ícono de una “luna” (Luna): 🌙
+Ícono de un “enlace” (Enlace): 🔗
+☝️

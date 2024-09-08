@@ -22,18 +22,14 @@
         <div class="m-2">
             <div class="m-2">
                 <label>Diagnostico Principal:</label>
-                <SelectDiagnoses v-model="record.diagnosis_1_full"
-                    @change="saveItem(record.id, 'diagnosis', record.diagnosis_1_full?.id)" />
+                <SelectDiagnoses v-model="record.diagnosis_full"
+                    @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)" />
             </div>
             <div class="m-2">
                 <label>Diagnosticos Secundarios:</label>
-                <SelectDiagnosesMulti v-model="record.diagnosis_multi"
-                     />
+                <SelectDiagnosesMulti v-model="record.diagnosis_multi" />
             </div>
-            <div class="m-2">
-                <label>Procedimientos:</label>
-                <SelectChoice :choiceType="'BODY_PART_CHOICES'" v-model="record.body_part_full" />
-            </div>
+           
             <div class="m-2">
                 <label>Parte Principal:</label>
                 <SelectChoice :choiceType="'BODY_PART_CHOICES'" v-model="record.body_part_full" />
@@ -73,6 +69,7 @@
             </div>
         </div>
     </div>
+    <PanelProcedures :calendarEvent="props.calendarEvent" />
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +79,8 @@ const listInjuries = ref([] as injurie[])
 const listInjuries2 = ref([] as any[])
 const listBody = ref([] as any[])
 const point = ref(0)
+const procedures_others = ref('')
+const newServices = ref([] as number[]);
 
 
 
@@ -214,11 +213,21 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 const retrieveFromApi = async (q: any) => {
-    const response = await $fetch<any>("api/records/" + props.calendarEvent?.id )
+    const response = await $fetch<any>("api/records/" + props.calendarEvent?.id)
     record.value = response
 }
 
-
+const saveServices = async () => {
+    console.log('Guardando', newServices.value + ' ' + procedures_others.value);
+    const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
+        method: 'Patch',
+        body: JSON.stringify({
+            service: newServices?.value,
+            procedures_others: procedures_others?.value
+        })
+    });
+    console.log('Respuesta:', response);
+};
 
 </script>
 <style>

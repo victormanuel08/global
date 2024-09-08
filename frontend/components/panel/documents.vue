@@ -34,7 +34,8 @@
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Ambulancia:</label>
                 <SelectVehicle v-model="thirdSelected.vehicle_full"
-                    @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)" :vehicleType="'AM'" />
+                    @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)"
+                    :vehicleType="'AM'" />
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Tercero Conductor: <span
@@ -61,7 +62,7 @@
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Tipo Identificacion</label>
                 <UInput v-model="record.number_report_id" placeholder="TI. Reporte Clinica"
-                    @change="saveItem(record.id, 'number_report_id', record.number_report)" />
+                    @change="saveItem(record.id, 'number_report_id', record.number_report_id)" />
             </div>
 
             <div class="m-2">
@@ -120,14 +121,29 @@
                 </button>
                 <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgic" />
             </div>
+            <div class="border rounded p-1 m-2">
+                <button @click="photoRecord('imghd')">
+                    📷 Huella Original
+                </button>
+                <img :src="record.imghd" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghd" />
+                <a :href="record.imghd" download="huella_original.jpg" v-if="record.imghd">
+                    Descargar imagen
+                </a>
+            </div>
+            <div class="border rounded p-1 m-2">
+                <button @click="RegenerateHD(record.id)">
+                    📷 Huella ProcesadaBeta
+                </button>
+                <img :src="record.imghdr" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghdr" />
+            </div>
 
         </div>
 
-        <div class="grid grid-cols-1  md:grid-cols-6">
-            <div></div>
+        <div class="grid grid-cols-1  md:grid-cols-5">
+
             <div class="m-5">
                 <button @click="signedRecord('signed')">
-                    🖋️ Firmar aqui
+                    🖋️ Firmar
                 </button>
                 <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
                 <strong>
@@ -143,7 +159,7 @@
 
             <div class="m-5">
                 <button @click="signedRecord('signed_recived')">
-                    🖋️ Firmar aqui
+                    🖋️ Firmar
                 </button>
                 <img :src="record.signed_recived" alt="Imagen Base64" width="60%" height="auto"
                     v-if="record.signed_recived" />
@@ -158,7 +174,7 @@
 
             <div class="m-5">
                 <button @click="signedRecord('signed_driver')">
-                    🖋️ Firmar aqui
+                    🖋️ Firmar
                 </button>
                 <img :src="record.signed_driver" alt="Imagen Base64" width="60%" height="auto"
                     v-if="record.signed_driver" />
@@ -171,11 +187,21 @@
                 </strong>
             </div>
             <div class="m-5">
-                <button @click="signedRecord('signed_patient')">
-                    🖋️ Firmar aqui
-                </button>
-                <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
-                    v-if="record.signed_patient" />
+                <div class="flex flex-column-3">
+                    <span @click="signedRecord('signed_patient')">
+                        🖋️ Firmar
+                    </span>
+                    <span @click="photoRecord('imghd')">
+                        📷 Huellar
+                    </span>
+
+                </div>
+                <div class="grid grid-cols-2">
+                    <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
+                        v-if="record.signed_patient" />
+                    <img :src="record.imghdr" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghdr"
+                        class="rotated-image-transform" />
+                </div>
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
@@ -184,14 +210,13 @@
                     </p>
                 </strong>
             </div>
-            <div></div>
-
         </div>
     </div>
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
     <ModalEditThird :typeT="typeT" v-model="isThird" />
     <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
+   
 
 </template>
 
@@ -208,6 +233,7 @@ const typeT = ref('')
 const isThird = ref(false)
 const isPhoto = ref(false)
 const isPolice = ref(false)
+const isDactilar = ref(false)
 
 const thirdSelected = ref<any>({})
 
@@ -246,6 +272,23 @@ const signedRecord = async (q: string) => {
     typeSing.value = q
     isSing.value = true
 }
+
+const RegenerateHD = async (recordId: string) => {
+    try {
+        const response = await $fetch('api/processimage/', {
+            method: 'POST',
+            body: JSON.stringify({ record_id: recordId }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log('Respuesta del servidor:', response);
+    } catch (error) {
+        console.error('Error al procesar la imagen:', error);
+    }
+    await fetchRecord(props.calendarEvent?.id)
+};
+
 
 const photoRecord = async (q: string) => {
     typeImg.value = q
@@ -289,4 +332,9 @@ watch(isSing, (value) => {
 
 </script>
 
-<style></style>
+<style>
+.rotated-image-transform {
+    /* Gira la imagen 90 grados hacia la izquierda */
+    transform: rotate(-90deg);
+}
+</style>

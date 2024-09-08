@@ -137,9 +137,6 @@
     return options;
   };
 
-
-
-
   // Función para obtener fechas dentro del rango
   const getDatesInRange = (startDate: any, endDate: any) => {
     const dates = [];

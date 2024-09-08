@@ -10,3 +10,6 @@ pillow
 drf-extra-fields
 weasyprint
 xhtml2pdf
+opencv-python 
+Pillow 
+numpy
