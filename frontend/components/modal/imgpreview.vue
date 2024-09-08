@@ -3,7 +3,8 @@
         <div class="signature-box border rounded">
             <div class="signature-content border rounded">
                 <!--<vue-image-zoomer :regular="imgRoute"  />  :zoom="imgRoute" -->
-                <img :src="imgRoute" alt="Imagen" />
+                <NuxtImg :src="imgRoute"  sizes="800px"
+                />
             </div>
         </div>
     </UModal>

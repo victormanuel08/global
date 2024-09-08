@@ -476,7 +476,7 @@ class ImageProcessingView(APIView):
                 result_image_bytes = buffer.getvalue()
 
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                filename = f"HDProcessed_{timestamp}.JPEG"
+                filename = f"HDProcessed_{timestamp}.jpeg"
 
                 record.imghdr.save(filename, ContentFile(result_image_bytes))
                 record.save()
@@ -488,50 +488,5 @@ class ImageProcessingView(APIView):
                 return Response({'error': 'Error al guardar la imagen'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'error': 'Se requiere un record_id válido'}, status=status.HTTP_400_BAD_REQUEST)
-
-class ImageProcessing2View(APIView):
-    def post(self, request, *args, **kwargs):
-        record_id = request.data.get("record_id")
-        if record_id:
-            record = get_object_or_404(Records, id=record_id)
-            image_path = record.imghd.path
-            image = Image.open(image_path)
-            image = np.array(image)
-            blurred_image = cv2.GaussianBlur(image, (5, 5), 0)
-            gray = cv2.cvtColor(blurred_image, cv2.COLOR_BGR2GRAY)
-            
-            # Aplicar el algoritmo Sobel para detectar bordes
-            sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-            sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
-            edges_sobel = np.sqrt(sobel_x**2 + sobel_y**2)
-            
-            # Convertir a imagen binaria
-            _, binary_sobel = cv2.threshold(edges_sobel, 128, 255, cv2.THRESH_BINARY)
-            result_image_sobel = Image.fromarray(binary_sobel)
-            
-            # Aplicar dilatación para mejorar la conectividad
-            kernel = np.ones((3, 3), np.uint8)
-            dilated_image = cv2.dilate(binary_sobel, kernel, iterations=1)
-            result_image_dilated = Image.fromarray(dilated_image)
-            
-            # Invertir los colores correctamente
-            inverted_image = 255 - np.array(result_image_dilated)
-            
-            try:
-                buffer = BytesIO()
-                Image.fromarray(inverted_image).save(buffer, format="PNG")
-                result_image_bytes = buffer.getvalue()
-
-                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                filename = f"HDProcessed_{timestamp}.png"
-
-                record.imghdr.save(filename, ContentFile(result_image_bytes))
-                record.save()
-
-                print(f"Imagen guardada como {filename}")
-                return Response({'message': f'Imagen procesada y guardada como {filename}'}, status=status.HTTP_200_OK)
-            except Exception as e:
-                print(f"Error al guardar la imagen: {str(e)}")
-                return Response({'error': 'Error al guardar la imagen'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'error': 'Se requiere un record_id válido'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        

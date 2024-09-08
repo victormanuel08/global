@@ -88,49 +88,44 @@
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgcc')">
                     📷 CEDULA
-                </button>
-                <img :src="record.imgcc" width="60%" height="auto" v-if="record.imgcc" />
+                </button>                
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgcc"  v-if="record.imgcc" @click="imgPreview(record.imgcc)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgso')">
                     📷 SOAT
-                </button>
-                <img :src="record.imgso" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgso" />
+                </button>                
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgso"  v-if="record.imgso" @click="imgPreview(record.imgso)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgtp')">
                     📷 TARJETA PROPIEDAD
                 </button>
-                <img :src="record.imgtp" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgtp"
-                    @click="imgPreview(record.imgtp)" />
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgtp"  v-if="record.imgtp" @click="imgPreview(record.imgtp)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imglc')">
                     📷 LICENCIA CONDUCIR
                 </button>
-                <img :src="record.imglc" alt="Imagen Base64" width="60%" height="auto" v-if="record.imglc"
-                    @click="imgPreview(record.imglc)" />
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imglc"  v-if="record.imglc" @click="imgPreview(record.imglc)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgco')">
                     📷 CONSENTIMIENTO
                 </button>
-                <img :src="record.imgco" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgco"
-                    @click="imgPreview(record.imgco)" />
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgco"  v-if="record.imgco" @click="imgPreview(record.imgco)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgic')">
                     📷 INGRESO CLINICA
                 </button>
-                <img :src="record.imgic" alt="Imagen Base64" width="60%" height="auto" v-if="record.imgic"
-                    @click="imgPreview(record.imgic)" />
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgic"  v-if="record.imgic" @click="imgPreview(record.imgic)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imghd')">
                     📷 Huella Original
                 </button>
-                <img :src="record.imghd" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghd"
-                    @click="imgPreview(record.imghd)" />
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imghd"  v-if="record.imghd" @click="imgPreview(record.imghd)" />
                 <!--<a :href="record.imghd" download="huella_original.jpg" v-if="record.imghd">
                     Descargar imagen
                 </a>
@@ -140,8 +135,7 @@
                 <button @click="RegenerateHD(record.id)">
                     📷 Huella ProcesadaBeta
                 </button>
-                <img :src="record.imghdr" alt="Imagen Base64" width="60%" height="auto" v-if="record.imghdr"
-                    @click="imgPreview(record.imghdr)" />
+                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imghdr"  v-if="record.imghd" @click="imgPreview(record.imghdr)" />
             </div>
         </div>
 
@@ -199,8 +193,8 @@
                 <span class="flex grid-flow-col">
                     <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
                         v-if="record.signed_patient" />
-                    <img :src="record.imghdr" alt="Imagen Base64" width="40%" height="auto" v-if="record.imghdr"
-                        class="rotated-image-transform" />
+          
+                    <NuxtImg  class="rotated-image-transform" sizes="100vw sm:50vw md:70px" :src="record.imghdr"  v-if="record.imghdr" @click="imgPreview(record.imghdr)" />
                 </span>
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
