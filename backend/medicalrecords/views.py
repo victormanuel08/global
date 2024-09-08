@@ -1,29 +1,29 @@
-
-
-import os
 from django.conf import settings
 from django.http import HttpResponse
-from django.template.loader import get_template
 from utils.pdf import render_to_pdf
-from xhtml2pdf import pisa
-from django.contrib.staticfiles import finders
-
-
 from .models import *
 from .serializers import *
 from .models import *
 from rest_framework import viewsets
+
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.views.generic import ListView,View
+import requests
+from django.core.mail import EmailMessage
+from rest_framework.decorators import api_view
+from django.views.decorators.csrf import csrf_exempt
+
+import cv2
+import numpy as np 
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-import base64
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.db.models import Q
-from django.views.generic import ListView,View
-from django.shortcuts import render
-import requests
-
+from django.core.files.base import ContentFile
+from io import BytesIO
+from PIL import Image
+from datetime import datetime
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Services.objects.all()
@@ -333,7 +333,7 @@ class RecordListView(ListView):
         template_type = self.kwargs.get('template_type')
         template_id = self.kwargs.get('template_id')
 
-        # Condicional para determinar qué entidad consultar
+     
         if template_type == 'ambulancia':
             model = Records
             template_name = "record_list.html"
@@ -349,9 +349,7 @@ class RecordListView(ListView):
         else:
             # Si no se encuentra el tipo de plantilla, puedes devolver todos los registros
             return Records.objects.all()  # O Thirds.objects.all() según corresponda
-
-   
-   
+     
 class RecordPdf(View):
     def get(self, request, *args, **kwargs):
         template_type = self.kwargs.get('template_type')
@@ -366,17 +364,12 @@ class RecordPdf(View):
         elif template_type == 'police':
             records = Policy.objects.filter(id=template_id)
             template_name = "police_list.html"
-        else:
-           
+        else:           
             records = Records.objects.all() 
-
         data = {'records': records}
         pdf = render_to_pdf('record_list.html', data)
         return HttpResponse(pdf, content_type='application/pdf')
   
-  
-
-
 class GeocodeView(APIView):
     def get(self, request, *args, **kwargs):
         coordinates_str = request.query_params.get("coordinates")
@@ -384,13 +377,10 @@ class GeocodeView(APIView):
             lat, lng = map(float, coordinates_str.split(","))
         except ValueError:
             return Response({"error": "Coordenadas inválidas"}, status=400)
-
         api_key = settings.DISTANCE_MATRIX_API_KEY
         distance_matrix_url = f"https://api-v2.distancematrix.ai/maps/api/geocode/json?latlng={lat},{lng}&key={api_key}"
         nominatim_url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=18&addressdetails=1"
-
         response_data = []
-
         try:
             distance_matrix_response = requests.get(distance_matrix_url)
             distance_matrix_data = distance_matrix_response.json()
@@ -398,10 +388,8 @@ class GeocodeView(APIView):
                 "formatted_address": distance_matrix_data["result"][0]["formatted_address"],
                 "address_components": distance_matrix_data["result"][0]["address_components"],
             })
-        except requests.RequestException as e:
-           
+        except requests.RequestException as e:           
             pass
-
         try:
             nominatim_response = requests.get(nominatim_url)
             nominatim_data = nominatim_response.json()
@@ -418,8 +406,132 @@ class GeocodeView(APIView):
                     "country": nominatim_data["address"]["country"],
                 },
             })
-        except requests.RequestException as e:
-           
+        except requests.RequestException as e:           
             pass
-
         return Response(response_data)
+
+@api_view(['POST'])
+@csrf_exempt
+def sendemail(request):
+    template_id =request.data.get('id', None)    
+    records = Records.objects.filter(id=template_id)
+    record = Records.objects.filter(id=template_id).first()
+    paciente=Thirds.objects.filter(nit=record.third_patient).first()
+    medico = Thirds.objects.filter(nit=record.third_medic).first()
+    clinica = Thirds.objects.filter(nit=record.third_clinic).first()
+    
+    if record:
+        fecha = record.date_time
+        cedula=paciente.nit   
+        nombre_paciente = paciente.name + ' ' + paciente.second_name
+        apellido_paciente = paciente.last_name + ' ' + paciente.second_last_name
+        nombre_medico = medico.name + ' ' + medico.second_name
+        apellido_medico = medico.last_name + ' ' + medico.second_last_name
+        mensaje = f"**Paciente:** {nombre_paciente} {apellido_paciente}\n**Medico:** {nombre_medico} {apellido_medico}\n**Dirección:** {record.address}\nAbrir en Mapa"
+        
+    else:
+        mensaje = "No se encontró información del paciente"
+    filename='GATA-HC-'+ cedula   
+    asunto = 'Reporte Ambulancia ' + filename
+    destinatarios=['rinconvargasvictormanuel@gmail.com']
+    from_email='noreply@globalsafeips.com.co'
+    template_name = "record_list.html"
+    
+    data = {'records': records}
+    pdf = render_to_pdf(template_name, data)   
+    try:
+        pdf_response = pdf
+        email = EmailMessage(
+            subject=asunto,
+            body=mensaje,
+            from_email=from_email,
+            to=destinatarios,
+        )
+        email.attach(filename +'.pdf', pdf_response.content, 'application/pdf')
+        email.send()
+        return Response({'mensaje': 'Correo enviado correctamente'})
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+class ImageProcessingView(APIView):
+    def post(self, request, *args, **kwargs):
+        record_id = request.data.get("record_id")
+        if record_id:
+            record = get_object_or_404(Records, id=record_id)
+            image_path = record.imghd.path
+            image = Image.open(image_path)
+            image = np.array(image)
+            blurred_image = cv2.GaussianBlur(image, (5, 5), 0)
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            _, binary = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)
+            edges = cv2.Canny(binary, 100, 200)
+            result_image = Image.fromarray(edges)
+            inverted_image = 255 - np.array(result_image)
+            
+            try:
+                buffer = BytesIO()
+                Image.fromarray(inverted_image).save(buffer, format="PNG")  # Cambio a formato PNG
+                result_image_bytes = buffer.getvalue()
+
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f"HDProcessed_{timestamp}.png"
+
+                record.imghdr.save(filename, ContentFile(result_image_bytes))
+                record.save()
+
+                print(f"Imagen guardada como {filename}")
+                return Response({'message': f'Imagen procesada y guardada como {filename}'}, status=status.HTTP_200_OK)
+            except Exception as e:
+                print(f"Error al guardar la imagen: {str(e)}")
+                return Response({'error': 'Error al guardar la imagen'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'error': 'Se requiere un record_id válido'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ImageProcessing2View(APIView):
+    def post(self, request, *args, **kwargs):
+        record_id = request.data.get("record_id")
+        if record_id:
+            record = get_object_or_404(Records, id=record_id)
+            image_path = record.imghd.path
+            image = Image.open(image_path)
+            image = np.array(image)
+            blurred_image = cv2.GaussianBlur(image, (5, 5), 0)
+            gray = cv2.cvtColor(blurred_image, cv2.COLOR_BGR2GRAY)
+            
+            # Aplicar el algoritmo Sobel para detectar bordes
+            sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+            sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+            edges_sobel = np.sqrt(sobel_x**2 + sobel_y**2)
+            
+            # Convertir a imagen binaria
+            _, binary_sobel = cv2.threshold(edges_sobel, 128, 255, cv2.THRESH_BINARY)
+            result_image_sobel = Image.fromarray(binary_sobel)
+            
+            # Aplicar dilatación para mejorar la conectividad
+            kernel = np.ones((3, 3), np.uint8)
+            dilated_image = cv2.dilate(binary_sobel, kernel, iterations=1)
+            result_image_dilated = Image.fromarray(dilated_image)
+            
+            # Invertir los colores correctamente
+            inverted_image = 255 - np.array(result_image_dilated)
+            
+            try:
+                buffer = BytesIO()
+                Image.fromarray(inverted_image).save(buffer, format="PNG")
+                result_image_bytes = buffer.getvalue()
+
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f"HDProcessed_{timestamp}.png"
+
+                record.imghdr.save(filename, ContentFile(result_image_bytes))
+                record.save()
+
+                print(f"Imagen guardada como {filename}")
+                return Response({'message': f'Imagen procesada y guardada como {filename}'}, status=status.HTTP_200_OK)
+            except Exception as e:
+                print(f"Error al guardar la imagen: {str(e)}")
+                return Response({'error': 'Error al guardar la imagen'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'error': 'Se requiere un record_id válido'}, status=status.HTTP_400_BAD_REQUEST)

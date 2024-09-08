@@ -1,7 +1,7 @@
 <template>
     <div class="signature-box border rounded">
         <div class="signature-content border rounded">
-            <canvas ref="signatureCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
+            <canvas ref="signatureCanvas" :width="canvasWidth" :height="canvasHeight">hjjhjhjh</canvas>
         </div>
         <div class="buttons mb-2">
             <UButton variant="soft" @click="clearSignature">Limpiar</UButton>

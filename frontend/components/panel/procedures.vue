@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Procedimientos</h1>
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-5">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
       <div v-for="(service, index) in services" :key="index">
         <UCheckbox v-model="newServices" class="border rounded p-1" :label="service.description"
           @change="saveServices()" :value="service.id" />

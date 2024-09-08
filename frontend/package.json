@@ -25,6 +25,7 @@
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "nuxt": "^3.12.2",
+    "nuxt-mail": "^5.0.1",
     "pinia": "^2.2.1",
     "pug": "^3.0.3",
     "signature_pad": "^5.0.2",

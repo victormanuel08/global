@@ -16,11 +16,7 @@
 <script>
 
 import SignaturePad from "signature_pad";
-
-
-
 export default {
-
     props: {
         record: Object,
         detail: Boolean,
@@ -28,6 +24,21 @@ export default {
     },
     defineEmits: ['close'],
     methods: {
+        data() {
+            return {
+                canvasWidth: 500, 
+                canvasHeight: 200, 
+            };
+        },
+        mounted() {
+            const canvas = this.$refs.signatureCanvas;
+            const signaturePad = new SignaturePad(canvas);
+ 
+            signaturePad.penColor = 'blue';
+       
+            const signatureData = signaturePad.toDataURL();
+            console.log('Firma en base64:', signatureData);
+        },
         clearSignature() {
             const signaturePad = new SignaturePad(this.$refs.signatureCanvas);
             signaturePad.clear();
@@ -36,8 +47,8 @@ export default {
             const signatureData = this.$refs.signatureCanvas.toDataURL('image/png');
             console.log('Firma guardada:', signatureData);
             console.log('Firma guardadaen modal:', this.record)
-            if (this.detail) {                
-                console.log('PROPMODALRECORD:',this.record );
+            if (this.detail) {
+                console.log('PROPMODALRECORD:', this.record);
                 const response = $fetch(`api/records_details/${this.record}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
@@ -45,8 +56,8 @@ export default {
                     }),
                 });
             } else {
-                console.log('typeThrodSigned:',this.typeThird);
-                console.log('singasasasas1111111:',this.record.id );
+                console.log('typeThrodSigned:', this.typeThird);
+                console.log('singasasasas1111111:', this.record.id);
                 const response = $fetch(`api/records/${this.record.id}`, {
                     method: 'PATCH',
                     body: JSON.stringify({
@@ -54,23 +65,22 @@ export default {
                     }),
                 });
             }
-            //como imprimo aca la prop record que viene de la tabla de records.vue);
-
             this.$emit('close', false);
         },
     },
 };
+
 </script>
+
 <style scoped>
+
 .signature-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
     border: 2px double blue;
-
     border-radius: 20px;
-
 }
 
 .signature-content {
@@ -84,4 +94,5 @@ export default {
     display: flex;
     gap: 1rem;
 }
+
 </style>

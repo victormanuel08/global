@@ -12,7 +12,8 @@ const create = async (value: any) => {
                 third_patient: value,
                 third_medic: authUserStorage?.value?.third?.id,
                 vehicle: authUserStorage?.value?.third?.vehicle,
-                third_driver: authUserStorage?.value?.third?.vehicle_full?.id
+                third_driver: authUserStorage?.value?.third?.vehicle_full?.id,
+                
                 
             },
         })

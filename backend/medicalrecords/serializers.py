@@ -238,5 +238,6 @@ class ValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Values
         fields = '__all__'
+        
 
-
+   

@@ -30,25 +30,35 @@
 
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="value.type_values" @change="saveItem(index,'type_values',value.type_values.id)" class="border rounded p-1 w-36" />
+                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="value.type_values"
+                    @change="saveItem(index, 'type_values', value.type_values.id)" class="border rounded p-1 w-36" />
                 </div>
-              </td>    
+              </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput v-model="value.amount" @blur="saveItem(index, 'code', value.amount)"
-                    class="border rounded p-1 w-36" />
+                  <UInput 
+                    v-model="value.amount" 
+                    @blur="saveItem(index, 'amount', value.amount)"
+                    class="border rounded p-1 w-36"
+                    v-if="value.type_values === 'SE' || value.type_values === 'FO' || value.type_values === 'SM' "/>
+                  <UInput 
+                    v-model="value.val" 
+                    @blur="saveItem(index, 'val', value.val)" 
+                    class="border rounded p-1 w-36"
+                    v-else 
+                  />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <UInput type="date" v-model="value.year_date" @blur="saveItem(index, 'year_date', value.year_date)"
-                    class="border rounded p-1 w-36" />
+                    class="border rounded p-1 w-36"  v-if="value.type_values === 'SE' || value.type_values === 'FO' || value.type_values === 'SM' "/>
                 </div>
-              </td>    
-    
+              </td>
+
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="deleteValue(value.id)" :class="ui.span" >🗑️</span>
+                  <span @click="deleteValue(value.id)" :class="ui.span">🗑️</span>
                 </div>
               </td>
             </tr>
@@ -56,7 +66,8 @@
             <tr>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="newValuesType" class="border rounded p-1 w-36" />
+                  <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="newValuesType"
+                    class="border rounded p-1 w-36" @change="console.log(newValuesType)"/>
                 </div>
               </td>
               <td :class="ui.td">
@@ -66,11 +77,12 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <UInput type="date" v-model="newValuesYear" placeholder="Nombre" class="border rounded p-1 w-36"  @change="toggleValues"/>
+                  <UInput type="date" v-model="newValuesYear" placeholder="Nombre" class="border rounded p-1 w-36"
+                    @change="toggleValues"  v-if="newValuesType.id === 'SE' || newValuesType.id === 'FO' || newValuesType.id === 'SM'" />
                 </div>
               </td>
 
-            
+
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <span @click="createValue" :class="ui.span">
@@ -90,7 +102,7 @@
 <script setup lang="ts">
 
 //const cities = ref([] as any[])
-const newValuesType = ref({}) 
+const newValuesType = ref({})
 const newValuesValue = ref('')
 const newValuesYear = ref('')
 //const search = ref('')
@@ -103,7 +115,7 @@ const {
 } = usePaginatedFetch<any>("/api/values/");
 
 const toggleValues = (value: string) => {
-  newValuesYear.value = formatDateYYYY0101(value)  
+  newValuesYear.value = formatDateYYYY0101(value)
 }
 const fetchValues = async () => {
   const {
@@ -114,6 +126,7 @@ const fetchValues = async () => {
   } = usePaginatedFetch<any>("/api/values/");
 
   console.log('fetchValues', values.value)
+  toggleValues(new Date().toISOString())
 
 }
 
@@ -167,22 +180,29 @@ const createValue = async () => {
     fetchValues()
     return
   }
+  const queryParams = {
+    type_values: newValuesType.value.id,
+    year_date: newValuesYear.value
+  }
 
+  if (newValuesType.value.id === 'SE' || newValuesType.value.id === 'FO' || newValuesType.value.id === 'SM') {
+    queryParams['amount'] = newValuesValue.value
+  } else {
+    queryParams['val'] = newValuesValue.value
+  }
   const response = await $fetch('api/values/', {
     method: 'POST',
-    body: {
-      type_values: newValuesType.value.id,
-      amount: newValuesValue.value,
-      year_date: newValuesYear.value
-    }
+    body: JSON.stringify(queryParams)
   })
   fetchValues()
   newValuesType.value = ''
   newValuesValue.value = ''
   newValuesYear.value = ''
+  toggleValues(new Date().toISOString())
 }
 
 onMounted(() => {
+  toggleValues(new Date().toISOString())
   fetchValues()
 })
 

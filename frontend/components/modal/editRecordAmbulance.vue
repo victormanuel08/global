@@ -4,10 +4,15 @@
             <UTabs :items="items" class="w-full" @change="onChange">
                 <template #default="{ item, index }">
                     <div :class="isActive(item) ? 'active-tab' : 'inactive-tab'">
-                        <Icon :name="item.icon" style="color: blue; font-size: 1.5em;" class="w-4 h-4 flex-shrink-0" />
-                        <span v-if="creationPanelSelected.title === item.panel" style="color: blue;">
+                        
+                        <span v-if="creationPanelSelected.title === item.panel" style="color: blue; font-size: 16px;">
+                            <Icon :name="item.icon" style="color: blue; font-size: 1em;" class="w-4 h-4 flex-shrink-0" />
                             {{ item.label }}
                         </span>
+                        <span v-else>
+                            <Icon :name="item.icon" style="color: blue; font-size: 2em;" class="w-4 h-4 flex-shrink-0" />
+                        </span>
+                        
                     </div>
                 </template>
             </UTabs>
@@ -18,7 +23,7 @@
     </UCard>
 </template>
 <script setup lang="ts">
-import { PanelReports, PanelBasic, PanelThird, PanelPregnancy, PanelDocuments, PanelHistory, PanelObjects, PanelProcedures, PanelRecords, PanelInjuries } from "#components";
+import { PanelReports, PanelBasic, PanelThird, PanelPregnancy, PanelDocuments,  PanelObjects,  PanelRecords, PanelInjuries } from "#components";
 const props = defineProps({
     calendarEvent: Object,
 })
@@ -38,10 +43,7 @@ const creationPanels = {
         component: PanelBasic,
         title: 'Basic'
     }),
-    'Procedures': markRaw({
-        component: PanelProcedures,
-        title: 'Procedures',
-    }),
+
     'Pregnancy': { component: PanelPregnancy, title: 'Pregnancy' },
     'Injuries': { component: PanelInjuries, title: 'Injuries' },
     'Objects': { component: PanelObjects, title: 'Objects' },
@@ -71,11 +73,6 @@ const items = [{
     panel: 'Injuries',
 },
 {
-    label: 'Procedimientos',
-    icon: 'uil:surgical-mask',
-    panel: 'Procedures',
-},
-{
     label: 'Objetos',
     icon: 'uil:briefcase',
     panel: 'Objects',
@@ -99,15 +96,5 @@ function onChange(index: any) {
 }
 </script>
 <style scoped>
-.active-tab {
-    font-size: 16px;
-}
 
-.inactive-tab {
-    font-size: 16px;
-}
-
-.text-md {
-    font-size: 16px;
-}
 </style>
