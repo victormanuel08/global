@@ -80,7 +80,7 @@ const takePhoto = () => {
       if (blob) {
         saveImage(props.record.id, props.typeImg, blob);
       }
-    }, 'image/png');
+    }, 'image/jpeg');
     
   }
 };
@@ -89,7 +89,7 @@ const takePhoto = () => {
 const saveImage = async (index: number, field: string, blob: Blob) => {
   try {
     console.log("blob", blob)
-    const file = new File([blob], 'image.png', { type: 'image/png' });
+    const file = new File([blob], 'image.jpeg', { type: 'image/jpeg' });
     const formData = new FormData();
     formData.append(field, file);
 

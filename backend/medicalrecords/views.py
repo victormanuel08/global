@@ -472,11 +472,11 @@ class ImageProcessingView(APIView):
             
             try:
                 buffer = BytesIO()
-                Image.fromarray(inverted_image).save(buffer, format="PNG")  # Cambio a formato PNG
+                Image.fromarray(inverted_image).save(buffer, format="JPEG")  # Cambio a formato PNG
                 result_image_bytes = buffer.getvalue()
 
                 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-                filename = f"HDProcessed_{timestamp}.png"
+                filename = f"HDProcessed_{timestamp}.JPEG"
 
                 record.imghdr.save(filename, ContentFile(result_image_bytes))
                 record.save()
