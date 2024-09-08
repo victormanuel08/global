@@ -28,7 +28,7 @@
     "nuxt-mail": "^5.0.1",
     "pinia": "^2.2.1",
     "pug": "^3.0.3",
-    "signature_pad": "^5.0.3",
+    "signature_pad": "^5.0.2",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
