@@ -84,48 +84,48 @@
 
         </div>
 
-        <div class="grid grid-cols-1  md:grid-cols-3">
+        <div class="grid grid-cols-2  md:grid-cols-6">
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgcc')">
                     📷 CEDULA
                 </button>                
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgcc"  v-if="record.imgcc" @click="imgPreview(record.imgcc)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgcc"  v-if="record.imgcc" @click="imgPreview(record.imgcc)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgso')">
                     📷 SOAT
                 </button>                
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgso"  v-if="record.imgso" @click="imgPreview(record.imgso)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgso"  v-if="record.imgso" @click="imgPreview(record.imgso)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgtp')">
-                    📷 TARJETA PROPIEDAD
+                    📷 T.PROPIEDAD
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgtp"  v-if="record.imgtp" @click="imgPreview(record.imgtp)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgtp"  v-if="record.imgtp" @click="imgPreview(record.imgtp)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imglc')">
-                    📷 LICENCIA CONDUCIR
+                    📷 LICENCIA
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imglc"  v-if="record.imglc" @click="imgPreview(record.imglc)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imglc"  v-if="record.imglc" @click="imgPreview(record.imglc)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgco')">
                     📷 CONSENTIMIENTO
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgco"  v-if="record.imgco" @click="imgPreview(record.imgco)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgco"  v-if="record.imgco" @click="imgPreview(record.imgco)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgic')">
-                    📷 INGRESO CLINICA
+                    📷 IN. CLINICA
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imgic"  v-if="record.imgic" @click="imgPreview(record.imgic)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgic"  v-if="record.imgic" @click="imgPreview(record.imgic)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imghd')">
-                    📷 Huella Original
+                    📷 Huella
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imghd"  v-if="record.imghd" @click="imgPreview(record.imghd)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghd"  v-if="record.imghd" @click="imgPreview(record.imghd)" />
                 <!--<a :href="record.imghd" download="huella_original.jpg" v-if="record.imghd">
                     Descargar imagen
                 </a>
@@ -133,9 +133,9 @@
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="RegenerateHD(record.id)">
-                    📷 Huella ProcesadaBeta
+                    📷 Huella P.
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:250px" :src="record.imghdr"  v-if="record.imghd" @click="imgPreview(record.imghdr)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghdr"  v-if="record.imghd" @click="imgPreview(record.imghdr)" />
             </div>
         </div>
 
