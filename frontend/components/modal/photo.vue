@@ -89,7 +89,7 @@ const takePhoto = () => {
 const saveImage = async (index: number, field: string, blob: Blob) => {
   try {
     console.log("blob", blob)
-    const file = new File([blob], 'image.jpeg', { type: 'image/jpeg' });
+    const file = new File([blob], 'HC-' + field +'-'+ index+'.jpeg', { type: 'image/jpeg' });
     const formData = new FormData();
     formData.append(field, file);
 
@@ -137,6 +137,7 @@ const saveImage = async (index: number, field: string, blob: Blob) => {
   padding: 1rem;
   border-radius: 20px;
 }
+
 
 .large-icon {
   font-size: 24px;
