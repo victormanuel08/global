@@ -103,6 +103,19 @@ class RecordViewSet(viewsets.ModelViewSet):
     serializer_class = RecordSerializer
     search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
     search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        diagnosis_ids = self.request.data.get('diagnosis_ids', [])
+        instance.diagnosis_multiple.set(diagnosis_ids)
+        instance.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()    
+        diagnosis_ids = self.request.data.get('diagnosis_multi', [])
+        instance.diagnosis_multiple.set(diagnosis_ids)    
+        instance.save()
+
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):

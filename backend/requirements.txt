@@ -13,3 +13,4 @@ xhtml2pdf
 opencv-python 
 Pillow 
 numpy
+corsheaders

@@ -18,9 +18,15 @@
         <thead>
           <tr>
             <th :class="ui.th">Usuario</th>
-            <th :class="ui.th"><span title="Indica si el usuario debe ser tratado como activo. Desmarque esta opción en lugar de borrar la cuenta." >Activo</span></th>
-            <th :class="ui.th"><span title="Indica si el usuario puede entrar en este sitio de Super Administración de Backend.">Staff</span></th>
-            <th :class="ui.th"><span title="Indica que este usuario tiene todos los permisos sin asignárselos explícitamente.">SuperUser</span></th>
+            <th :class="ui.th"><span
+                title="Indica si el usuario debe ser tratado como activo. Desmarque esta opción en lugar de borrar la cuenta.">Activo</span>
+            </th>
+            <th :class="ui.th"><span
+                title="Indica si el usuario puede entrar en este sitio de Super Administración de Backend.">Staff</span>
+            </th>
+            <th :class="ui.th"><span
+                title="Indica que este usuario tiene todos los permisos sin asignárselos explícitamente.">SuperUser</span>
+            </th>
             <th :class="ui.th">Acciones</th>
           </tr>
         </thead>
@@ -34,13 +40,10 @@
               </div>
               <div class="grid grid-cols-3 justify-center" v-if="showUserGroups && user.id === selectedUserId">
                 <div v-for="(group, index) in groups" :key="index" class="justify-center">
-                  {{ group.name }} {{ group.id }} {{ user.id }}
-                  <UCheckbox 
-                    v-model="groupSelected" 
-                    @change="saveUserGroups(group.id)" 
-                    :value="group.id" />
+                  <input type="checkbox" :checked="validateGroupUser(group.id, selectedUserId)"
+                  @change="saveUserGroups(group.id, selectedUserId)" />
+                  {{ group.name }} {{ group.id }} {{ selectedUserId }}
                 </div>
-                
               </div>
             </td>
             <td :class="ui.td">
@@ -127,11 +130,30 @@ const {
   pending,
 } = usePaginatedFetch<any>("/api/auth/users/");
 
-const toggleUserGroups = (user_id: number) => {
+const toggleUserGroups = async (user_id: number) => {
   showUserGroups.value = !showUserGroups.value
-  groupSelected.value = []
+  const response = await $fetch<any>(`api/auth/users/${user_id}`, {
+    method: 'GET',
+  });
+  groupSelected.value = response?.groups
+  //groupSelected.value = []
   selectedUserId.value = user_id
+  //console.log('Grupos del usuarioFull:', response)
+  //validatePermissions('cities', 'add')
 }
+
+const validateGroupUser = (group_id: number, user_id: number) => {
+  if (groupSelected.value.includes(group_id)) {
+    //console.log('Validando', group_id + ' ' + user_id + ' ' + true);
+    return true;
+  } else {
+    //console.log('Validando', group_id + ' ' + user_id + ' ' + false);
+    return false;
+  }
+
+};
+
+
 
 const fetchUsers = async () => {
   const {
@@ -141,15 +163,15 @@ const fetchUsers = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/auth/users/");
 
-  console.log('FecthUsers', users.value)
+  //console.log('FecthUsers', users.value)
 
 }
 
 const fetchGroups = async () => {
   const response = await $fetch<any>('api/auth/groups/')
-  console.log('fetchGroups', response)
+  //console.log('fetchGroups', response)
   groups.value = response.results
-  console.log('fetchGroups', groups.value)
+  //console.log('fetchGroups', groups.value)
 }
 
 const deleteUser = async (id: number) => {
@@ -228,25 +250,41 @@ const ui = {
   span: 'cursor-pointer'
 }
 
+const saveUserGroups = async (groupId: number, userId: number) => {
+  //console.log('Guardando', groupId, userId);
 
-const saveUserGroups = async (value: number) => {
-  console.log('Guardando', groupSelected.value + ' ' + selectedUserId.value);
-  const oldusers = await $fetch<any>(`api/auth/groups/${value}/`, {
-    method: 'GET',
-  });
-  console.log('RespuestaOld:', oldusers?.users);
-  console.log('RespuestaNew:', selectedUserId?.value);
-  const updatedusers = oldusers.users.concat(selectedUserId.value);
-  console.log('RespuestaUpdated:', updatedusers);
-  
-  const response = await $fetch<any>(`api/auth/groups/${value}/`, {//aca pegar es group 
-    method: 'PATCH',
-    body: ({
-        users: updatedusers,
+  try {
+    // Obtener los grupos actuales del usuario
+    const userResponse = await $fetch<any>(`api/auth/users/${userId}/`, {
+      method: 'GET',
+    });
+
+    //console.log('Grupos actuales del usuario:', userResponse?.groups);
+
+    // Asegurarse de que los grupos actuales sean un array
+    const currentGroups = Array.isArray(userResponse?.groups) ? userResponse.groups : [];
+
+    // Añadir el nuevo grupo a la lista de grupos
+    const updatedGroups = [...currentGroups, groupId];
+
+    //console.log('Grupos actualizados:', updatedGroups);
+
+    // Actualizar los grupos del usuario
+    const response = await $fetch<any>(`api/auth/users/${userId}/`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        groups: updatedGroups,
       }),
-  });
-  console.log('Respuesta:', response);
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
+    //console.log('Respuesta de actualización:', response);
+  } catch (error) {
+    //console.error('Error al actualizar:', error);
+  }
 };
+
 
 </script>

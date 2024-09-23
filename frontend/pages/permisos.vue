@@ -15,13 +15,13 @@
                                 Agregar
                             </th>
                             <th :class="ui.th">
-                                Ver
-                            </th>
-                            <th :class="ui.th">
                                 Editar
                             </th>
                             <th :class="ui.th">
-                                Eliminar
+                                Delete
+                            </th>
+                            <th :class="ui.th">
+                                Ver
                             </th>
                         </tr>
                     </thead>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-
+const toast = useToast()
 const permissionsByEntity = ref({} as Record<string, any>)
 const allPermisions = ref([] as any[])
 const groups = ref([] as any[])
@@ -92,18 +92,20 @@ const saveGroupPermissions = async (group: any) => {
     saving.value = true
     try {
 
-        await $fetch(`api/auth/groups/${group.id}/`, {
+        const response = await $fetch(`api/auth/groups/${group.id}/`, {
             method: 'PATCH',
             body: requestBody
         })
         saving.value = false
-        window.alert("Guardado")
+        toast.add({ title: 'Guardado' })
+        console.log('saveGroupPermissions', response)
         fetchGroups()
     } catch (e) {
         console.error(e)
         saving.value = false
         window.alert("Error")
     }
+   
 }
 
 const ui = {

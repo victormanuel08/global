@@ -163,6 +163,7 @@ class RecordSerializer(serializers.ModelSerializer):
     third_obj_full =ThirdSerializer(source = 'third_obj', read_only=True)  
     third_driver_full=ThirdSerializer(source = 'third_driver', read_only=True)
     diagnosis_full = DiagnosisSerializer(source = 'diagnosis', read_only=True)
+    diagnosis_multi_full = serializers.SerializerMethodField()
     diagnosis_1_full = DiagnosisSerializer(source = 'diagnosis_1', read_only=True)
     diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
     diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
@@ -170,8 +171,6 @@ class RecordSerializer(serializers.ModelSerializer):
     # service_full = ServiceSerializer(source = 'service', read_only=True)
     fee_full = FeeSerializer(source = 'fee', read_only=True)
     records_details = serializers.SerializerMethodField()
-    
-
 
     class Meta:
         model = Records
@@ -181,6 +180,10 @@ class RecordSerializer(serializers.ModelSerializer):
         records_details = Records_details.objects.filter(record=obj)
         return RecordDetailSerializer(records_details, many=True).data
         
+    def get_diagnosis_multi_full(self, obj):
+        diagnosis_multi = obj.diagnosis_multiple.all()
+        return DiagnosisSerializer(diagnosis_multi, many=True).data
+    
 class ScheduledSerializer(serializers.ModelSerializer):
     third_patient_full = ThirdSerializer(source = 'third_patient', read_only=True)
     third_medic_full = ThirdSerializer(source = 'third_medic', read_only=True)

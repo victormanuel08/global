@@ -1,12 +1,53 @@
+from users.views import *
 from rest_framework import serializers
 from users.models import User, PermissionsSet
 from medicalrecords.models import Thirds
 from medicalrecords.serializers import ThirdSerializer
+from users.serializers import GroupSerializer, PermissionSerializer
+from django.contrib.auth.models import Permission
+
 
 
 class UserSerializer(serializers.ModelSerializer):
     third = serializers.SerializerMethodField()
     menu_items = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
+    groups_full = serializers.SerializerMethodField()
+    union_permissions = serializers.SerializerMethodField()
+    union_permissions_all = serializers.SerializerMethodField()
+    union_permissions_full = serializers.SerializerMethodField()
+
+    def get_union_permissions_all(self, obj):
+        groups_full = self.get_groups_full(obj)
+        permissions = set()
+        for group in groups_full:
+            group_permissions = group['permissions']
+            for permission in group_permissions:
+                permissions.add(permission)
+        return PermissionSerializer(Permission.objects.filter(id__in=permissions), many=True).data
+
+    def get_union_permissions(self, obj):
+        groups_full = self.get_groups_full(obj)
+        permissions_ids = set()
+        for group in groups_full:
+            group_permissions_ids = group['permissions']
+            for permission in group_permissions_ids:
+                permissions_ids.add(permission)
+        return list(permissions_ids)
+
+    def get_union_permissions_full(self, obj):
+        union_permissions_ids = self.get_union_permissions(obj)
+        return PermissionSerializer(Permission.objects.filter(id__in=union_permissions_ids), many=True).data
+
+    def get_groups_full(self, obj):
+        groups = obj.groups.all()
+        return GroupSerializer(groups, many=True).data
+
+
+    def get_groups(self, obj):
+        groups = obj.groups.all()
+        return [group.id for group in groups]
+
 
     def get_third(self, obj):
         thirds = Thirds.objects.filter(user=obj)
@@ -79,4 +120,9 @@ class UserSerializer(serializers.ModelSerializer):
             "is_superuser",
             "menu_items",            
             "third",
+            'groups',
+            'groups_full',
+            'union_permissions',
+            'union_permissions_all',
+            'union_permissions_full',
         ]

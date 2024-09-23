@@ -145,6 +145,11 @@ const fetchVehicles = async () => {
 }
 
 const deleteVehicle = async (id: number) => {
+  autorized.value = await validatePermissions('vehicles', 'delete');
+  if (!autorized.value) {
+    fetchVehicles()
+    return
+  }l
   const message = confirm('¿Estás seguro de eliminar este Vehiculo?')
   if (message) {
     const response = await $fetch(`api/vehicles/${id}/`, {
@@ -154,9 +159,14 @@ const deleteVehicle = async (id: number) => {
   }
 }
 
-
+const autorized = ref(false)
 
 const saveItem = async (index: number, field: string, value: string) => {
+  autorized.value = await validatePermissions('vehicles', 'change');
+  if (!autorized){
+    fetchVehicles();
+    return
+  }
   const vehicle = vehicles.value[index];
   vehicle[field] = value;
   const response = await $fetch(`api/vehicles/${vehicle.id}`, {
@@ -169,6 +179,11 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 const createVehicle = async () => {
+  autorized.value = await validatePermissions('vehicles', 'add');
+  if (!autorized) {
+    fetchVehicles()
+    return
+  }
   const message = confirm('¿Estás seguro de crear este Vehiculo?')
 
   if (!message) {
@@ -180,6 +195,7 @@ const createVehicle = async () => {
     fetchVehicles()
     return
   }
+  
 
   const response = await $fetch('api/vehicles/', {
     method: 'POST',

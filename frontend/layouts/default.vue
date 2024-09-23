@@ -58,6 +58,7 @@ const authUserStorage = useAuthUserStorage()
 const authTokensStorage = useAuthTokensStorage()
 const user = computed(() => authUserStorage.value)
 const tokenCookie = useCookie('token')
+console.log("torage: ",authUserStorage.value)
 
 const menuItems = computed(() => {
     const user = authUserStorage.value

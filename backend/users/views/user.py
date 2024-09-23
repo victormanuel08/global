@@ -15,3 +15,13 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(request.user)
         return response.Response(serializer.data)
     
+    def perform_create(self, serializer):
+        user = serializer.save()
+        user.groups.set(self.request.data.get('groups', []))
+        user.save()
+
+    def perform_update(self, serializer):
+        user = serializer.save()
+        user.groups.set(self.request.data.get('groups', []))
+        user.save()
+    

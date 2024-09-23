@@ -17,6 +17,7 @@ thirds_to_create = [
         "last_name": "N",
         "second_last_name": "N",
         "type": "P",
+        "sex":"M",
         "type_document": "AS"
     },
     {

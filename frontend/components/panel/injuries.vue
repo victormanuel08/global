@@ -27,9 +27,12 @@
             </div>
             <div class="m-2">
                 <label>Diagnosticos Secundarios:</label>
-                <SelectDiagnosesMulti v-model="record.diagnosis_multi" />
+                <SelectDiagnosesMulti 
+                    v-model="record.diagnosis_multi_fulld" 
+                    @change="viewDiagnosesSecondaries(record.id)" 
+                />
             </div>
-           
+
             <div class="m-2">
                 <label>Parte Principal:</label>
                 <SelectChoice :choiceType="'BODY_PART_CHOICES'" v-model="record.body_part_full" />
@@ -82,8 +85,19 @@ const point = ref(0)
 const procedures_others = ref('')
 const newServices = ref([] as number[]);
 
+const selectedDiagnoses = ref([]);
 
 
+const viewDiagnosesSecondaries = async (value) => {
+    selectedDiagnoses.value = record.value.diagnosis_multi_full;
+    const diagnosisIds = selectedDiagnoses.value.map(diagnosis => diagnosis.id);
+    const response = await $fetch(`api/records/${value}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            diagnosis_multi: diagnosisIds
+        }),
+    });
+};
 
 const record = ref({} as any)
 
@@ -92,8 +106,9 @@ const props = defineProps({
 })
 
 onMounted(() => {
-
     fetchRecord(props.calendarEvent?.id)
+    console.log('DMF', record.value.diagnosis_multi_full)
+    selectedDiagnoses.value = record.value.diagnosis_multi_full
 });
 
 type injurie = {
