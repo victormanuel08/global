@@ -98,7 +98,14 @@ const props = defineProps({
 const record = ref({} as Record)
 if (props.calendarEvent) {
     record.value = props.calendarEvent as Record;
-    record.value.policy_full.concat = props.calendarEvent.policy_full?.name + ' - ' +props.calendarEvent.policy_full?.description + ' - ' + props.calendarEvent.policy_full?.date_start + ' - ' + props.calendarEvent.policy_full?.date_end             
+    if (props.calendarEvent.policy_full){
+        record.value.policy_full?.concat = props.calendarEvent.policy_full?.name + ' - ' +props.calendarEvent.policy_full?.description + ' - ' + props.calendarEvent.policy_full?.date_start + ' - ' + props.calendarEvent.policy_full?.date_end             
+    }else{
+        record.value.policy_full = {               
+            concat: ''
+        };
+    }
+      
      
 }
 
