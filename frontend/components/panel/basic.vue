@@ -98,10 +98,13 @@ const props = defineProps({
 const record = ref({} as Record)
 if (props.calendarEvent) {
     record.value = props.calendarEvent as Record;
-    if (props.calendarEvent.policy_full){
-        record.value.policy_full?.concat = props.calendarEvent.policy_full?.name + ' - ' +props.calendarEvent.policy_full?.description + ' - ' + props.calendarEvent.policy_full?.date_start + ' - ' + props.calendarEvent.policy_full?.date_end             
-    }else{
-        record.value.policy_full = {               
+    if (props.calendarEvent.policy_full) {
+        record.value.policy_full = {
+            ...props.calendarEvent.policy_full,
+            concat: props.calendarEvent.policy_full.name + ' - ' + props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end
+        };
+    } else {
+        record.value.policy_full = {
             concat: ''
         };
     }
@@ -254,13 +257,21 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 onMounted(() => {
-    getLocation()
+    getLocation();
 
-    record.value=props.calendarEvent as Record;
-    record.value.policy_full = {               
-        concat: record.value.policy_full?.name + ' - ' + record.value.policy_full?.description + ' - ' + record.value.policy_full?.date_start + ' - ' + record.value.policy_full?.date_end
-    };
+    record.value = props.calendarEvent as Record;
+    if (props.calendarEvent.policy_full) {
+        record.value.policy_full = {
+            ...props.calendarEvent.policy_full,
+            concat: props.calendarEvent.policy_full.name + ' - ' + props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end
+        };
+    } else {
+        record.value.policy_full = {
+            concat: ''
+        };
+    }
 });
+
 
 
 const handlePolicyChange = (value: any) => {
