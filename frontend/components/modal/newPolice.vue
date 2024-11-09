@@ -1,6 +1,6 @@
 <template>
     <UModal>
-        <div class="border rounded m-4 ">
+        <div class="border rounded m-4 " v-if="!isVehicle">
             <div class=" m-4 ">
 
 
@@ -25,8 +25,8 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Vehiculo: <span
-                                @click="showModalVehicle('SE')"></span></label>
-                        <SelectVehicle v-model="newVehicle"  />
+                                @click="showModalVehicle('SE')">➕</span></label>
+                        <SelectVehicle v-model="newVehicle" />
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4" v-if="newTypePolice.id === 'SE'">
@@ -49,7 +49,37 @@
                 </div>
             </div>
         </div>
+
+        <div class="border rounded m-4 " v-if="isVehicle">
+            <div class="m-4">
+                <span @click="isVehicle = false">⏪</span>
+                <h3>Crear Vehículo</h3>
+                <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4">
+                    <div class="m-2">
+                        <label class="block text-sm font-medium text-gray-700">Placa:</label>
+                        <UInput v-model="newVehiclePlate" placeholder="Placa" class="border rounded p-1 w-full" />
+                    </div>
+                    <div class="m-2">
+                        <label class="block text-sm font-medium text-gray-700">Modelo / Movil:</label>
+                        <UInput v-model="newVehicleBrand" placeholder="Modelo / Movil"
+                            class="border rounded p-1 w-full" />
+                    </div>
+                </div>
+                <div class="m-2">
+                    <label class="block text-sm font-medium text-gray-700">Tipo:</label>
+                    <SelectChoice :choiceType="'VEHICLE_TYPE_CHOICES'" v-model="newVehicleType"
+                        class="border rounded p-1 w-full" />
+                </div>
+                <div class="flex items-center justify-center mt-4">
+                    <span @click="createVehicle">💾</span>
+                </div>
+            </div>
+
+
+        </div>
+
     </UModal>
+
 </template>
 
 <script lang="ts" setup>
@@ -63,8 +93,27 @@ const newDateEnd = ref({})
 const newAmountAffection = ref(0)
 const newAmountTotal = ref(0)
 
-const isvehicle = ref(false)
+const isVehicle = ref(false)
+const newVehiclePlate = ref('')
+const newVehicleBrand = ref('')
+const newVehicleType = ref('')
+const toast = useToast()
 
+const createVehicle = async () => {
+    const response = await $fetch<any>('api/vehicles/', {
+        method: 'POST',
+        body: {
+            plate: newVehiclePlate.value,
+            brand: newVehicleBrand.value,
+            vehicle_type: newVehicleType.value.id
+          
+        }
+    })
+    //alert('Vehiculo creado, cerrar modal')
+    toast.add({ title: 'Vehiculo creado' })
+    isVehicle.value = false
+    newVehicle.value = response
+}
 
 
 type Props = {
@@ -79,7 +128,10 @@ watch(() => props.typeT, async () => {
 })
 
 
-
+const showModalVehicle = (type: string) => {
+    //  alert('Crear Vehiculo')
+    isVehicle.value = true
+}
 
 
 const createPolice = async () => {
@@ -87,7 +139,7 @@ const createPolice = async () => {
         const year = await formatDateYYYY0101(newDateStart.value)
         const valueSOAT = await getVALUE('SE', year)
         if (valueSOAT.results && valueSOAT.results.length > 0) {
-            const amount = valueSOAT.results[0].amount;            
+            const amount = valueSOAT.results[0].amount;
             newAmountTotal.value = amount;
         } else {
             alert('No se encontro el valor del SOAT en ese año debe agregar el valor en configuracion')

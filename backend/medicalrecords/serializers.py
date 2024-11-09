@@ -168,10 +168,11 @@ class RecordSerializer(serializers.ModelSerializer):
     diagnosis_2_full = DiagnosisSerializer(source = 'diagnosis_2', read_only=True)
     diagnosis_3_full = DiagnosisSerializer(source = 'diagnosis_3', read_only=True)
     policy_full = PoliceSerializer( source = 'policy' ,  read_only = True)
+    vehicle_full = VehicleSerializer(source = 'vehicle', read_only=True)
     # service_full = ServiceSerializer(source = 'service', read_only=True)
     fee_full = FeeSerializer(source = 'fee', read_only=True)
     records_details = serializers.SerializerMethodField()
-
+   
     class Meta:
         model = Records
         fields = '__all__'  

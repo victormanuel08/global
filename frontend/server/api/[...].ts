@@ -1,6 +1,8 @@
 import type { H3Event, HTTPMethod } from "h3";
 import { FetchError } from "ofetch";
-const API_URL = "http://api.globalsafeips.com.co"
+//const API_URL = "http://api.globalsafeips.com.co"
+const API_URL = "http://localhost:8000"
+
 
 export default defineEventHandler(async (event) => {
     const route = event.context.params?._;

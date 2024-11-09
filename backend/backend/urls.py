@@ -50,6 +50,8 @@ urlpatterns = [
     path('sendemail/',sendemail, name='sendemail'),
     path('processimage/',ImageProcessingView.as_view(), name='processimage'),
 
+    path('kc/', views.kc, name='kc'),
+
     path('api/pdf/<str:template_type>/<str:template_id>/', views.RecordListView.as_view(), name='template-pdf'),
     path('api/printpdf/<str:template_type>/<int:template_id>/', views.RecordPdf.as_view(), name='print-pdf'),
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),

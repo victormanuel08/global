@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from django.views.generic import ListView,View
 import requests
 from django.core.mail import EmailMessage
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from django.views.decorators.csrf import csrf_exempt
 
 import cv2
@@ -101,6 +101,7 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordSerializer
+    
     search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
     search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
     
@@ -115,7 +116,17 @@ class RecordViewSet(viewsets.ModelViewSet):
         diagnosis_ids = self.request.data.get('diagnosis_multi', [])
         instance.diagnosis_multiple.set(diagnosis_ids)    
         instance.save()
-
+        
+    def update(self, request, *args, **kwargs): 
+        partial = kwargs.pop('partial', False) 
+        instance = self.get_object() 
+        serializer = self.get_serializer(instance, data=request.data, partial=partial) 
+        serializer.is_valid(raise_exception=True) 
+        self.perform_update(serializer) # Manejar la actualización de diagnosis_multiple 
+        diagnosis_ids = request.data.get('diagnosis_multiple', []) 
+        instance.diagnosis_multiple.set(diagnosis_ids) 
+        instance.save() 
+        return Response(serializer.data)
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):
@@ -339,6 +350,8 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+
+
 class RecordListView(ListView):
     context_object_name = "records"
 
@@ -346,22 +359,26 @@ class RecordListView(ListView):
         template_type = self.kwargs.get('template_type')
         template_id = self.kwargs.get('template_id')
 
-     
         if template_type == 'ambulancia':
-            model = Records
-            template_name = "record_list.html"
+            self.template_name = "record_list.html"
             return Records.objects.filter(id=template_id)
         elif template_type == 'thirds':
-            model = Thirds
-            template_name = "thirds_list.html"
+            self.template_name = "thirds_list.html"
             return Thirds.objects.filter(id=template_id)
         elif template_type == 'police':
-            model = Policy
-            template_name = "police_list.html"
-            return Thirds.objects.filter(id=template_id)
+            self.template_name = "police_list.html"
+            return Policy.objects.filter(id=template_id)
         else:
-            # Si no se encuentra el tipo de plantilla, puedes devolver todos los registros
-            return Records.objects.all()  # O Thirds.objects.all() según corresponda
+            self.template_name = "default_list.html"
+            return Records.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        template_id = self.kwargs.get('template_id')
+        record = Records.objects.filter(id=template_id).first()
+        context['document'] = record
+        return context
+
      
 class RecordPdf(View):
     def get(self, request, *args, **kwargs):
@@ -423,34 +440,43 @@ class GeocodeView(APIView):
             pass
         return Response(response_data)
 
+
 @api_view(['POST'])
 @csrf_exempt
 def sendemail(request):
-    template_id =request.data.get('id', None)    
+    template_id = request.data.get('id', None)    
     records = Records.objects.filter(id=template_id)
     record = Records.objects.filter(id=template_id).first()
-    paciente=Thirds.objects.filter(nit=record.third_patient).first()
+    paciente = Thirds.objects.filter(nit=record.third_patient).first()
     medico = Thirds.objects.filter(nit=record.third_medic).first()
+    auxiliar = Thirds.objects.filter(nit=record.third_medic_clinic).first()
+    conductor = Thirds.objects.filter(nit=record.third_driver).first()
     clinica = Thirds.objects.filter(nit=record.third_clinic).first()
+    emails = Values.objects.filter(type_values='ED').values_list('val', flat=True)
     
     if record:
         fecha = record.date_time
-        cedula=paciente.nit   
+        cedula = paciente.nit   
         nombre_paciente = paciente.name + ' ' + paciente.second_name
         apellido_paciente = paciente.last_name + ' ' + paciente.second_last_name
         nombre_medico = medico.name + ' ' + medico.second_name
         apellido_medico = medico.last_name + ' ' + medico.second_last_name
-        mensaje = f"**Paciente:** {nombre_paciente} {apellido_paciente}\n**Medico:** {nombre_medico} {apellido_medico}\n**Dirección:** {record.address}\nAbrir en Mapa"
-        
+        nombre_auxiliar = auxiliar.name + ' ' + auxiliar.second_last_name
+        apellido_auxiliar = auxiliar.last_name + ' ' + auxiliar.second_last_name
+        nombre_conductor = conductor.name + ' ' + conductor.second_last_name
+        apellido_conductor = conductor.last_name + ' ' + conductor.second_last_name
+        mensaje = f"**Paciente:** {nombre_paciente} {apellido_paciente}\n**Medico:** {nombre_medico} {apellido_medico}\n**Auxiliar:** {nombre_auxiliar} {apellido_auxiliar}\n**Conductor** {nombre_auxiliar} {apellido_auxiliar}"   
     else:
         mensaje = "No se encontró información del paciente"
-    filename='GATA-HC-'+ cedula   
+    
+    filename = 'GATA-HC-' + cedula   
     asunto = 'Reporte Ambulancia ' + filename
-    destinatarios=['rinconvargasvictormanuel@gmail.com']
-    from_email='noreply@globalsafeips.com.co'
+    
+    destinatarios = list(emails)
+    from_email = 'noreply@globalsafeips.com.co'
     template_name = "record_list.html"
     
-    data = {'records': records}
+    data = {'document': record}
     pdf = render_to_pdf(template_name, data)   
     try:
         pdf_response = pdf
@@ -460,12 +486,12 @@ def sendemail(request):
             from_email=from_email,
             to=destinatarios,
         )
-        email.attach(filename +'.pdf', pdf_response.content, 'application/pdf')
+        email.attach(filename + '.pdf', pdf_response.content, 'application/pdf')
         email.send()
         return Response({'mensaje': 'Correo enviado correctamente'})
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
 
 
 class ImageProcessingView(APIView):
@@ -501,5 +527,12 @@ class ImageProcessingView(APIView):
                 return Response({'error': 'Error al guardar la imagen'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'error': 'Se requiere un record_id válido'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+def kc(request):
+    response = HttpResponse("Cookie borrada")
+    response.delete_cookie('token')
+    return response
         
         

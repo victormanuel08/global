@@ -82,7 +82,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User" # Para que Django use nuestro modelo de usuario personalizado.
 DISTANCE_MATRIX_API_KEY = "UdVE1delQ39PrAppo8MJUpK2K6xpAC6m5dginSwYckjTBf6nyn04VQd0uoWSDTZ4"
 
 # Database
@@ -93,7 +93,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "globalsafe", # Esto debería estar en un archivo .envs
         "HOST": "127.0.0.1",
-        "PASSWORD": "Bce2024.",
+        "PASSWORD": "postgres",
         "USER": "postgres"
     }
 }

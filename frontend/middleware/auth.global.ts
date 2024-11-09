@@ -26,7 +26,7 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo("/");
   }
 
-  const expDT = new Date(decodedToken.exp * 1000);
+  const expDT = new Date(decodedToken.exp * 10000);
   const nowDT = new Date();
 
   if (expDT < nowDT) {

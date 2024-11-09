@@ -63,12 +63,12 @@ const items = [{
     panel: 'Records',
 },
 {
-    label: 'Datos Evento',
+    label: 'Evento',
     icon: 'uil:exclamation-triangle',
     panel: 'Basic',
 },
 {
-    label: 'Lesiones',
+    label: 'Clinica',
     icon: 'uil:file-medical',
     panel: 'Injuries',
 },

@@ -4,11 +4,14 @@
         @change="loader">
     </USelectMenu>
 </template>
-
 <script setup lang="ts">
+
 const options = ref<any[]>([])
 const query = ref("")
 const modelValue = defineModel<any>({ default: () => ({}) })
+const specialities = ref<any[]>([])
+const specialitiesSet = new Set();
+const services = ref<any[]>([])
 
 type Props = {
     third?: string | number
@@ -20,6 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const clickHandler = () => {
     options.value = []
+    
     retrieveFromApi()
 }
 
@@ -39,7 +43,7 @@ const retrieveFromApi = async () => {
 };
 
 const isFee = ref(false)
-const uniqueSpecialities = [] as any;
+const uniqueSpecialities = []as any;
 
 const loader = async () => {
     await modelValue.value
@@ -60,6 +64,7 @@ const loader = async () => {
         isFee.value = false
     }
 
+
     if (!isFee.value) {
         modelValue.value.services = [];
         modelValue.value.specialities = [];
@@ -70,6 +75,7 @@ const loader = async () => {
         
         uniqueSpecialities.length = 0;
         for (const fee of response.results) {
+          
             modelValue.value.services.push(fee);
             const especialidadExistente = uniqueSpecialities.find(
                 (especialidad: { id: any; }) => especialidad.id === fee.speciality_full.id
@@ -89,6 +95,7 @@ const loader = async () => {
         const feeResponse = await $fetch<any>(`/api/fees/?search&policy=${modelValue.value.id}`, {
             method: 'GET'
         });
+     
 
         for (const fee of feeResponse.results) {
             fee.service_full.amount = fee.amount;
@@ -103,10 +110,16 @@ const loader = async () => {
         }
         
         modelValue.value.specialities = uniqueSpecialities;
+
     }
 
-    console.log(modelValue.value.description, modelValue.value)
+ console.log(modelValue.value.description,modelValue.value)
 }
+
+
+
+
+
 
 watch(
     [query, () => props.third],

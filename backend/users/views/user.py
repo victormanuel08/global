@@ -7,6 +7,7 @@ from rest_framework import viewsets, decorators, response
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.filter(is_active=True).order_by('username')
+    search_fields = ['username', 'email','first_name','last_name']
     
     @decorators.action(detail=False, methods=['get'])
     def me(self, request):
@@ -24,4 +25,5 @@ class UserViewSet(viewsets.ModelViewSet):
         user = serializer.save()
         user.groups.set(self.request.data.get('groups', []))
         user.save()
+    
     

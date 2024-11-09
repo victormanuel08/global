@@ -1,7 +1,48 @@
 <template>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-6 mt-4" >
+        <div class="mr-2">
+            <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
+            <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
+                @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
+                :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
+                :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
+            </SelectChoice>
+        </div>
+        <div class="mr-2">
+                <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
+                <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
+                    @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
+            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Seleccion Paciente: <span
+                    @click="showModalThird('')">➕</span><span @click="showModalThird(record.third_patient_full)"
+                    v-if="record.third_patient_full?.nit !== '222222222222'">🖊️</span></label>
 
-    <h1>Informacion Paciente <span @click="showModalThird(record.third_patient_full)"
-            v-if="record.third_patient_full?.type_document !== 'AS'">🖊️</span></h1>
+
+            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
+                @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)" />
+
+        </div>
+        <div >
+                <label class="block text-sm font-medium text-gray-700">Identificacion Temporal</label>
+                <UInput v-model="record.number_report_id" placeholder="TI. Reporte Clinica"
+                    @change="saveItem(record.id, 'number_report_id', record.number_report_id)" />
+            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Acompañante: <span
+                    @click="showModalThird('')">➕</span></label>
+            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_buddy_full"
+                @change="saveItem(record.id, 'third_buddy', record.third_buddy_full?.id)" />
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Relacion con el Paciente:</label>
+            <SelectChoice :choiceType="'RELATIONSHIP_CHOICES'" v-model="record.relationship_full"
+                @change="saveItem(record.id, 'relationship', record.relationship_full.id)" />
+        </div>
+
+    </div>
+
+    <h1>Informacion Paciente </h1>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4" v-if="record.third_patient_full?.type_document === 'AS'">
         <div>
             <label class="block text-sm font-medium text-gray-700">Identificacion:</label>
@@ -12,18 +53,7 @@
             {{ record.third_patient_full?.name }} {{ record.third_patient_full?.second_name }} {{
                 record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Tercero: <span
-                    @click="showModalThird('')">➕</span></label>
-            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
-                @change="saveItem(record.id, 'third_patient', record.third_patient_full?.id)" />
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Tercero Acompañante: <span
-                    @click="showModalThird('')">➕</span></label>
-            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_buddy_full"
-                @change="saveItem(record.id, 'third_buddy', record.third_buddy_full?.id)" />
-        </div>
+
     </div>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4" v-if="record.third_patient_full?.type_document !== 'AS'">
         <div>
@@ -57,19 +87,19 @@
             <label class="block text-sm font-medium text-gray-700">Sexo: </label>
             {{ record.third_patient_full?.sex_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
             <label class="block text-sm font-medium text-gray-700">Amamantamiento Complemntario: </label>
             {{ record.maternity_complementary_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
             <label class="block text-sm font-medium text-gray-700">Amamantamiento extendido: </label>
             {{ record.third_patient_full?.maternity_extend_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
             <label class="block text-sm font-medium text-gray-700">Embarazo</label>
             {{ record.third_patient_full?.maternity_pregnancy_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id ==='F'">
+        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
             <label class="block text-sm font-medium text-gray-700">Violencia :</label>
             {{ record.third_patient_full?.maternity_violance_full?.name }}
         </div>
@@ -92,30 +122,15 @@
             <label class="block text-sm font-medium text-gray-700">Email:</label>
             {{ record.third_patient_full?.email }}
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Edicion Tercero: <span
-                    @click="showModalThird('')">➕</span></label>
-
-
-            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
-                @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)" />
-
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Tercero Acompañante: <span
-                    @click="showModalThird('')">➕</span></label>
-            <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_buddy_full"
-                @change="saveItem(record.id, 'third_buddy', record.third_buddy_full?.id)" />
-        </div>
-
     </div>
-    <div v-if="record.third_patient_full?.type_document !== 'AS'" class="mt-3">
+
+    <div v-if="record.third_patient_full?.type_document !== 'AS'" class="mt-3" hidden>
         <h1>Antecedentes</h1>
         <div class="grid grid-cols-1  md:grid-cols-2 m-4">
             <div class="m-2 g-4">
                 <label class="block text-sm font-medium">Alergias: {{ record.third_patient_full?.allergies }}. {{
                     newRecordAllergies
-                    }}</label>
+                }}</label>
                 <UTextarea v-model="newRecordAllergies" variant="outline" />
             </div>
             <div class="m-2 g-4">
@@ -198,6 +213,9 @@ const fetchProps = async () => {
     props.calendarEvent.third_patient_full.maternity_pregnancy_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
     props.calendarEvent.third_patient_full.maternity_violance_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
     props.calendarEvent.third_patient_full.type_document_full = await getCHOICE(props.calendarEvent.third_patient_full.type_document, "TYPE_DOCUMENT_CHOICES")
+    props.calendarEvent.priority_full = await getCHOICE(props.calendarEvent.priority, "PRIORITY_CHOICES")
+    props.calendarEvent.relationship_full = await getCHOICE(props.calendarEvent.relationship, "RELATIONSHIP_CHOICES")
+    props.calendarEvent.external_cause_full = await getCHOICE(props.calendarEvent.external_cause, "EXTERNAL_CAUSE_CHOICES")
 
 }
 
@@ -248,6 +266,8 @@ const ui = {
     check: 'align-center justify-center',
     span: 'cursor-pointer'
 }
+
+
 
 </script>
 

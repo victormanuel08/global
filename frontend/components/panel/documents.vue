@@ -25,7 +25,7 @@
                     @change="saveItem(record.id, 'half', record.half_full.id)" />
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Clinica: <span
+                <label class="block text-sm font-medium text-gray-700">Transportado a: <span
                         @click="typeT = 'C', typeTA = 'A', showModalThird('')">➕</span></label>
                 <SelectThird :third-type="'C'" v-model="record.third_clinic_full"
                     @change="saveItem(record.id, 'third_clinic', record.third_clinic_full.id)">
@@ -33,12 +33,12 @@
             </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Ambulancia:</label>
-                <SelectVehicle v-model="thirdSelected.vehicle_full"
-                    @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)"
+                <SelectVehicle v-model="record.vehicle_full"
+                    @change="saveItem(record.id, 'vehicle', record.vehicle_full.id)"
                     :vehicleType="'AM'" />
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Conductor: <span
+                <label class="block text-sm font-medium text-gray-700">Conductor: <span
                         @click="typeT = 'P', showModalThird('')">➕</span></label>
                 <SelectThird :third-type="'P'" v-model="record.third_driver_full"
                     @change="saveItem(record.id, 'third_driver', record.third_driver_full.id)"
@@ -46,29 +46,22 @@
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tercero Medico Clinica: <span
+                <label class="block text-sm font-medium text-gray-700">Auxiliar: <span
                         @click="typeT = 'M', showModalThird('')">➕</span></label>
                 <SelectThird :third-type="'M'" v-model="record.third_medic_clinic_full"
                     @change="saveItem(record.id, 'third_medic_clinic', record.third_medic_clinic_full.id)">
                 </SelectThird>
-            </div>
-            <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Poliza: <span
-                        @click="typeT = 'E', showModalPolice('')">➕</span></label>
-                <SelectInsurance :v-model="record.policy_full" :third="record.third_patient_full?.id"
-                    @change="saveItem(record.id, 'policy', record.policy_full?.id)" :placeholder="'Aseguradora'">
-                </SelectInsurance>
-            </div>
-            <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Tipo Identificacion</label>
-                <UInput v-model="record.number_report_id" placeholder="TI. Reporte Clinica"
-                    @change="saveItem(record.id, 'number_report_id', record.number_report_id)" />
             </div>
 
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">N° Id. Reporte Ingreso clinica</label>
                 <UInput v-model="record.number_report" placeholder="N° Id. Reporte Ingreso clinica"
                     @change="saveItem(record.id, 'number_report', record.number_report)" />
+            </div>
+            <div class="m-2">
+                <label class="block text-sm font-medium text-gray-700">Condicion Accidentado:</label>
+                <SelectChoice :choiceType="'TYPE_ACCIDENT_CHOICES'" v-model="record.condition_full"
+                    @change="saveItem(record.id, 'condition', record.condition_full.id)" />
             </div>
         </div>
 
@@ -141,21 +134,7 @@
 
         <div class="grid grid-cols-1  md:grid-cols-5">
 
-            <div class="m-5">
-                <button @click="signedRecord('signed')">
-                    🖋️ Firmar
-                </button>
-                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
-                <strong>
-                    <hr style="border: 1px solid black; font-weight: bold;">
-                    <p>
-                        Dr(a). {{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name
-                        }} {{
-                            record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name
-                        }}
-                    </p>
-                </strong>
-            </div>
+
 
             <div class="m-5">
                 <button @click="signedRecord('signed_recived')">
@@ -168,6 +147,23 @@
                     <p>
                         Dr(a). {{ record.third_clinic_full?.name }} {{ record.third_clinic_full?.second_name }} {{
                             record.third_clinic_full?.last_name }} {{ record.third_clinic_full?.second_last_name }}
+                            <span v-if="!record.signed_recived">. NO FIRMA.</span>
+                    </p>
+                </strong>
+            </div>
+
+            <div class="m-5">
+                <button @click="signedRecord('signed')">
+                    🖋️ Firmar
+                </button>
+                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
+                <strong>
+                    <hr style="border: 1px solid black; font-weight: bold;">
+                    <p>
+                        Dr(a). {{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name
+                        }} {{
+                            record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name
+                        }}<span v-if="!record.signed">. NO FIRMA.</span>
                     </p>
                 </strong>
             </div>
@@ -183,6 +179,7 @@
                     <p>
                         Conductor: {{ record.third_driver_full?.name }} {{ record.third_driver_full?.second_name }} {{
                             record.third_driver_full?.last_name }} {{ record.third_driver_full?.second_last_name }}
+                            <span v-if="!record.signed_driver">. NO FIRMA.</span>
                     </p>
                 </strong>
             </div>
@@ -194,13 +191,14 @@
                     <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
                         v-if="record.signed_patient" />
           
-                    <NuxtImg  class="rotated-image-transform" sizes="100vw sm:50vw md:70px" :src="record.imghdr"  v-if="record.imghdr" @click="imgPreview(record.imghdr)" />
+                    <NuxtImg  class="rotated-image-transform" sizes="20vw sm:20vw md:20px" :src="record.imghdr"  v-if="record.imghdr" @click="imgPreview(record.imghdr)" />
                 </span>
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
                         Paciente: {{ record.third_patient_full?.name }} {{ record.third_patient_full?.second_name }} {{
                             record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
+                            <span v-if="!record.signed_patient">. NO FIRMA.</span><span v-if="!record.imghdr">. NO HUELLA.</span>
                     </p>
                 </strong>
             </div>
@@ -209,7 +207,7 @@
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
     <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
     <ModalEditThird :typeT="typeT" v-model="isThird" />
-    <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
+ 
     <ModalImgpreview :imgRoute="imgRoute" @close="handleModalClose" v-model="isPreview" />
 
 </template>
@@ -245,10 +243,7 @@ const imgPreview = (value: any) => {
     isPreview.value = true
 }
 
-const showModalPolice = (value: any) => {
-    console.log('showModalThird', thirdSelected)
-    isPolice.value = true
-}
+
 
 
 const props = defineProps({
@@ -259,13 +254,23 @@ const record = ref({} as any)
 
 onMounted(() => {
     fetchRecord(props.calendarEvent?.id)
+    fetchProps()
 });
+
+
+const fetchProps = async () => {
+
+
+    props.calendarEvent.condition_full = await getCHOICE(props.calendarEvent.condition, 'TYPE_ACCIDENT_CHOICES')
+
+}   
 
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
     console.log('RECORDobjets', record.value)
     record.value.half_full = await getCHOICE(record.value.half, 'HALF_CHOICES')
+    record.value.condition_full = await getCHOICE(record.value.condition, 'TYPE_ACCIDENT_CHOICES')
     if (typeImg.value === 'imghd') {
         RegenerateHD(record.value.id)
         typeImg.value = ''

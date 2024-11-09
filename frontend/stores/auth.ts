@@ -11,6 +11,7 @@ watch(() => useAuthTokensStorage().accessToken.value, (value) => {
   console.log('accessToken changed', value)
   const tokenCookie = useCookie('token')
   tokenCookie.value = value
+  console.log('tokenCookieSTORE', tokenCookie.value)
 })
 
 export const useAuthUserStorage = createGlobalState(
