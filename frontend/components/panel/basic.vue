@@ -98,7 +98,7 @@ const props = defineProps({
 const record = ref({} as Record)
 if (props.calendarEvent) {
     record.value = props.calendarEvent as Record;
-    record.value.policy_full.concat = props.calendarEvent.policy_full?.name + ' - ' +props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end             
+    record.value.policy_full.concat = props.calendarEvent.policy_full?.name + ' - ' +props.calendarEvent.policy_full?.description + ' - ' + props.calendarEvent.policy_full?.date_start + ' - ' + props.calendarEvent.policy_full?.date_end             
      
 }
 
@@ -251,7 +251,7 @@ onMounted(() => {
 
     record.value=props.calendarEvent as Record;
     record.value.policy_full = {               
-        concat: record.value.policy_full?.name + ' - ' + record.value.policy_full.description + ' - ' + record.value.policy_full.date_start + ' - ' + record.value.policy_full.date_end
+        concat: record.value.policy_full?.name + ' - ' + record.value.policy_full?.description + ' - ' + record.value.policy_full?.date_start + ' - ' + record.value.policy_full?.date_end
     };
 });
 
