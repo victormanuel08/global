@@ -78,7 +78,7 @@ GLASGOW_RM_CHOICES = (
 
 HALF_CHOICES = (
     ('TE', 'Telfonico'),
-    ('RA', 'Padio'),
+    ('RA', 'Radio'),
     ('PE', 'Personal'),
     ('OB', 'Observado')
 )
@@ -539,6 +539,7 @@ class Records(models.Model):
     imgic= models.ImageField(upload_to='records/', null=True, blank=True)
     imghd= models.ImageField(upload_to='records/', null=True, blank=True)
     imghdr= models.ImageField(upload_to='records/', null=True, blank=True)
+    imgls= models.ImageField(upload_to='records/', null=True, blank=True)
     
     latitude= models.CharField(max_length=20,null=True, blank=True)
     longitude= models.CharField(max_length=20,null=True, blank=True)

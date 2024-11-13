@@ -351,7 +351,6 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-
 class RecordListView(ListView):
     context_object_name = "records"
 
@@ -376,29 +375,21 @@ class RecordListView(ListView):
         context = super().get_context_data(**kwargs)
         template_id = self.kwargs.get('template_id')
         record = Records.objects.filter(id=template_id).first()
+        record.glassgow_total = int(record.glasgow_ro) + int(record.glasgow_rv) + int(record.glasgow_rm)
         context['document'] = record
         return context
 
-     
-class RecordPdf(View):
-    def get(self, request, *args, **kwargs):
-        template_type = self.kwargs.get('template_type')
-        template_id = self.kwargs.get('template_id')
-       
-        if template_type == 'ambulancia':
-            records = Records.objects.filter(id=template_id)
-            template_name = "record_list.html"
-        elif template_type == 'thirds':
-            records = Thirds.objects.filter(id=template_id)
-            template_name = "thirds_list.html"
-        elif template_type == 'police':
-            records = Policy.objects.filter(id=template_id)
-            template_name = "police_list.html"
-        else:           
-            records = Records.objects.all() 
-        data = {'records': records}
-        pdf = render_to_pdf('record_list.html', data)
-        return HttpResponse(pdf, content_type='application/pdf')
+    
+class RecordPdf(RecordListView, View): 
+    def get(self, request, *args, **kwargs): 
+        self.object_list = self.get_queryset() 
+        context = self.get_context_data(object_list=self.object_list) 
+        pdf = render_to_pdf(self.template_name, context) 
+        response = HttpResponse(pdf, content_type='application/pdf') 
+        response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+        return response
+
+
   
 class GeocodeView(APIView):
     def get(self, request, *args, **kwargs):

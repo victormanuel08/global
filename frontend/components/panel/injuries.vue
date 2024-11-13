@@ -33,7 +33,7 @@
     <h1>Lesiones</h1>
     <div class="container grid grid-cols-1   lg:grid-cols-2  m-4">
         <div style="overflow: auto;">
-            <div class="m-2" style="width: 450px; height: 500px; position: relative;">
+            <div class="grid-container2" style="width: 450px; height: 500px; position: relative;">
                 <img src="@/assets/img/body.png" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
                 <img src="@/assets/img/body2.png" alt="Imagen" v-else />
                 <div class="grid-container">
@@ -41,13 +41,14 @@
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
                             <div class="square" v-if="injurie.point === n">
                                 <div class="circle">
-                                    {{ index + 1 }}
+                                    {{ index + 1 }}. {{ injurie.body_part.name }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
         <div class="m-2">
@@ -111,10 +112,11 @@
 
     </div>
 
+
 </template>
 
 <script lang="ts" setup>
-
+import html2canvas from 'html2canvas';
 const newInjurie = ref('')
 const listInjuries = ref([] as injurie[])
 const listInjuries2 = ref([] as any[])
@@ -139,6 +141,41 @@ const handleDiagnosesChange = (value: any) => {
     viewDiagnosesSecondaries(record.value.id);
 };
 
+const downloadImage = async () => {
+    const element = document.querySelector('.grid-container2');
+    const canvas = await html2canvas(element as HTMLElement);
+    const dataURL = canvas.toDataURL();
+    //const a = document.createElement('a');
+    //a.href = dataURL;
+    //a.download = 'lesiones.png';
+    //a.click();
+    canvas.toBlob((blob) => {
+        if (blob) {
+            saveImage(record.value.id, 'imgls', blob);
+        }
+    }, 'image/png');
+};
+
+
+const saveImage = async (index: number, field: string, blob: Blob) => {
+    try {
+        console.log("blob", blob)
+        const file = new File([blob], 'HC-Lesiones-' + index + '.png', { type: 'image/png' });
+        const formData = new FormData();
+        formData.append(field, file);
+
+        const response = await $fetch(`api/records/${index}/`, {
+            method: 'PATCH',
+            body: formData,
+            headers: {
+                "Content-Type": "multipart/form-data; boundary=----"
+            },
+        });
+
+    } catch (error) {
+        console.error('Error en la solicitud al servidor:', error);
+    }
+};
 
 const viewDiagnosesSecondaries = async (value: any) => {
     selectedDiagnoses.value = record.value.diagnosis_multi_full;
@@ -190,7 +227,7 @@ onMounted(() => {
     fetchRecord(props.calendarEvent?.id)
     console.log('DMF', record.value.diagnosis_multi_full)
     selectedDiagnoses.value = record.value.diagnosis_multi_full
-   // handleDiagnosesChange(record.value.diagnosis_multi)
+    // handleDiagnosesChange(record.value.diagnosis_multi)
 });
 
 type injurie = {
@@ -232,6 +269,7 @@ const saveInjuries = async (index: number, injuries: object[], body: any, injuri
     });
     fetchRecord(props.calendarEvent?.id);
     alert('Lesiones guardadas correctamente')
+    downloadImage();
 };
 
 const cleanFields = async () => {
@@ -347,6 +385,10 @@ const saveServices = async () => {
 
 }
 
+.grid-container2 {
+    
+}
+
 .grid-item {
     /* border: 1px solid #ccc;*/
 
@@ -370,11 +412,11 @@ const saveServices = async () => {
     width: 20px;
     /* Tamaño del círculo */
     height: 20px;
-    background-color: #a70505;
+    background-color: #08c66d;
     /* Color del círculo */
     border-radius: 50%;
     /* Hacerlo circular */
-    color: #fff;
+    color: #ea0404;
     /* Color del número */
     font-weight: bold;
     /* Grosor del número */
