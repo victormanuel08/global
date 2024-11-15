@@ -1,6 +1,14 @@
 <template>
-  <ModalEditFeePolicie :calendarEvent="policeObject" v-if="isFee" />
-  <div class="max-w-5xl mx-auto">
+  <div v-if="isFee">
+    <div class="flex justify-center">
+      <UButton variant="soft" @click="handleBackClick">Regresar</UButton>
+    </div>
+
+    <ModalEditFeePolicie :calendarEvent="policeObject" />
+  </div>
+
+
+  <div class="max-w-5xl mx-auto "v-if="!isFee">
     <UCard class="my-2">
       <template #header>
         <div class="flex justify-between items-center">
@@ -25,7 +33,9 @@
 
 
               <th :class="ui.th">Tipo Pago - Poliza</th>
+              <!--
               <th :class="ui.th">Palntilla</th>
+              -->
               <th :class="ui.th">Acciones</th>
             </tr>
           </thead>
@@ -58,7 +68,7 @@
 
                 </div>
               </td>
-
+              <!--
               <td :class="ui.td">
                 <div class="grid grid-flow-row justify-center">
                   <span v-if="policy.template">SI</span>
@@ -66,13 +76,11 @@
 
                 </div>
               </td>
-
+              -->
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span  :class="ui.span"
-                    v-if="policy.type_police === 'SE' || policy.type_police === 'PA'"></span>
-                    <span @click="feePolicies(policy)" :class="ui.span"
-                    v-else>📎</span>
+                  <span :class="ui.span" v-if="policy.type_police === 'SE' || policy.type_police === 'PA'"></span>
+                  <span @click="feePolicies(policy)" :class="ui.span" v-else>📎</span>
                   <span @click="deletePolicies(policy.id)" :class="ui.span" v-if="policy.code !== '012'">🗑️</span>
                 </div>
               </td>
@@ -97,7 +105,7 @@
               </td>
               <td :class="ui.td">
                 <div class="grid grid-rows justify-left">
-                  <UInput v-model="newPoliciesAmountTotal" placeholder="$ Total" class="border rounded p-1"  />
+                  <UInput v-model="newPoliciesAmountTotal" placeholder="$ Total" class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -109,12 +117,13 @@
                 </div>
               </td>
 
-
+              <!--
               <td :class="ui.td">
                 <div class="grid grid-rows justify-center">
                   <UCheckbox v-model="newPoliciesTemplate" />
                 </div>
               </td>
+              -->
               <td :class="ui.td">
                 <div class="grid grid-rows justify-center">
                   <span @click="createPolice" :class="ui.span">
@@ -137,6 +146,7 @@ import { get } from '@vueuse/core';
 
 
 //const cities = ref([] as any[])
+const newPolicyCode = ref('')
 const newPoliciesThirdEntity = ref({})
 const newPoliciesDescription = ref('')
 
@@ -147,7 +157,7 @@ const newPoliciesTypePolice = ref('')
 const newPoliciesPaymentForm = ref('')
 const newPoliciesTemplate = ref(false)
 
-const policeObject = ref ({})
+const policeObject = ref({})
 const isFee = ref(false)
 
 const {
@@ -155,24 +165,23 @@ const {
   pagination,
   search,
   pending,
+  refresh
 } = usePaginatedFetch<any>("/api/polices/");
 
-const getChoice = async (value: string, choiceType: string) => {
-  const response = await getCHOICE(value, choiceType)
-  return response.id
+
+let updatedPolicies = [];
+if (policies.value) {
+  updatedPolicies = await Promise.all(policies.value.map(async (policy: any) => {
+    policy.type_police_full = await getCHOICE(policy.type_police, 'TYPE_POLICE_CHOICES');
+    return policy;
+  }));
 }
 
 
 
-const fetchPolicies = async () => {
-  const {
-    data: policies,
-    pagination,
-    search,
-    pending,
-  } = usePaginatedFetch<any>("/api/polices/");
 
-}
+
+
 
 
 
@@ -182,7 +191,7 @@ const deletePolicies = async (id: number) => {
     const response = await $fetch(`api/policies/${id}/`, {
       method: 'DELETE'
     })
-    fetchPolicies()
+    refresh()
   }
 }
 
@@ -199,19 +208,15 @@ const saveItem = async (index: number, field: string, value: string) => {
       [field]: value,
     }),
   });
-  fetchPolicies();
+  refresh()
 };
 
 const createPolice = async () => {
   const message = confirm('¿Estás seguro de crear este Contrato?')
-
   if (!message) {
-    
-
-    fetchPolicies()
+    refresh()
     return
   }
-
   const response = await $fetch('api/polices/', {
     method: 'POST',
     body: {
@@ -226,14 +231,24 @@ const createPolice = async () => {
 
     }
   })
-  fetchPolicies()
+  refresh()
   newPolicyCode.value = ''
-
-
+  newPoliciesThirdEntity.value = {}
+  newPoliciesDescription.value = ''
+  newPoliciesDateStart.value = ''
+  newPoliciesDateEnd.value = ''
+  newPoliciesAmountTotal.value = '0'
+  newPoliciesTypePolice.value = ''
+  newPoliciesPaymentForm.value = ''
+  newPoliciesTemplate.value = false
 }
 
+const handleBackClick = () => {
+  isFee.value = false;
+};
+
 onMounted(() => {
-  fetchPolicies()
+  refresh()
 })
 
 const feePolicies = (policy: any) => {

@@ -1,5 +1,6 @@
 <template>
     <USelectMenu v-model="internalValue" option-attribute="name" multiple :searchable="search" trailing by="id">
+       
     </USelectMenu>
 </template>
 

@@ -97,23 +97,24 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
     queryset = Diagnoses.objects.all()
     serializer_class = DiagnosisSerializer
     search_fields = ['name', 'code', 'description', 'extra']
-    
+   
 class RecordViewSet(viewsets.ModelViewSet):
     queryset = Records.objects.all()
     serializer_class = RecordSerializer
     
     search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
-    search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']
     
     def perform_create(self, serializer):
         instance = serializer.save()
         diagnosis_ids = self.request.data.get('diagnosis_ids', [])
+        print(f"Creating record with diagnosis_ids: {diagnosis_ids}")
         instance.diagnosis_multiple.set(diagnosis_ids)
         instance.save()
 
     def perform_update(self, serializer):
         instance = serializer.save()    
         diagnosis_ids = self.request.data.get('diagnosis_multi', [])
+        print(f"Updating record with diagnosis_ids: {diagnosis_ids}")
         instance.diagnosis_multiple.set(diagnosis_ids)    
         instance.save()
         
@@ -122,11 +123,24 @@ class RecordViewSet(viewsets.ModelViewSet):
         instance = self.get_object() 
         serializer = self.get_serializer(instance, data=request.data, partial=partial) 
         serializer.is_valid(raise_exception=True) 
-        self.perform_update(serializer) # Manejar la actualización de diagnosis_multiple 
-        diagnosis_ids = request.data.get('diagnosis_multiple', []) 
-        instance.diagnosis_multiple.set(diagnosis_ids) 
-        instance.save() 
+        
+        # Obtener los valores actuales de diagnosis_multiple si no están en la solicitud
+        if 'diagnosis_multiple' not in request.data:
+            current_diagnosis_ids = list(instance.diagnosis_multiple.values_list('id', flat=True))
+            request.data['diagnosis_multiple'] = current_diagnosis_ids
+            print(f"Adding current diagnosis_multiple to request data: {current_diagnosis_ids}")
+        
+        self.perform_update(serializer) 
+        
+        diagnosis_ids = request.data.get('diagnosis_multiple', [])
+        print(f"Updating diagnosis_multiple with: {diagnosis_ids}")
+        instance.diagnosis_multiple.set(diagnosis_ids)
+        instance.save()
+        
+        print(f"Final diagnosis_multiple: {instance.diagnosis_multiple.all()}")
         return Response(serializer.data)
+
+
 
 
 class RecordDetailViewSet(viewsets.ModelViewSet):

@@ -42,7 +42,7 @@
                 <div v-for="(group, index) in groups" :key="index" class="justify-center">
                   <input type="checkbox" :checked="validateGroupUser(group.id, selectedUserId)"
                   @change="saveUserGroups(group.id, selectedUserId)" />
-                  {{ group.name }} {{ group.id }} {{ selectedUserId }}
+                  {{ group.name }}
                 </div>
               </div>
             </td>
@@ -251,7 +251,7 @@ const ui = {
 }
 
 const saveUserGroups = async (groupId: number, userId: number) => {
-  //console.log('Guardando', groupId, userId);
+  console.log('Guardando', groupId, userId);
 
   try {
     // Obtener los grupos actuales del usuario
@@ -259,15 +259,25 @@ const saveUserGroups = async (groupId: number, userId: number) => {
       method: 'GET',
     });
 
-    //console.log('Grupos actuales del usuario:', userResponse?.groups);
+    console.log('Grupos actuales del usuario:', userResponse?.groups);
 
     // Asegurarse de que los grupos actuales sean un array
     const currentGroups = Array.isArray(userResponse?.groups) ? userResponse.groups : [];
 
-    // Añadir el nuevo grupo a la lista de grupos
-    const updatedGroups = [...currentGroups, groupId];
+    // Verificar el estado del checkbox
+    const checkbox = document.querySelector(`input[type="checkbox"][data-group-id="${groupId}"]`);
+    const isChecked = checkbox?.checked;
 
-    //console.log('Grupos actualizados:', updatedGroups);
+    let updatedGroups;
+    if (isChecked) {
+      // Añadir el grupo a la lista si está marcado
+      updatedGroups = [...currentGroups, groupId];
+    } else {
+      // Eliminar el grupo de la lista si está desmarcado
+      updatedGroups = currentGroups.filter(id => id !== groupId);
+    }
+
+    console.log('Grupos actualizados:', updatedGroups);
 
     // Actualizar los grupos del usuario
     const response = await $fetch<any>(`api/auth/users/${userId}/`, {
@@ -280,11 +290,12 @@ const saveUserGroups = async (groupId: number, userId: number) => {
       },
     });
 
-    //console.log('Respuesta de actualización:', response);
+    console.log('Respuesta de actualización:', response);
   } catch (error) {
-    //console.error('Error al actualizar:', error);
+    console.error('Error al actualizar:', error);
   }
 };
+
 
 
 </script>

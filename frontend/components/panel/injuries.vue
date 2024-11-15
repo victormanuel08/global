@@ -41,7 +41,7 @@
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
                             <div class="square" v-if="injurie.point === n">
                                 <div class="circle">
-                                    {{ index + 1 }}. {{ injurie.body_part.name }}
+                                    {{ index + 1 }}
                                 </div>
                             </div>
                         </div>
@@ -108,7 +108,11 @@
     <div class="m-2">
         <label>Diagnosticos Secundarios:</label>
 
-        <SelectDiagnosesMulti v-model="record.diagnosis_multi_full" @change="handleDiagnosesChange" />
+        <SelectDiagnosesMulti v-model="record.diagnosis_multi_full" @change="handleDiagnosesChange">
+            <template #selected="{ selectedOptions }">
+                <span v-if="selectedOptions.length == 0">Seleccionar Diagnósticos</span>
+            </template>
+        </SelectDiagnosesMulti>
 
     </div>
 
@@ -385,9 +389,7 @@ const saveServices = async () => {
 
 }
 
-.grid-container2 {
-    
-}
+.grid-container2 {}
 
 .grid-item {
     /* border: 1px solid #ccc;*/
@@ -412,11 +414,11 @@ const saveServices = async () => {
     width: 20px;
     /* Tamaño del círculo */
     height: 20px;
-    background-color: #08c66d;
+    background-color: #d41616;
     /* Color del círculo */
     border-radius: 50%;
     /* Hacerlo circular */
-    color: #ea0404;
+    color: #f9f9f9;
     /* Color del número */
     font-weight: bold;
     /* Grosor del número */

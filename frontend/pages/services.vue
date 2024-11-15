@@ -5,6 +5,10 @@
         <div class="flex justify-between items-center">
           <h2 class="font-bold">Servicios</h2>
           <div class="flex gap-3 my-3">
+            <SelectSpecialities v-model="newServiceSpeciality" class="border rounded p-1 w-64" />
+            <input ref="fileInput" type="file" accept=".txt" @change="uploadListFile" class="hidden" />
+            <UButton variant="soft" @click="triggerFileInput" class="round-button large-icon">
+              Cargar Archivo</UButton>
             <UInput v-model="search" placeholder="Buscar" />
             <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
           </div>
@@ -57,12 +61,13 @@
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <UInput v-model="service.amount_particular"
-                    @blur="saveItem(index, 'amount_particular', service.amount_particular)" class="border rounded p-1" />
+                    @blur="saveItem(index, 'amount_particular', service.amount_particular)"
+                    class="border rounded p-1" />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span @click="deleteService(service.id)" :class="ui.span" v-if="service.code !== '012'">🗑️</span>
+                  <span @click="deleteService(service.id, true)" :class="ui.span" v-if="service.code !== '012'">🗑️</span>
                 </div>
               </td>
             </tr>
@@ -102,6 +107,11 @@
                 </div>
               </td>
             </tr>
+
+
+
+
+
           </tbody>
         </table>
       </div>
@@ -115,7 +125,7 @@
 //const cities = ref([] as any[])
 const newServiceDescription = ref('')
 const newServiceCode = ref('')
-const newServiceSpeciality = ref({})
+const newServiceSpeciality = ref<{ id?: number }>({})
 const newServiceAmountSoat = ref('')
 const newServiceAmountParticular = ref('')
 //const search = ref('')
@@ -125,6 +135,7 @@ const {
   pagination,
   search,
   pending,
+  refresh
 } = usePaginatedFetch<any>("/api/services/");
 
 const fetchServices = async () => {
@@ -139,13 +150,20 @@ const fetchServices = async () => {
 
 }
 
-const deleteService = async (id: number) => {
-  const message = confirm('¿Estás seguro de eliminar este Servicio?')
-  if (message) {
-    const response = await $fetch(`api/services/${id}/`, {
+const deleteService = async (id: number, confirmed: boolean) => {
+  try {
+    if (confirmed) {
+      if (!confirm('¿Estás seguro de eliminar este Servicio?')) {
+        return
+      }
+    }
+    await $fetch(`api/services/${id}/`, {
       method: 'DELETE'
     })
-    fetchServices()
+    refresh()
+    toast.add({ title: "Precio eliminado" })
+  } catch (error) {
+    toast.add({ title: "Error al eliminar el Precio" })
   }
 }
 
@@ -160,7 +178,7 @@ const saveItem = async (index: number, field: string, value: string) => {
       [field]: value,
     }),
   });
-  fetchServices();
+  refresh()
 };
 
 const createService = async () => {
@@ -172,7 +190,7 @@ const createService = async () => {
     newServiceAmountSoat.value = ''
     newServiceAmountParticular.value = ''
     newServiceSpeciality.value = ''
-    fetchServices()
+    refresh()
     return
   }
 
@@ -186,7 +204,7 @@ const createService = async () => {
       amount_particular: newServiceAmountParticular.value
     }
   })
-  fetchServices()
+  refresh()
   newServiceCode.value = ''
   newServiceDescription.value = ''
   newServiceAmountSoat.value = ''
@@ -196,7 +214,7 @@ const createService = async () => {
 }
 
 onMounted(() => {
-  fetchServices()
+  refresh()
 })
 
 const ui = {
@@ -205,5 +223,92 @@ const ui = {
   check: 'align-center justify-center',
   span: 'cursor-pointer'
 }
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const toast = useToast()
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const uploadListFile = async (event: any) => {
+  const fileInput = event.target;
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    console.error("No se ha seleccionado ningún archivo.");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  console.log("Archivo seleccionado:", file);
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  if (!confirm("¿Estás seguro de cargar la lista de Servicios? Esto sobrescribirá y borrará todos los Servicios actuales de la especialidad seleccionada y establecerá estrictamente la lista suministrada.")) {
+    return;
+  }
+
+  const serviceslist: { value: Array<{ id: number }> } = await $fetch(`api/services/?speciality=${newServiceSpeciality.value.id}`, {
+    method: 'GET',
+  });
+
+  await deleteServiceListByPackage(serviceslist.value);
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const text = e.target?.result as string;
+    const lines = text.split('\n');
+    for (const line of lines) {
+      const [code, description,  pricesoat, priceparticular] = line.split(',');
+      await updateServicesList(newServiceSpeciality.value.id, code, description, parseFloat(pricesoat), parseFloat(priceparticular));
+    }
+    toast.add({ title: "Lista de Servicios actualizada" });
+  };
+  reader.readAsText(file);
+};
+
+
+
+const deleteServiceListByPackage = async (list: Array<{ id: number }>) => {
+  try {
+    if (!confirm("¿Estas seguro de eliminar la lista de Servicios de la especialidad?")) {
+      return
+    }
+    for (const service of list) {
+      deleteService(service.id, false)
+    }
+    toast.add({ title: "Lista de Servicios eliminados" })
+  } catch (error) {
+    toast.add({ title: "Error al eliminar el Servicio" })
+  }
+}
+
+
+const updateServicesList = async (speciality: number, code: string, description: string, pricesoat: number, priceparticular: number) => {
+    try {
+        const services = await $fetch<any>(`api/services/?code=${code}`, {
+            method: 'GET'
+        })
+        console.log("SERVICES", services)
+        if (services.results.length > 0) {
+            const article = services.results[0]
+            const priceEditing = {
+                code: code,
+                description: description,
+                amount_soat: pricesoat,
+                amount_particular: priceparticular,
+                speciality: speciality
+            }
+            const response = await $fetch("api/pricelist", {
+                method: 'POST',
+                body: priceEditing
+            })
+        }
+    } catch (error) {
+        toast.add({ title: `Error al actualizar el precio para el código ${code}` })
+    }
+    refresh()
+}
+
+
 
 </script>
