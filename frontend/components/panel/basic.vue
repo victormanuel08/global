@@ -256,6 +256,26 @@ const saveItem = async (index: number, field: string, value: string) => {
 
 };
 
+const savePolicyThird = async (index: number) => {
+    console.log('savePolicyThird', index, props.calendarEvent?.third_patient_full.id);
+    
+    // Obtener el array de IDs de las políticas actuales y agregar el nuevo índice
+    const policyarray = props.calendarEvent?.third_patient_full.policy.map((item: any) => item.id) || [];
+    policyarray.push(index);
+
+    // Realizar la solicitud PATCH para actualizar el campo policy
+    const response = await $fetch(`api/thirds/${props.calendarEvent?.third_patient_full.id}`, {        
+        method: 'PATCH',
+        body: JSON.stringify({
+            policy: policyarray
+        }),
+    });
+
+    console.log('Response:', response);
+};
+
+
+
 onMounted(() => {
     getLocation();
 
@@ -277,6 +297,7 @@ onMounted(() => {
 const handlePolicyChange = (value: any) => {
     record.value.policy_full = value; 
     saveItem(record.value.id, 'policy', value.id)
+    //savePolicyThird(value.id)
 }
 
 

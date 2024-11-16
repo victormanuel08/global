@@ -29,22 +29,31 @@ class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Services.objects.all()
     serializer_class = ServiceSerializer
     search_fields = [ 'code', 'description','speciality','amount_soat','amount_particular']
-    filterset_fields=['code', 'description','speciality','amount_soat','amount_particular']
+    filterset_fields={
+        'code': ['exact'],
+        'description': ['icontains'],
+        'speciality': ['exact'],
+        'amount_soat': ['gt', 'lt'],
+        'amount_particular': ['gt', 'lt'],                  
+    }
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        amount_gt = self.request.query_params.get('amount_particular__gt')
-        amount_soat_gt = self.request.query_params.get('amount_soat__gt')  # Nuevo filtro para monto SOAT
-        description = self.request.query_params.get('description')
-
-        if amount_gt:
-            queryset = queryset.filter(amount_particular__gt=float(amount_gt))
-        if amount_soat_gt:
-            queryset = queryset.filter(amount_soat__gt=float(amount_soat_gt))
-        if description:         
-            queryset = queryset.filter(category__name__icontains=description)
-
-        return queryset
+    #def get_queryset(self):
+    #    queryset = super().get_queryset()
+    #    amount_gt = self.request.query_params.get('amount_particular__gt')
+    #    amount_soat_gt = self.request.query_params.get('amount_soat__gt')  # Nuevo filtro para monto SOAT
+    #    description = self.request.query_params.get('description')
+    #    speciality= self.request.query_params.get('speciality')
+#
+    #    if amount_gt:
+    #        queryset = queryset.filter(amount_particular__gt=float(amount_gt))
+    #    if amount_soat_gt:
+    #        queryset = queryset.filter(amount_soat__gt=float(amount_soat_gt))
+    #    if description:         
+    #        queryset = queryset.filter(category__name__icontains=description)
+    #    if speciality:
+    #        queryset = queryset.filter(speciality=speciality)
+#
+    #    return queryset
 
 class VehicleViewSet(viewsets.ModelViewSet):
     queryset = Vehicles.objects.all()
@@ -61,7 +70,9 @@ class ValuesViewSet(viewsets.ModelViewSet):
 class PoliceViewSet(viewsets.ModelViewSet):
     queryset = Policy.objects.all()
     serializer_class = PoliceSerializer
-    search_fields = ['plate', 'brand']
+    search_fields = ['type_police','payment_model','name','description','date_start','date_end']
+    filterset_fields=['third_entity__nit','type_police','payment_model','name','description','date_start','date_end']
+    
     
  
     

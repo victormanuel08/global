@@ -7,7 +7,9 @@
                     <h2 class="font-bold">Tarifas {{ props.calendarEvent?.description }} - {{
                         props.calendarEvent?.third_entity_full?.name }}</h2>
                     <div class="flex gap-3 my-3">
-
+                        <input ref="fileInput" type="file" accept=".txt" @change="uploadListFile" class="hidden" />
+                        <UButton variant="soft" @click="triggerFileInput" class="round-button large-icon">
+                            Cargar Archivo</UButton>
                         <UInput v-model="search" placeholder="Buscar" />
                         <UPagination v-model="pagination.page" :page-count="pagination.pageSize"
                             :total="pagination.resultsCount" />
@@ -114,31 +116,24 @@ const {
     pagination,
     search,
     pending,
+    refresh
 } = usePaginatedFetch<any>(`/api/fees/?search&policy=${props.calendarEvent?.id}`);
 
 
 
-const fetchFees = async () => {
-    const {
-        data: fees,
-        pagination,
-        search,
-        pending,
-    } = usePaginatedFetch<any>(`/api/fees/?search&policy=${props.calendarEvent?.id}`);
-}
 
 const deleteFees = async (id: number) => {
-  const message = confirm('¿Estás seguro de eliminar esta Tarifa?')
-  if (message) {
-    const response = await $fetch(`api/fees/${id}/`, {
-      method: 'DELETE'
-    })
-    fetchFees()
-  }
+    const message = confirm('¿Estás seguro de eliminar esta Tarifa?')
+    if (message) {
+        const response = await $fetch(`api/fees/${id}/`, {
+            method: 'DELETE'
+        })
+        refresh()
+    }
 }
 
 onMounted(() => {
-  fetchFees()
+    refresh()
 })
 
 const createFee = async () => {
@@ -153,7 +148,7 @@ const createFee = async () => {
     });
 
     if (response) {
-       
+
         const policiesResponse = await $fetch<any>(`api/polices/${props.calendarEvent?.id}`, {
             method: "GET"
         });
@@ -184,6 +179,99 @@ const ui = {
 }
 
 
-</script>
+const fileInput = ref<HTMLInputElement | null>(null)
+const toast = useToast()
+const triggerFileInput = () => {
+    fileInput.value?.click()
+}
 
-<style></style>
+const uploadListFile = async (event: any) => {
+    const fileInput = event.target;
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        toast.add({ title: "No se ha seleccionado ningún archivo." });
+        console.error("No se ha seleccionado ningún archivo.");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    toast.add({ title: "Archivo seleccionado: " + file.name });
+    console.log("Archivo seleccionado:", file);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    if (!confirm("¿Estás seguro de cargar la lista de Servicios? Esto sobrescribirá y borrará los Servicios del Contrato actuales.")) {
+        return;
+    }
+
+    const polices: { results: any[] } = await $fetch(`api/fees/?policy=${props.calendarEvent?.id}`, {
+        method: 'GET'
+    })
+
+    for (const fee of polices.results) {
+        const response = await $fetch(`api/fees/${fee.id}`, {
+            method: 'DELETE'
+        })
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const text = e.target?.result as string;
+        const lines = text.split('\n');
+        for (const line of lines) {
+            console.log("line", line);
+            //toast.add({ title: "line: " + line });
+            // entidad,specialidad,service,polici,amount
+            const [code, amount] = line.split(',');
+
+            toast.add({ title: "Code: " + code + " Amount: " + amount });
+
+            const service: { results: any[] } = await $fetch(`api/services/?code=${code}`, {
+                method: 'GET'
+            })
+
+            const policyId = props.calendarEvent?.id;
+            const serviceId = service.results[0]?.id;
+            const specialityId = service.results[0]?.speciality;
+            const third_entityId = props.calendarEvent?.third_entity_full.id;
+
+            await updatePolicesList(policyId, serviceId, specialityId, third_entityId, parseFloat(amount));
+
+        }
+        toast.add({ title: "Lista de Servicios actualizada" });
+        fileInput.value = null;
+    };
+    reader.readAsText(file);
+};
+
+
+
+const updatePolicesList = async (policyId: number, serviceId: number, specialityId: number, thirdEntityId: number, amount: number) => {
+    try {
+
+
+        const priceEditing = {
+            policy: policyId,
+            service: serviceId,
+            specialities: specialityId,
+            third_entity: thirdEntityId,
+            amount: amount
+        }
+
+        const response = await $fetch(`api/fees/`, {
+            method: 'POST',
+            body: priceEditing
+        })
+        if (response) {
+            toast.add({ title: `Servicio  creado` })
+        }
+
+    } catch (error) {
+        toast.add({ title: `Error al actualizar` })
+    }
+    refresh()
+}
+
+
+
+</script>

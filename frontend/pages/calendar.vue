@@ -30,11 +30,16 @@
                         @change="saveItem(selectedEventId, 'third_entity', newScheduledEntity.id)">
                     </SelectThird>
                 </div>
+
+                <SelectSpecialities v-model="newScheduledSpeciality"
+                        :specialities="newScheduledInsurance.specialities" class="border rounded p-1 w-64"
+                        @change="console.log(newScheduledSpeciality)">
+                    </SelectSpecialities>
                 -->
                 <div v-if="newScheduledInsurance">
                     <label class="font-bold">Especialidad</label>
                     <SelectSpecialities v-model="newScheduledSpeciality"
-                        :specialities="newScheduledInsurance.specialities" class="border rounded p-1 w-64"
+                         class="border rounded p-1 w-64"
                         @change="console.log(newScheduledSpeciality)">
                     </SelectSpecialities>
                 </div>
@@ -50,8 +55,11 @@
             <div class="flex grid-cols-4 justify-center border-solid mt-4 mb-4">
                 <div v-if="newScheduledSpeciality">
                     <label class="font-bold">Servicios</label>
-                    <SelectServices v-model="newScheduledService" :third="newScheduledEntity"
-                        class="border rounded p-1 w-72" :specialities="newScheduledSpeciality"
+                    <SelectServices 
+                        class="border rounded p-1 w-72"    
+                        v-model="newScheduledService" 
+                        :third="newScheduledEntity"
+                        :specialities="newScheduledSpeciality"
                         :services="newScheduledInsurance.services"
                         @change="saveItem(selectedEventId, 'service', newScheduledService.id)">
                     </SelectServices>

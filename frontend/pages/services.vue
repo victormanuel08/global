@@ -189,7 +189,7 @@ const createService = async () => {
     newServiceDescription.value = ''
     newServiceAmountSoat.value = ''
     newServiceAmountParticular.value = ''
-    newServiceSpeciality.value = ''
+    newServiceSpeciality.value = {}
     refresh()
     return
   }
@@ -227,17 +227,23 @@ const ui = {
 const fileInput = ref<HTMLInputElement | null>(null)
 const toast = useToast()
 const triggerFileInput = () => {
+  if ( newServiceSpeciality.value.id === undefined) {
+    toast.add({ title: "Seleccione una especialidad" })
+    return
+  }
   fileInput.value?.click()
 }
 
 const uploadListFile = async (event: any) => {
   const fileInput = event.target;
   if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    toast.add({ title: "No se ha seleccionado ningún archivo." });
     console.error("No se ha seleccionado ningún archivo.");
     return;
   }
 
   const file = fileInput.files[0];
+  toast.add({ title: "Archivo seleccionado: " + file.name });
   console.log("Archivo seleccionado:", file);
 
   const formData = new FormData();
@@ -251,17 +257,29 @@ const uploadListFile = async (event: any) => {
     method: 'GET',
   });
 
-  await deleteServiceListByPackage(serviceslist.value);
+  if (serviceslist.length > 0){
+    await deleteServiceListByPackage(serviceslist.value);
+  }
 
   const reader = new FileReader();
   reader.onload = async (e) => {
     const text = e.target?.result as string;
     const lines = text.split('\n');
     for (const line of lines) {
+      console.log("line", line);
+      toast.add({ title: "line: " + line });
       const [code, description,  pricesoat, priceparticular] = line.split(',');
-      await updateServicesList(newServiceSpeciality.value.id, code, description, parseFloat(pricesoat), parseFloat(priceparticular));
+      console.log("code", code, "description", description, "pricesoat", pricesoat, "priceparticular", priceparticular);
+      if (newServiceSpeciality.value.id !== undefined) {
+        toast.add({ title: "Actualizando Servicio: " + code });
+        await updateServicesList(newServiceSpeciality.value.id, code, description, parseFloat(pricesoat), parseFloat(priceparticular));
+      } else {
+        toast.add({ title: "Speciality ID no esta Definida" });
+        console.error("Speciality ID no esta Definida");
+      }
     }
     toast.add({ title: "Lista de Servicios actualizada" });
+    fileInput.value = null;
   };
   reader.readAsText(file);
 };
@@ -288,23 +306,36 @@ const updateServicesList = async (speciality: number, code: string, description:
         const services = await $fetch<any>(`api/services/?code=${code}`, {
             method: 'GET'
         })
+        toast.add({ title: `Actualizando precio para el código ${code}` })
         console.log("SERVICES", services)
-        if (services.results.length > 0) {
-            const article = services.results[0]
-            const priceEditing = {
+        const priceEditing = {
                 code: code,
                 description: description,
                 amount_soat: pricesoat,
                 amount_particular: priceparticular,
                 speciality: speciality
             }
-            const response = await $fetch("api/pricelist", {
+        if (services.results.length > 0) {
+            const service = services.results[0]
+           
+            const response = await $fetch(`api/services/${service.id}`, {
+                method: 'PATCH',
+                body: priceEditing
+            })
+            toast.add({ title: `Servicio ${description} actualizado` })
+        }else{
+           
+            const response = await $fetch(`api/services/`, {
                 method: 'POST',
                 body: priceEditing
             })
+            if (response){
+              toast.add({ title: `Servicio ${description} creado` })
+            }
+            
         }
     } catch (error) {
-        toast.add({ title: `Error al actualizar el precio para el código ${code}` })
+        toast.add({ title: `Error al actualizar  el código ${code}` })
     }
     refresh()
 }

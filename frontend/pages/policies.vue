@@ -14,6 +14,10 @@
         <div class="flex justify-between items-center">
           <h2 class="font-bold"><span @click="isFee = false">Contratos</span></h2>
           <div class="flex gap-3 my-3">
+           
+            <input ref="fileInput" type="file" accept=".txt" @change="uploadListFile" class="hidden" />
+            <UButton variant="soft" @click="triggerFileInput" class="round-button large-icon">
+              Cargar Archivo</UButton>
             <UInput v-model="search" placeholder="Buscar" />
             <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
           </div>
@@ -188,7 +192,7 @@ if (policies.value) {
 const deletePolicies = async (id: number) => {
   const message = confirm('¿Estás seguro de eliminar este Contrato?')
   if (message) {
-    const response = await $fetch(`api/policies/${id}/`, {
+    const response = await $fetch(`api/polices/${id}/`, {
       method: 'DELETE'
     })
     refresh()
@@ -264,5 +268,108 @@ const ui = {
   check: 'align-center justify-center',
   span: 'cursor-pointer'
 }
+
+
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const toast = useToast()
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const uploadListFile = async (event: any) => {
+  const fileInput = event.target;
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    toast.add({ title: "No se ha seleccionado ningún archivo." });
+    console.error("No se ha seleccionado ningún archivo.");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  toast.add({ title: "Archivo seleccionado: " + file.name });
+  console.log("Archivo seleccionado:", file);
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  if (!confirm("¿Estás seguro de cargar la lista de Contratos? Esto No sobrescribirá Ni borrará los Contratos actuales. Toda la lista sera creada incluso si ya hay un contrato similar.")) {
+    return;
+  }
+
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const text = e.target?.result as string;
+    const lines = text.split('\n');
+    for (const line of lines) {
+      console.log("line", line);
+      //toast.add({ title: "line: " + line });
+      // 13279115,NOMBREPOLIZA,2024-09-03,2024-09-03,EV,MP,1000000
+      const [nit, description,  date_start, date_end,fp,tp,amount] = line.split(',');
+      const third_entity: any[] = await $fetch(`api/thirds/?nit=${nit}`, {
+        method: 'GET'
+      })
+      toast.add({ title: "Nit: " + nit + " Descripcion: " + description + " Fecha Inicio: " + date_start + " Fecha Fin: " + date_end + " Forma de Pago: " + fp + " Tipo de Poliza: " + tp + " Monto: " + amount });
+      
+      console.log("third_entity", third_entity.results[0]);
+      const thirdEntityId = third_entity.results[0]?.id ?? 0;
+      if (thirdEntityId === 0) {
+        toast.add({ title: "No se ha encontrado la entidad con NIT: " + nit });
+        continue;
+      }else{
+        toast.add({ title: "Entidad encontrada: " + third_entity.results[0]?.name });
+        await updatePolicesList(thirdEntityId, description, date_start, date_end, fp, tp, parseFloat(amount));
+      }
+      
+    }
+    toast.add({ title: "Lista de Servicios actualizada" });
+    fileInput.value = null;
+  };
+  reader.readAsText(file);
+};
+
+
+
+const updatePolicesList = async (thirdEntityId: number, description: string, date_start: string, date_end: string, fp: string, tp: string, amount: number) => {
+    try {
+        const polices: { results: any[] } = await $fetch(`api/polices/?third_entity=${thirdEntityId}&description=${description}&date_start=${date_start}&date_end=${date_end}`, {
+            method: 'GET'
+        })
+        console.log("polices", polices);
+        
+        const priceEditing = {
+            third_entity: thirdEntityId,
+            description: description,
+            date_start: date_start,
+            date_end: date_end,
+            amount_total: amount,
+            type_police: tp,
+            payment_model: fp
+        }
+        if (polices.results.length > 0) {
+            const police = polices.results[0]           
+            const response = await $fetch(`api/polices/${police.id}`, {
+                method: 'PATCH',
+                body: priceEditing
+            })
+            toast.add({ title: `Contrato ${description} actualizado` })
+        }else{
+           
+            const response = await $fetch(`api/polices/`, {
+                method: 'POST',
+                body: priceEditing
+            })
+            if (response){
+              toast.add({ title: `Contrato ${description} creado` })
+            }
+            
+        }
+    } catch (error) {
+        toast.add({ title: `Error al actualizar  ${description}` })
+    }
+    refresh()
+}
+
+
 
 </script>

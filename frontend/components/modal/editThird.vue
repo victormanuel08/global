@@ -50,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div v-if="!thirdSelected?.id || props.typeTA === 'A'"
                     :class="newThirdDocument?.id === 'NI' ? 'grid grid-cols-1 gap-2 md:grid-cols-1' : 'grid grid-cols-1 gap-2 md:grid-cols-2'">
 
@@ -161,6 +161,12 @@
                     <SelectVehicle v-model="thirdSelected.vehicle_full"
                         @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)" />
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Estado:</label>
+                    <SelectChoice :choiceType="'STATUS_CHOICES'" v-model="thirdSelected.status_full"
+                        @change="saveItem(thirdSelected.id, 'status', thirdSelected.status_full.id)" />
+                </div>
+               
 
             </div>
             <div class="mt-4" v-if="thirdSelected.sex_full?.id === 'F' && thirdSelected?.id > 0">
@@ -286,6 +292,7 @@ const propEvent = async (value: any) => {
     thirdSelected.value.etnia_full = await getCHOICE(value.ethnicity, "ETNIAS_CHOICES")
     thirdSelected.value.zone_full = await getCHOICE(value.zone, "ZONE_CHOICES")
     thirdSelected.value.occupation_full = await getCHOICE(value.occupation, "OCCUPATION_CHOICES")
+    thirdSelected.value.status_full = await getCHOICE(value.status, "STATUS_CHOICES")
     thirdSelected.value.maternity_full = await getCHOICE(value.maternity_breasfeeding, "MATERNITY_CHOICES")
     thirdSelected.value.maternity_complementary_full = await getCHOICE(value.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
     thirdSelected.value.maternity_extend_full = await getCHOICE(value.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")

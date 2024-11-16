@@ -187,7 +187,7 @@
 
 
 <script setup lang="ts">
-
+const toast = useToast()
 const newAvailabilityThird = ref('')
 const newAvailabilityThirdName = ref('')
 const newAvailabilityDate = ref(getCurrentDate())
@@ -265,6 +265,8 @@ const createAvailability = async () => {
 
   // Insertar registros para cada fecha
   for (const date of newAvailabilityDay.value.days.split(',')) {
+    toast.add({title: 'Creando Cronograma', description: 'Por favor espere...'});
+    console.log('createAvailability',formatDateYYYYMMDD(date))
     const response = await $fetch('api/availabilities/', {
       method: 'POST',
       body: {        
