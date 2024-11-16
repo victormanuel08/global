@@ -36,6 +36,7 @@
                 <div class="flex items-center justify-center">
                      <span v-if="record.number_report" title="Ambulancia"> 🚑  </span><span v-else title="Consultorio Medico"> 🏥  </span><span>{{ formatDateYYYYMMDD(record.date_time) }}</span>
                 </div>
+    
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-start">

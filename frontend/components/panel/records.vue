@@ -41,7 +41,7 @@
 
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-
+                  {{ record.third_patient_full?.nit }}
                   {{ record.third_medic_full?.name }} {{ record.third_medic_full?.last_name }} {{
                     record.third_medic_full?.second_last_name }}
                 </div>
@@ -87,7 +87,8 @@ const {
   pagination,
   search,
   pending,
-} = usePaginatedFetch<any>(`/api/records/?search&third_patient__nit=${record.value.third_patient_full.nit}`);
+  refresh
+} = usePaginatedFetch<any>(`/api/records/?search&third_patient__nit=${record.value.third_patient_full?.nit}`);
 
 records.value = records.value.map((record: any) => {
   record.date_time = formatDateTime(record.date_time)

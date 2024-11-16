@@ -23,13 +23,26 @@ export const formatDate = (date: string) => {
 
 export const formatDateYYYYMMDD = (date: string): string => {
   console.log(date);
-  const [day, month, year] = date.split('/');
+  
+  // Verificar si la fecha está en formato ISO
+  if (date.includes('T')) {
+    const parsedDate = new Date(date);
+    const formattedYear = parsedDate.getFullYear();
+    const formattedMonth = (parsedDate.getMonth() + 1).toString().padStart(2, '0');
+    const formattedDay = parsedDate.getDate().toString().padStart(2, '0');
+    return `${formattedYear}-${formattedMonth}-${formattedDay}`;
+  }
+
+  // Manejar fechas separadas por '/' o '-'
+  const [day, month, year] = date.split(/[-\/]/);
   const parsedDate = new Date(Number(year), Number(month) - 1, Number(day));
   const formattedYear = parsedDate.getFullYear();
   const formattedMonth = (parsedDate.getMonth() + 1).toString().padStart(2, '0');
   const formattedDay = parsedDate.getDate().toString().padStart(2, '0');
   return `${formattedYear}-${formattedMonth}-${formattedDay}`;
 };
+
+
 
 export const formatDateYYYY0101 = (date: string): string => {
   const parsedDate = new Date(date);
