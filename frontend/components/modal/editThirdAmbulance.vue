@@ -240,6 +240,7 @@
 
 <script lang="ts" setup>
 
+
 import { useThirdObject } from '~/stores/thirds';
 
 const { thirdObject } = useThirdObject();
