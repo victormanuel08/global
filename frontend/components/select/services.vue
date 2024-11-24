@@ -15,35 +15,51 @@ const modelValue = defineModel<any>({ default: () => ({}) }) // Esto es para que
 type Props = {
     specialities?: string | number | object | any
     services?: string | number | object | any
+    insurance?: string | number | object | any
+}
+
+const onMounted = async () => {
+    console.log('mounted', props)
 }
 
 const props = withDefaults(defineProps<Props>(), {
     specialities: '',
-    services: ''
+    services: '',
+    insurance: ''
 })
 
 console.log('stprops', props)
+console.log('isurance', props.insurance)
 
 const clickHandler = () => {
     retrieveFromApi()
 }
-
 const retrieveFromApi = async () => {
+    console.log('insurance', props.insurance);
     const queryParams: any = {
         search: query.value,
-    }
+    };
 
     if (props.specialities) {
         queryParams.speciality = props.specialities?.id;
     }
+    if (props.insurance.type_police === 'PA') {
+        queryParams.amount_particular__gt = 0;
+    } 
+    
+    if (props.insurance.type_police === 'SE') {
+        queryParams.amount_soat__gt = 0;
+    }
 
     const response = await $fetch<any>("api/services", {
         query: queryParams
-    })
+    });
 
-    options.value = response.results
-    console.log('optionsTQP', options.value)
-}
+    options.value = response.results;
+    console.log('optionsTQP', options.value);
+    console.log('insurance', props.insurance);
+};
+
 
 watch(
     [query, () => props.specialities],

@@ -235,6 +235,8 @@ const uploadListFile = async (event: any) => {
             const specialityId = service.results[0]?.speciality;
             const third_entityId = props.calendarEvent?.third_entity_full.id;
 
+
+
             await updatePolicesList(policyId, serviceId, specialityId, third_entityId, parseFloat(amount));
 
         }
@@ -244,33 +246,50 @@ const uploadListFile = async (event: any) => {
     reader.readAsText(file);
 };
 
-
-
-const updatePolicesList = async (policyId: number, serviceId: number, specialityId: number, thirdEntityId: number, amount: number) => {
+const updatePolicesList = async (policyId, serviceId, specialityId, thirdEntityId, amount) => {
     try {
-
-
         const priceEditing = {
             policy: policyId,
             service: serviceId,
             specialities: specialityId,
             third_entity: thirdEntityId,
             amount: amount
-        }
+        };
 
-        const response = await $fetch(`api/fees/`, {
-            method: 'POST',
-            body: priceEditing
-        })
-        if (response) {
-            toast.add({ title: `Servicio  creado` })
-        }
+        // Función para obtener las tarifas con paginación
+        const fetchFees = async (policyId, serviceId, page = 1, pageSize = 100) => {
+            const response = await $fetch(`api/fees/?policy=${policyId}&service=${serviceId}&page=${page}&page_size=${pageSize}`, {
+                method: 'GET'
+            });
+            return response.results;
+        };
 
+        // Obtener las tarifas existentes
+        const response_exists = await fetchFees(policyId, serviceId);
+
+        if (response_exists.length > 0) {
+            const response = await $fetch(`api/fees/${response_exists[0].id}/`, {
+                method: 'PATCH',
+                body: priceEditing
+            });
+            if (response) {
+                toast.add({ title: `Servicio actualizado` });
+            }
+        } else {
+            const response = await $fetch(`api/fees/`, {
+                method: 'POST',
+                body: priceEditing
+            });
+            if (response) {
+                toast.add({ title: `Servicio creado` });
+            }
+        }
     } catch (error) {
-        toast.add({ title: `Error al actualizar` })
+        toast.add({ title: `Error al actualizar` });
     }
-    refresh()
-}
+    refresh();
+};
+
 
 
 

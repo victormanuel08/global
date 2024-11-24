@@ -9,7 +9,7 @@
 const options = ref<any[]>([])
 const query = ref("")
 const modelValue = defineModel<any>({ default: () => ({}) })
-
+const toast = useToast()
 type Props = {
     third?: string | number
 }
@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const clickHandler = () => {
     options.value = []
+
     retrieveFromApi()
 }
 
@@ -42,33 +43,32 @@ const isFee = ref(false)
 const uniqueSpecialities = [] as any;
 
 const loader = async () => {
-    await modelValue.value
-    const querySet = ref({})
-    if (modelValue.value.payment_model === 'FF') {
-        isFee.value = true
-    }
-    if (modelValue.value.payment_model === 'EV' && modelValue.value.type_police === 'SE') {
-        querySet.value = {
-            amount_soat__gt: 0.1
-        }
-        isFee.value = false
-    }
-    if (modelValue.value.payment_model === 'EV' && modelValue.value.type_police === 'PA') {
-        querySet.value = {
-            amount_particular__gt: 0.1
-        }
-        isFee.value = false
+    await modelValue.value;
+    const querySet = ref({});
+    // isFee toma el valor de true si el tipo de póliza es diferente de "PA" o "SE"
+    isFee.value = !['PA', 'SE'].includes(modelValue.value.type_police);
+
+    switch (modelValue.value.type_police) {
+        case 'SE':
+            querySet.value = { amount_soat__gt: 0.1 };
+            isFee.value = false;
+            break;
+        case 'PA':
+            querySet.value = { amount_particular__gt: 0.1 };
+            isFee.value = false;
+            break;
     }
 
+    modelValue.value.services = [];
+    modelValue.value.specialities = [];
+    uniqueSpecialities.length = 0;
+
     if (!isFee.value) {
-        modelValue.value.services = [];
-        modelValue.value.specialities = [];
         const response = await $fetch<any>('api/services/', {
             method: 'GET',
             params: querySet.value
         });
-        
-        uniqueSpecialities.length = 0;
+        console.log('responseIS FALSE', response);
         for (const fee of response.results) {
             modelValue.value.services.push(fee);
             const especialidadExistente = uniqueSpecialities.find(
@@ -79,17 +79,11 @@ const loader = async () => {
                 uniqueSpecialities.push(fee.speciality_full);
             }
         }
-        
-        modelValue.value.specialities = uniqueSpecialities;
-
     } else {
-        modelValue.value.services = [];
-        modelValue.value.specialities = [];
-        uniqueSpecialities.length = 0;
         const feeResponse = await $fetch<any>(`/api/fees/?search&policy=${modelValue.value.id}`, {
             method: 'GET'
         });
-
+        console.log('feeResponseIS TRUEEEEE', feeResponse);
         for (const fee of feeResponse.results) {
             fee.service_full.amount = fee.amount;
             modelValue.value.services.push(fee.service_full);
@@ -101,12 +95,13 @@ const loader = async () => {
                 uniqueSpecialities.push(fee.service_full.speciality_full);
             }
         }
-        
-        modelValue.value.specialities = uniqueSpecialities;
     }
 
-    console.log(modelValue.value.description, modelValue.value)
-}
+    modelValue.value.specialities = uniqueSpecialities;
+
+    console.log("dsdsdsdsds" + modelValue.value.description, modelValue.value);
+};
+
 
 watch(
     [query, () => props.third],

@@ -19,6 +19,7 @@
                     </label>
                     <SelectInsurance v-model="newScheduledInsurance" class="border rounded p-1 w-96"
                         :third="newScheduledPatient.id"
+                       
                         @change="saveItem(selectedEventId, 'insurance', newScheduledInsurance.id)"
                         :placeholder="'Aseguradora'">
                     </SelectInsurance>
@@ -38,8 +39,10 @@
                 -->
                 <div v-if="newScheduledInsurance">
                     <label class="font-bold">Especialidad</label>
-                    <SelectSpecialities v-model="newScheduledSpeciality"
-                         class="border rounded p-1 w-64"
+                    <SelectSpecialities 
+                        v-model="newScheduledSpeciality" 
+                      
+                        class="border rounded p-1 w-64"
                         @change="console.log(newScheduledSpeciality)">
                     </SelectSpecialities>
                 </div>
@@ -55,12 +58,9 @@
             <div class="flex grid-cols-4 justify-center border-solid mt-4 mb-4">
                 <div v-if="newScheduledSpeciality">
                     <label class="font-bold">Servicios</label>
-                    <SelectServices 
-                        class="border rounded p-1 w-72"    
-                        v-model="newScheduledService" 
-                        :third="newScheduledEntity"
-                        :specialities="newScheduledSpeciality"
-                        :services="newScheduledInsurance.services"
+                    <SelectServices class="border rounded p-1 w-72" v-model="newScheduledService"
+                        :third="newScheduledEntity" :specialities="newScheduledSpeciality"
+                        :services="newScheduledInsurance.services" :insurance="newScheduledInsurance"
                         @change="saveItem(selectedEventId, 'service', newScheduledService.id)">
                     </SelectServices>
                 </div>
@@ -150,6 +150,7 @@ const calendarInitialView = ref('dayGridMonth');//timeGridDay);dayGridMonth
 const isOpen = ref(false)
 const eventsToShow = ref<any[]>([
 ]);
+const toast = useToast();
 
 
 const showModalThird = (value: any) => {
@@ -363,6 +364,22 @@ watch(calendarInitialView,
     }
 );
 
+watch(newScheduledInsurance, async (newVal, oldVal) => {
+    const telefono = newVal.third_entity_full?.phone || "No tiene telefono"
+    if (newVal && newVal.name) {
+        toast.add({
+            title: newVal.third_entity_full.name,
+            description: `Teléfono: ${telefono}, Email: ${newVal.third_entity_full.email}, Dirección: ${newVal.third_entity_full.address}`,
+            
+        });
+
+
+
+
+    }
+});
+
+
 
 const saveItem = async (index: number, field: string, value: string) => {
     if (isEdit.value) {
@@ -415,6 +432,8 @@ const handleModalClose = async (value: any) => {
     isPolice.value = false
     await fetchScheduleds()
 }
+
+
 
 </script>
 

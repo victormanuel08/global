@@ -268,7 +268,7 @@ class Services(models.Model):
     id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=20)
     description = models.TextField(max_length=300)
-    speciality = models.ForeignKey(Specialities, on_delete=models.CASCADE)
+    speciality = models.ForeignKey(Specialities, on_delete=models.PROTECT)
     amount_soat = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     amount_particular = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     
@@ -285,8 +285,8 @@ class Services(models.Model):
 class Fees(models.Model):
     id = models.AutoField(primary_key=True)    
     description = models.TextField(max_length=300, null=True, blank=True)
-    service = models.ForeignKey(Services, on_delete=models.CASCADE)
-    specialities = models.ForeignKey(Specialities, on_delete=models.CASCADE)
+    service = models.ForeignKey(Services, on_delete=models.PROTECT)
+    specialities = models.ForeignKey(Specialities, on_delete=models.PROTECT)
     third_entity = models.ForeignKey(
         'Thirds',
         on_delete=models.PROTECT,
@@ -297,7 +297,7 @@ class Fees(models.Model):
         blank=True,
     )  
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    policy= models.ForeignKey('Policy', on_delete=models.CASCADE, null=True, blank=True)
+    policy= models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
     
     
     class Meta:
@@ -408,7 +408,7 @@ class Records(models.Model):
     )
     diagnosis_2 = models.ForeignKey(
         "Diagnoses",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Segundo Diagnostico",
         related_name="diagnosis_2",
         #limit_choices_to={"diagnoses__name": "Diagnostico"},
@@ -417,7 +417,7 @@ class Records(models.Model):
     )
     diagnosis_3 = models.ForeignKey(
         "Diagnoses",
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name="Tercer Diagnostico",
         related_name="diagnosis_3",
         #limit_choices_to={"diagnoses__name": "Diagnostico"},

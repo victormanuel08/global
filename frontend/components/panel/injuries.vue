@@ -106,7 +106,7 @@
             @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)" />
     </div>
     <div class="m-2">
-        <label>Diagnosticos Secundarios:</label>
+        <label>{{ record.diagnosis_multi_full?.length || 0 }} Diagnosticos Secundarios:</label>
 
         <SelectDiagnosesMulti v-model="record.diagnosis_multi_full" @change="handleDiagnosesChange">
             <template #selected="{ selectedOptions }">

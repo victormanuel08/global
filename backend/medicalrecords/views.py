@@ -26,9 +26,17 @@ from PIL import Image
 from datetime import datetime
 
 class ServiceViewSet(viewsets.ModelViewSet):
-    queryset = Services.objects.all()
+    queryset = Services.objects.all().order_by('speciality__description', 'description')
     serializer_class = ServiceSerializer
-    search_fields = [ 'code', 'description','speciality','amount_soat','amount_particular']
+    search_fields = {
+                     
+                     'description': ['icontains'],
+                        'speciality__description': ['icontains'],
+                        'code': ['exact'],
+                        'amount_soat': ['gt', 'lt'],
+                        'amount_particular': ['gt', 'lt'],
+               
+    }
     filterset_fields={
         'code': ['exact'],
         'description': ['icontains'],
@@ -70,16 +78,16 @@ class ValuesViewSet(viewsets.ModelViewSet):
 class PoliceViewSet(viewsets.ModelViewSet):
     queryset = Policy.objects.all()
     serializer_class = PoliceSerializer
-    search_fields = ['type_police','payment_model','name','description','date_start','date_end']
+    search_fields = ['type_police','payment_model','name','description','date_start','date_end','third_entity__name','third_entity__nit']
     filterset_fields=['third_entity__nit','type_police','payment_model','name','description','date_start','date_end']
     
     
  
     
 class FeeViewSet(viewsets.ModelViewSet):
-    queryset = Fees.objects.all()
+    queryset = Fees.objects.all().order_by('specialities__description', 'service__description')
     serializer_class = FeeSerializer
-    search_fields = [ 'description','specialities','third_entity','service','policy']
+    search_fields = [ 'description','specialities__description','service__description']
     filterset_fields=[ 'description','specialities','third_entity','service','policy']
     
     @receiver(pre_save, sender=Fees)
@@ -184,11 +192,45 @@ class ProceduresViewSet(viewsets.ModelViewSet):
 class ThirdViewSet(viewsets.ModelViewSet):
     queryset = Thirds.objects.all()
     serializer_class = ThirdSerializer
-    # search_fields = ['name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
-    #filterset_fields = ['type','type_document','speciality','name','last_name','second_name','second_last_name', 'nit', 'email', 'phone', 'address', 'city', 'speciality__description','type']
-    search_fields = ['type','name','last_name','second_name','second_last_name', 'nit', 'type_document','speciality']
-    filterset_fields = ['type','name','last_name','second_name','second_last_name', 'nit','type_document','speciality']
-    
+    search_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality__description']
+    filterset_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality']
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        policy_ids = self.request.data.get('policys', [])
+        print(f"Creating third with policy_ids: {policy_ids}")
+        instance.policys.set(policy_ids)
+        instance.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        policy_ids = self.request.data.get('policys', [])
+        print(f"Updating third with policy_ids: {policy_ids}")
+        instance.policys.set(policy_ids)
+        instance.save()
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        # Obtener los valores actuales de policys si no están en la solicitud
+        if 'policys' not in request.data:
+            current_policy_ids = list(instance.policys.values_list('id', flat=True))
+            request.data['policys'] = current_policy_ids
+            print(f"Adding current policys to request data: {current_policy_ids}")
+
+        self.perform_update(serializer)
+
+        policy_ids = request.data.get('policys', [])
+        print(f"Updating policys with: {policy_ids}")
+        instance.policys.set(policy_ids)
+        instance.save()
+
+        print(f"Final policys: {instance.policys.all()}")
+        return Response(serializer.data)
+
 class GeneralExamViewSet(viewsets.ModelViewSet):
     queryset = GeneralExam.objects.all()
     serializer_class = GeneralExamSerializer

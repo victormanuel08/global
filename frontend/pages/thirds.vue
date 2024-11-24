@@ -33,14 +33,14 @@
             <tbody>
 
               <tr v-for="(third, index) in thirds" :key="index">
-                <td :class="ui.td">
+                <td :class="ui.td" v-if="third.id !='2'">
                   <div class="flex items-center justify-center">
                     {{ third.type_document }}
                     <UInput v-model="third.nit" @blur="saveItem(index, 'nit', third.nit)"
                       class="border rounded p-1 w-32" />
                   </div>
                 </td>
-                <td :class="ui.td">
+                <td :class="ui.td" v-if="third.id !='2'">
                   <div class="flex items-center justify-center">
                     <UInput v-model="third.name" @blur="saveItem(index, 'name', third.name)"
                       :class="third.type_document === 'NI' ? 'border rounded p-1 w-64' : 'border rounded p-1 w-32'" />
@@ -48,7 +48,7 @@
                       class="border rounded p-1 w-32" v-if="third.type_document !== 'NI'" />
                   </div>
                 </td>
-                <td :class="ui.td">
+                <td :class="ui.td" v-if="third.id !='2'">
                   <div class="flex items-center justify-center">
                     <UInput v-model="third.last_name" @blur="saveItem(index, 'last_name', third.last_name)"
                       class="border rounded p-1 w-32" v-if="third.type_document !== 'NI'" />
@@ -57,7 +57,7 @@
                       class="border rounded p-1 w-32" v-if="third.type_document !== 'NI'" />
                   </div>
                 </td>
-                <td :class="ui.td">
+                <td :class="ui.td" v-if="third.id !='2'">
                   <div class="flex items-center justify-center">
                     <SelectUsers class="border rounded p-1 w-32" v-model="third.user_full"
                       @change="saveItem(index, 'user', third.user_full.id)">
@@ -65,11 +65,11 @@
                   </div>
 
                 </td>
-                <td :class="ui.td">
+                <td :class="ui.td" v-if="third.id !='2'">
                   <div class="flex items-center justify-center">
                  
-                    <span @click="showModalThird(third)" :class="ui.span">🖊️</span>
-                    <span @click="deleteThird(third.id)" :class="ui.span">🗑️</span>
+                    <span @click="showModalThird(third)" :class="ui.span" v-if="third.id !='2'">🖊️</span>
+                    <span @click="deleteThird(third.id)" :class="ui.span" v-if="third.id !='2'">🗑️</span>
                   </div>
                 </td>
               </tr>
