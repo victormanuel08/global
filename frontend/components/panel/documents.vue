@@ -160,7 +160,7 @@
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
-                        Dr(a). {{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name
+                        Dr(a). Auxiliar{{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name
                         }} {{
                             record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name
                         }}<span v-if="!record.signed">. NO FIRMA.</span>

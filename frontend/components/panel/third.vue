@@ -15,7 +15,7 @@
             </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Seleccion Paciente: <span
-                    @click="showModalThird('')">➕</span><span @click="showModalThird(record.third_patient_full)"
+                    @click="showModalThirdAmbulance('')">➕</span><span @click="showModalThirdAmbulance(record.third_patient_full)"
                     v-if="record.third_patient_full?.nit !== '222222222222'">🖊️</span></label>
 
 
@@ -30,7 +30,7 @@
             </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Acompañante: <span
-                    @click="showModalThird('')">➕</span></label>
+                    @click="showModalThirdAmbulanceBuddy('')">➕</span></label>
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_buddy_full"
                 @change="saveItem(record.id, 'third_buddy', record.third_buddy_full?.id)" />
         </div>
@@ -159,7 +159,8 @@
         </div>
 
     </div>
-    <ModalEditThird :third="thirdSelectedThird" :typeT="'P'" v-model="isThird" />
+    <ModalEditThirdAmbulance :third="thirdSelectedThird" :typeT="'P'" v-model="isThird" />
+    <ModalEditThirdAmbulanceBuddy :third="thirdSelectedThird" :typeT="'P'" v-model="isThirdBuddy" />
 
 </template>
 
@@ -171,6 +172,7 @@ const newRecordAllergies = ref('')
 const newRecordPathologies = ref('')
 const newRecordMedications = ref('')
 const newRecordLiquidsFoods = ref('')
+const isThirdBuddy = ref(false)
 
 
 const props = defineProps({
@@ -194,9 +196,14 @@ onMounted(() => {
 
 //await record.value;
 
-const showModalThird = (value: any) => {
+const showModalThirdAmbulance = (value: any) => {
     thirdSelectedThird.value = value
     isThird.value = true
+}
+
+const showModalThirdAmbulanceBuddy = (value: any) => {
+    thirdSelectedThird.value = value
+    isThirdBuddy.value = true
 }
 
 const fetchProps = async () => {
