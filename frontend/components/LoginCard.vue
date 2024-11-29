@@ -1,7 +1,7 @@
 <template>
 <div class="mx-2">
     <h2 class="font-bold text-xl mb-16 text-center">Ingreso usuarios</h2>
-    <UInput class="mb-4" size="xl" v-model="loginData.username" label="Email" type="email" placeholder="Email" :ui="ui.input"></UInput>
+    <UInput class="mb-4" size="xl" v-model="loginData.username" label="Email" type="email" placeholder="Username" :ui="ui.input"></UInput>
     <UInput class="mb-4" size="xl" v-model="loginData.password" label="Password" type="password" placeholder="Password" :ui="ui.input"></UInput>
     <UButton class="mb-4" size="xl"  block :ui="ui.button" @click="doLogin" >INGRESAR</UButton>
 </div>

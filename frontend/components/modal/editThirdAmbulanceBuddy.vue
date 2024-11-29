@@ -7,7 +7,7 @@
                     <h3><strong>Nombre:</strong> {{ thirdSelected?.name }} {{ thirdSelected?.second_name }} {{
                         thirdSelected?.last_name }} {{ thirdSelected?.second_last_name }}</h3>
                     <h3><strong>Identificacion: </strong>{{ thirdSelected?.nit }}</h3>
-                    <span  v-if="thirdSelected?.type_document !='NI'"><h3><strong>Edad: </strong>{{ thirdSelected?.nit }}</h3></span>
+                    <span  v-if="thirdSelected?.type_document !='NI'"><h3><strong>Edad: </strong>{{ calculateAge(thirdSelected?.date_birth) }}</h3></span>
                     <h3 v-if="thirdSelected?.user"><strong>Usuario: </strong>{{ thirdSelected?.user }}</h3>
 
                 </div>

@@ -8,6 +8,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.filter(is_active=True).order_by('username')
     search_fields = ['username', 'email','first_name','last_name']
+    filterset_fields = ['is_active', 'is_staff', 'is_superuser','username']
     
     @decorators.action(detail=False, methods=['get'])
     def me(self, request):

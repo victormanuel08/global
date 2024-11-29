@@ -68,7 +68,7 @@
         <div>
             <label class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
             {{ record.third_patient_full?.city_birth_full?.name }} - {{ record.third_patient_full?.date_birth }} ({{
-                record.third_patient_full?.year_old }} años)
+                calculateAge(record.third_patient_full?.date_birth) }} )
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Telefono:</label>

@@ -73,14 +73,50 @@ export const formatDateTime = (datetime: string) => {
   return formattedDateTime;
 };
 
+//export const getCHOICE = async (value: string, choices: string) => {
+//  if (!value) {
+//    return [];
+//  }
+//  const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);
+//
+//  return response;
+//};
+
+import { useCookie } from 'nuxt/app';
+
 export const getCHOICE = async (value: string, choices: string) => {
   if (!value) {
     return [];
   }
+
+  // Crear una clave de almacenamiento basada en los parámetros
+  const storageKey = `choices_${choices}_${value}`;
+
+  // Intentar obtener los datos almacenados desde el almacenamiento local
+  let storedData = localStorage.getItem(storageKey);
+
+  // Si los datos no están en el almacenamiento local, intentar obtenerlos desde la cookie
+  if (!storedData) {
+    const cookie = useCookie(storageKey);
+    storedData = cookie.value ?? null;
+  }
+
+  // Si los datos están en el almacenamiento, devolverlos
+  if (storedData) {
+    return JSON.parse(storedData);
+  }
+
+  // Si no están en el almacenamiento, hacer la consulta
   const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);
+
+  // Guardar los datos en el almacenamiento local y en la cookie
+  localStorage.setItem(storageKey, JSON.stringify(response));
+  const cookie = useCookie(storageKey);
+  cookie.value = JSON.stringify(response);
 
   return response;
 };
+
 
 export const getBODYPART = async (value: number, choices: string, field: string) => {
   const response = await $fetch<any>(`/api/api/choices/${choices}/${value}/${field}`);
@@ -111,22 +147,50 @@ export const getVALUE = async (val: string, year: string) => {
   return response;
 }
 
-export const getuser = async (val: string) => {
 
+
+export const getuser = async (val: string) => {
+  if (!val) {
+    return null;
+  }
+
+  // Crear una clave de almacenamiento basada en el valor
+  const storageKey = `user_${val}`;
+
+  // Intentar obtener los datos almacenados desde el almacenamiento local
+  let storedData = localStorage.getItem(storageKey);
+
+  // Si los datos no están en el almacenamiento local, intentar obtenerlos desde la cookie
+  if (!storedData) {
+    const cookie = useCookie(storageKey);
+    storedData = cookie.value ?? null;
+  }
+
+  // Si los datos están en el almacenamiento, devolverlos
+  if (storedData) {
+    return JSON.parse(storedData);
+  }
+
+  // Si no están en el almacenamiento, hacer la consulta
   const response = await $fetch<any>(`/api/user/`, {
     method: 'GET',
     query: {
       value: val,
     }
-
   });
 
+  // Guardar los datos en el almacenamiento local y en la cookie
+  localStorage.setItem(storageKey, JSON.stringify(response));
+  const cookie = useCookie(storageKey);
+  cookie.value = JSON.stringify(response);
+
   return response;
-}
+};
+
 
 export const listDaysOptions = (date: any, enddate: any) => {
   const options = [];
-
+  //console.log("listDayOprons control",date, enddate);
   const allDates = getDatesInRange(date, enddate);
   if (allDates.length > 0) {
     options.push({
@@ -155,6 +219,7 @@ export const listDaysOptions = (date: any, enddate: any) => {
 // Función para obtener fechas dentro del rango
 const getDatesInRange = (startDate: any, endDate: any) => {
   const dates = [];
+  //console.log("getDatesInRange control",startDate, endDate);
   const currentDate = new Date(startDate + 'T00:00:00');
   const endDate2 = new Date(endDate + 'T00:00:00');
   while (currentDate <= endDate2) {
@@ -167,6 +232,7 @@ const getDatesInRange = (startDate: any, endDate: any) => {
 // Función para obtener fechas específicas de un día de la semana dentro del rango
 const getWeekdayDatesInRange = (startDate: any, endDate: any, weekdayIndex: any) => {
   const dates = [];
+  //console.log("getWeekdayDatesInRange control",startDate, endDate, weekdayIndex);
   const currentDate = new Date(startDate + 'T00:00:00');
   const endDate2 = new Date(endDate + 'T00:00:00');
   while (currentDate <= endDate2) {
@@ -177,3 +243,25 @@ const getWeekdayDatesInRange = (startDate: any, endDate: any, weekdayIndex: any)
   }
   return dates;
 };
+
+
+export const calculateAge = (dateString: string) => { 
+  const birthDate = new Date(dateString);
+  const today = new Date();
+
+  let years = today.getFullYear() - birthDate.getFullYear();
+  let months = today.getMonth() - birthDate.getMonth();
+  let days = today.getDate() - birthDate.getDate();
+  
+  if (days < 0) {
+    months--;
+    days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+  }
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  return  years + " Años, " + months + " Meses y " + days + " dias";
+};
+

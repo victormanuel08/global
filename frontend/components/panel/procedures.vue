@@ -152,7 +152,7 @@ const saveItem = async (index: number, field: string, value: string) => {
     }
 
   retrieveFromApi(index)
-  fetchRecord(props.calendarEvent?.id)
+  //fetchRecord(props.calendarEvent?.id)
 };
 
 const query = ref('');

@@ -7,7 +7,7 @@
                     <h3><strong>Nombre:</strong> {{ thirdSelected?.name }} {{ thirdSelected?.second_name }} {{
                         thirdSelected?.last_name }} {{ thirdSelected?.second_last_name }}</h3>
                     <h3><strong>Identificacion: </strong>{{ thirdSelected?.nit }}</h3>
-                    <span  v-if="thirdSelected?.type_document !='NI'"><h3><strong>Edad: </strong>{{ thirdSelected?.nit }}</h3></span>
+                    <span  v-if="thirdSelected?.type_document !='NI'"><h3><strong>Edad: </strong>{{ calculateAge(thirdSelected?.date_birth) }}</h3></span>
                     <h3 v-if="thirdSelected?.user"><strong>Usuario: </strong>{{ thirdSelected?.user }}</h3>
 
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                <div v-if="!thirdSelected?.id || props.typeTA === 'A'"
+                <div v-if="!thirdSelected?.id || typeTA === 'A'"
                     :class="newThirdDocument?.id === 'NI' ? 'grid grid-cols-1 gap-2 md:grid-cols-1' : 'grid grid-cols-1 gap-2 md:grid-cols-2'">
 
                     <!--
@@ -118,6 +118,11 @@
                     <label class="block text-sm font-medium text-gray-700">Especialidad:</label>
                     <SelectSpecialities v-model="thirdSelected.speciality_full"
                         @change="saveItem(thirdSelected.id, 'speciality', thirdSelected.speciality_full.id)" />
+                </div>
+                <div v-if="thirdSelected.type_full?.id === 'M'">
+                    <label class="block text-sm font-medium text-gray-700">T.P.:</label>
+                    <UInput v-model="thirdSelected.tp"
+                        @change="saveItem(thirdSelected.id, 'tp', thirdSelected.tp)" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Sexo:</label>
@@ -244,6 +249,7 @@ const newThirdBlood = ref({})
 const newThirdSex = ref({})
 const newThirdType = ref('')
 const isPolice = ref(false)
+const typeTA = ref('')
 
 const showModalPolice = () => {
 
@@ -273,6 +279,14 @@ const clear = () => {
     thirdSelected.value = ''
 
 }
+watch(() => thirdSelected.type_full, async (newValue, oldValue) => {
+    console.log('new', newValue)
+    if (newValue.id !== 'P' && newValue.id !== 'M') {
+        typeTA.value = '';
+    } else {
+        typeTA.value = 'A';
+    }
+});
 
 
 watch(() => props.third, async (value: any) => {
@@ -281,6 +295,11 @@ watch(() => props.third, async (value: any) => {
         newThirdNit.value = ''
         newThirdDocument.value = ''
         propEvent(value)
+    }
+    if ((props.third as any)?.type === 'P' || (props.third as any)?.type === 'M') {
+        typeTA.value === ''
+    } else {
+        typeTA.value === 'A'
     }
 })
 

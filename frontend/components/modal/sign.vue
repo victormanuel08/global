@@ -20,6 +20,7 @@ export default {
     props: {
         record: Object,
         detail: Boolean,
+        third: Boolean,
         typeThird: String,
     },
     defineEmits: ['close'],
@@ -53,6 +54,15 @@ export default {
                     method: 'PATCH',
                     body: JSON.stringify({
                         [this.typeThird]: signatureData,
+                    }),
+                });
+            } else if (this.third) {
+                console.log('typeThrodSigned:', this.typeThird);
+                console.log('singasasasasTHRID:', this.record.id);
+                const response = $fetch(`api/thirds/${this.third}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        signed: signatureData,
                     }),
                 });
             } else {

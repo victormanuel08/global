@@ -145,7 +145,8 @@ class Thirds(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, blank=True)
     policys = models.ManyToManyField(Policy, null=True, blank=True)
     vehicle = models.ForeignKey('Vehicles', on_delete=models.PROTECT, null=True, blank=True)
- 
+    signed = models.TextField(null=True,blank=True)  
+    tp= models.CharField(max_length=40, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

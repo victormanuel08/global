@@ -57,104 +57,74 @@
 
 
       
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-4 border-solid mt-6">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div>
-                <button @click="signedRecord()">
-                    🖋️ Click para firmar y aceptar.
-                </button>
-                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
-                <strong>
-                    <hr style="border: 1px solid black; font-weight: bold;">
-                    <p>
-                        Dr(a). {{ record.third_medic_full?.name }} {{ record.third_medic_full?.second_name }} {{
-                            record.third_medic_full?.last_name }} {{ record.third_medic_full?.second_last_name }}
-                    </p>
-                    <p>
-                        Esp. {{ record.third_medic_full?.speciality_full?.description }}
-                    </p>
-                </strong>
-            </div>
 
-        </div>
 
     </div>
-    <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="'signed'" />
- 
+  
     <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
 </template>
-
 <script lang="ts" setup>
-
-
-
+import { ref, onMounted, watch } from 'vue';
 
 const props = defineProps({
     calendarEvent: Object,
-})
+});
 
-const record = ref({} as Record)
+const record = ref({} as Record);
+const Location = ref({} as location);
+const coordinates = ref("");
+const addressOption = ref<any>({});
+const isPolice = ref<boolean>(false);
+const thirdSelected = ref<any>({});
+const detail = ref(false);
+const isSing = ref(false);
+
+type location = {
+    latitude: number;
+    longitude: number;
+};
+
 if (props.calendarEvent) {
     record.value = props.calendarEvent as Record;
     if (props.calendarEvent.policy_full) {
         record.value.policy_full = {
             ...props.calendarEvent.policy_full,
-            concat: props.calendarEvent.policy_full.name + ' - ' + props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end
+            concat: props.calendarEvent.policy_full.name + ' - ' + props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end,
         };
     } else {
         record.value.policy_full = {
-            concat: ''
+            concat: '',
         };
     }
-      
-     
 }
 
-console.log('calendarEvent', props.calendarEvent)
-
-const Location = ref({} as location)
-const coordinates = ref("")
-const addressOption = ref<any>({})
-const isPolice = ref<boolean>(false)
-
-type location = {
-    latitude: number
-    longitude: number
-}
-
+console.log('calendarEvent', props.calendarEvent);
 
 const showModalPolice = (value: any) => {
-    console.log('showModalThird', thirdSelected)
-    isPolice.value = true
-}
+    console.log('showModalThird', thirdSelected);
+    isPolice.value = true;
+};
 
-const address = ref<any>()
+const address = ref<any>();
 
 watch(Location, async (newLocation, oldLocation) => {
-
     if (newLocation.latitude && newLocation.longitude) {
-
-        coordinates.value = newLocation.latitude + ', ' + newLocation.longitude
-       
-
+        coordinates.value = newLocation.latitude + ', ' + newLocation.longitude;
     }
 });
 
 const validate = (value: any) => {
-
     if (record.value.address === '') {
-        record.value.address = addressOption.value.formatted_address
+        record.value.address = addressOption.value.formatted_address;
     } else {
-        if (confirm(('El campo ya tienen una direccion previa guardada. ¿Desea guardar la direccion sugerida?'))) {
-            record.value.address = addressOption.value.formatted_address
+        if (confirm('El campo ya tiene una dirección previa guardada. ¿Desea guardar la dirección sugerida?')) {
+            record.value.address = addressOption.value.formatted_address;
         }
     }
-    saveItem(value, 'address', record.value.address)
-    saveItem(props.calendarEvent?.id, 'latitude', (newLocation.latitude))
-    saveItem(props.calendarEvent?.id, 'longitude', (newLocation.longitude))
-}
+    saveItem(value, 'address', record.value.address);
+    saveItem(props.calendarEvent?.id, 'latitude', Location.value.latitude);
+    saveItem(props.calendarEvent?.id, 'longitude', Location.value.longitude);
+};
 
 const getLocation = () => {
     if (navigator.geolocation) {
@@ -172,78 +142,17 @@ const getLocation = () => {
     } else {
         console.error('Geolocalización no está disponible en este navegador.');
     }
-}
-
-
-
-
-
-
-const thirdSelected = ref<any>({})
-
-const detail = ref(false)
-const isSing = ref(false)
-
-
-type Record = {
-    id: number,
-    reason_consultation: string,
-    diagnosis: string,
-    diagnosis_full: any
-    diagnosis_1_full: any
-    diagnosis_2_full: any
-    diagnosis_3_full: any
-    third_patient_full: {
-        id: number,
-        name: string,
-        second_name: string,
-        last_name: string,
-        second_last_name: string,
-    },
-    third_medic_full: any
-    third_entity_full: any
-    service_full: any
-    fee_full: any
-    third_entity: number
-    diagnoses_1: string,
-    diagnoses_2: string,
-    diagnoses_3: string,
-    signed: string,
-    policy: string,
-    policy_full: any,
-    priority: string,
-    priority_full: any,
-    external_cause: string,
-    external_cause_full: any,
-    glasgow_ro: string,
-    glasgow_ro_full: any,
-    glasgow_rv: string,
-    glasgow_rv_full: any,
-    glasgow_rm: string,
-    glasgow_rm_full: any,
-    condition_full: any,
-    ef_fc: string,
-    ef_fr: string,
-    ef_pa: string,
-    ef_temp: string,
-    condition: string,
-    address: string,
-}
-
-
-
-
-
-
+};
 
 const signedRecord = async () => {
-    isSing.value = true
-}
+    isSing.value = true;
+};
 
-const handleModalClose = (value: any) => {
-    isSing.value = false
-
-}
+const handleModalClose = async (value: any) => {
+    isSing.value = false;
+    const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}`);
+    record.value.third_medic_full = response.third_medic_full
+};
 
 const saveItem = async (index: number, field: string, value: string) => {
     const response = await $fetch(`api/records/${index}`, {
@@ -252,29 +161,23 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-
-
 };
 
 const savePolicyThird = async (index: number) => {
     console.log('savePolicyThird', index, props.calendarEvent?.third_patient_full.id);
-    
-    // Obtener el array de IDs de las políticas actuales y agregar el nuevo índice
+
     const policyarray = props.calendarEvent?.third_patient_full.policy.map((item: any) => item.id) || [];
     policyarray.push(index);
 
-    // Realizar la solicitud PATCH para actualizar el campo policy
-    const response = await $fetch(`api/thirds/${props.calendarEvent?.third_patient_full.id}`, {        
+    const response = await $fetch(`api/thirds/${props.calendarEvent?.third_patient_full.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
-            policy: policyarray
+            policy: policyarray,
         }),
     });
 
     console.log('Response:', response);
 };
-
-
 
 onMounted(() => {
     getLocation();
@@ -283,23 +186,17 @@ onMounted(() => {
     if (props.calendarEvent.policy_full) {
         record.value.policy_full = {
             ...props.calendarEvent.policy_full,
-            concat: props.calendarEvent.policy_full.name + ' - ' + props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end
+            concat: props.calendarEvent.policy_full.name + ' - ' + props.calendarEvent.policy_full.description + ' - ' + props.calendarEvent.policy_full.date_start + ' - ' + props.calendarEvent.policy_full.date_end,
         };
     } else {
         record.value.policy_full = {
-            concat: ''
+            concat: '',
         };
     }
 });
 
-
-
 const handlePolicyChange = (value: any) => {
-    record.value.policy_full = value; 
-    saveItem(record.value.id, 'policy', value.id)
-    //savePolicyThird(value.id)
-}
-
-
+    record.value.policy_full = value;
+    saveItem(record.value.id, 'policy', value.id);
+};
 </script>
-<style></style>

@@ -41,7 +41,7 @@
               <div class="grid grid-cols-3 justify-center" v-if="showUserGroups && user.id === selectedUserId">
                 <div v-for="(group, index) in groups" :key="index" class="justify-center">
                   <input type="checkbox" :checked="validateGroupUser(group.id, selectedUserId)"
-                  @change="saveUserGroups(group.id, selectedUserId)" />
+                    @change="saveUserGroups(group.id, selectedUserId)" :data-group-id="group.id" />
                   {{ group.name }}
                 </div>
               </div>
@@ -108,8 +108,6 @@
 
 
 <script setup lang="ts">
-
-//const cities = ref([] as any[])
 const newUserUsername = ref('')
 const newUserActive = ref(0)
 const newUserStaff = ref(0)
@@ -119,9 +117,6 @@ const showUserGroups = ref(false)
 const selectedUserId = ref()
 const saving = ref(false)
 const groupSelected = ref([] as number[]);
-
-
-//const search = ref('')
 
 const {
   data: users,
@@ -136,24 +131,16 @@ const toggleUserGroups = async (user_id: number) => {
     method: 'GET',
   });
   groupSelected.value = response?.groups
-  //groupSelected.value = []
   selectedUserId.value = user_id
-  //console.log('Grupos del usuarioFull:', response)
-  //validatePermissions('cities', 'add')
 }
 
 const validateGroupUser = (group_id: number, user_id: number) => {
   if (groupSelected.value.includes(group_id)) {
-    //console.log('Validando', group_id + ' ' + user_id + ' ' + true);
     return true;
   } else {
-    //console.log('Validando', group_id + ' ' + user_id + ' ' + false);
     return false;
   }
-
 };
-
-
 
 const fetchUsers = async () => {
   const {
@@ -162,16 +149,11 @@ const fetchUsers = async () => {
     search,
     pending,
   } = usePaginatedFetch<any>("/api/auth/users/");
-
-  //console.log('FecthUsers', users.value)
-
 }
 
 const fetchGroups = async () => {
   const response = await $fetch<any>('api/auth/groups/')
-  //console.log('fetchGroups', response)
   groups.value = response.results
-  //console.log('fetchGroups', groups.value)
 }
 
 const deleteUser = async (id: number) => {
@@ -184,31 +166,6 @@ const deleteUser = async (id: number) => {
   }
 }
 
-
-
-const saveItem = async (index: number, field: string, value: string) => {
-  const user = users.value[index];
-  user[field] = value;
-  const response = await $fetch(`api/auth/users/${user.id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      [field]: value,
-    }),
-  });
-  fetchUsers();
-};
-
-const saveCheck = async (index: number, field: string, value: string) => {
-  const user = users.value[index];
-  user[field] = value;
-  const response = await $fetch(`api/auth/users/${user.id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      [field]: value,
-    }),
-  });
-  fetchUsers();
-};
 
 const createUser = async () => {
   const message = confirm('¿Estás seguro de crear este Usuario?')
@@ -250,34 +207,49 @@ const ui = {
   span: 'cursor-pointer'
 }
 
+const saveItem = async (index: number, field: string, value: string) => {
+  const user = users.value[index];
+  user[field] = value;
+  const userResponse = await $fetch<any>(`api/auth/users/${user.id}/`, {
+    method: 'GET',
+  });
+  console.log('Grupos actuales del usuario:', userResponse?.groups);
+  const currentGroups = Array.isArray(userResponse?.groups) ? userResponse.groups : [];
+  const response = await $fetch(`api/auth/users/${user.id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      [field]: value,
+      groups: currentGroups,
+    }),
+  });
+  fetchUsers();
+};
+
+
 const saveUserGroups = async (groupId: number, userId: number) => {
   console.log('Guardando', groupId, userId);
 
   try {
-    // Obtener los grupos actuales del usuario
     const userResponse = await $fetch<any>(`api/auth/users/${userId}/`, {
       method: 'GET',
     });
-
     console.log('Grupos actuales del usuario:', userResponse?.groups);
-
-    // Asegurarse de que los grupos actuales sean un array
     const currentGroups = Array.isArray(userResponse?.groups) ? userResponse.groups : [];
-
-    // Verificar el estado del checkbox
     const checkbox = document.querySelector(`input[type="checkbox"][data-group-id="${groupId}"]`);
+    console.log("Checkbox:", checkbox);
     const isChecked = checkbox?.checked;
-
     let updatedGroups;
     if (isChecked) {
       // Añadir el grupo a la lista si está marcado
       updatedGroups = [...currentGroups, groupId];
+      console.log('Grupos actualizados1:', updatedGroups);
     } else {
       // Eliminar el grupo de la lista si está desmarcado
       updatedGroups = currentGroups.filter(id => id !== groupId);
+      console.log('Grupos actualizados1:', updatedGroups);
     }
 
-    console.log('Grupos actualizados:', updatedGroups);
+    console.log('Grupos actualizados0:', updatedGroups);
 
     // Actualizar los grupos del usuario
     const response = await $fetch<any>(`api/auth/users/${userId}/`, {
@@ -295,7 +267,6 @@ const saveUserGroups = async (groupId: number, userId: number) => {
     console.error('Error al actualizar:', error);
   }
 };
-
 
 
 </script>

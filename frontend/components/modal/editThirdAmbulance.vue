@@ -8,7 +8,7 @@
                         thirdSelected?.last_name }} {{ thirdSelected?.second_last_name }}</h3>
                     <h3><strong>Identificacion: </strong>{{ thirdSelected?.nit }}</h3>
                     <span v-if="thirdSelected?.type_document != 'NI'">
-                        <h3><strong>Edad: </strong>{{ thirdSelected?.nit }}</h3>
+                        <h3><strong>Edad: </strong>{{ calculateAge(thirdSelected?.date_birth) }}</h3>
                     </span>
                     <h3 v-if="thirdSelected?.user"><strong>Usuario: </strong>{{ thirdSelected?.user }}</h3>
 
@@ -67,21 +67,20 @@
                             <Label class="block text-sm font-medium text-gray-700">Tipo Sangre:</label>
                             <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="newThirdBlood" />
                         </div>
-                       
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Estado:</label>
-                            <SelectChoice :choiceType="'STATUS_CHOICES'" v-model="thirdSelected.status_full"
-                                @change="saveItem(thirdSelected.id, 'status', thirdSelected.status_full.id)" />
+                            <SelectChoice :choiceType="'STATUS_CHOICES'" v-model="newThirdSelectedStatus_full" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Fecha Nacimiento:</label>
-                            <UInput type="date" v-model="thirdSelected.date_birth"
-                                @change="saveItem(thirdSelected.id, 'date_birth', thirdSelected.date_birth)" />
+                            <UInput type="date" v-model="newThirdSelectedDate_birth" />
                         </div>
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Ocupacion:</label>
-                            <SelectChoice :choiceType="'OCCUPATION_CHOICES'" v-model="thirdSelected.occupation_full"
-                                @change="saveItem(thirdSelected.id, 'occupation', thirdSelected.occupation_full.id)" />
+                            <SelectChoice :choiceType="'OCCUPATION_CHOICES'"
+                                v-model="newThirdSelectedOccupation_full" />
                         </div>
                     </div>
 
@@ -89,25 +88,31 @@
                 <div v-if="!thirdSelected?.id">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Direccion:</label>
-                        <UInput v-model="thirdSelected.address"
-                            @change="saveItem(thirdSelected.id, 'address', thirdSelected.address)" />
+                        <UInput v-model="newThirdSelectedAddress" />
                     </div>
                 </div>
                 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 mt-4" v-if="newThirdDocument?.id !== 'NI'">
+                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'"  >
+                        <label class="block text-sm font-medium text-gray-700">Especialidad:</label>
+                        <SelectSpecialities v-model="thirdSelected.speciality_full"
+                            @change="saveItem(thirdSelected.id, 'speciality', thirdSelected.speciality_full.id)" />
+                    </div>
+                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'" >
+                        <label class="block text-sm font-medium text-gray-700">T.P.:</label>
+                        <UInput v-model="thirdSelected.tp"
+                            @change="saveItem(thirdSelected.id, 'tp', thirdSelected.tp)" />
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Telefono:</label>
-                        <UInput v-model="thirdSelected.phone"
-                            @change="saveItem(thirdSelected.id, 'phone', thirdSelected.phone)" />
+                        <UInput v-model="newThirdSelectedPhone" />
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Zona:</label>
-                        <SelectChoice :choiceType="'ZONE_CHOICES'" v-model="thirdSelected.zone_full"
-                            @change="saveItem(thirdSelected.id, 'zone', thirdSelected.zone_full.id)" />
+                        <SelectChoice :choiceType="'ZONE_CHOICES'" v-model="newthirdSelectedZone_full" />
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Ciudad actual:</label>
-                        <SelectCities v-model="thirdSelected.city_full"
-                            @change="saveItem(thirdSelected.id, 'city', thirdSelected.city_full.id)" />
+                        <SelectCities v-model="newThirdSelectedCity_full" />
                     </div>
                 </div>
 
@@ -115,8 +120,7 @@
                 <div v-if="!thirdSelected?.id">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Correo:</label>
-                        <UInput v-model="thirdSelected.email"
-                            @change="saveItem(thirdSelected.id, 'email', thirdSelected.email)" />
+                        <UInput v-model="newThirdSelectedEmail" />
                     </div>
                 </div>
 
@@ -139,10 +143,14 @@
             </div>
             <div class="grid grid-cols-2 gap-4 md:grid-cols-2 m-4"
                 v-if="thirdSelected?.id > 0 && thirdSelected?.type_document !== 'NI' && thirdSelected?.type_document !== 'AS'">
-                <div v-if="thirdSelected.type_full?.id === 'M'">
+                <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
                     <label class="block text-sm font-medium text-gray-700">Especialidad:</label>
                     <SelectSpecialities v-model="thirdSelected.speciality_full"
                         @change="saveItem(thirdSelected.id, 'speciality', thirdSelected.speciality_full.id)" />
+                </div>
+                <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
+                    <label class="block text-sm font-medium text-gray-700">T.P.:</label>
+                    <UInput v-model="thirdSelected.tp" @change="saveItem(thirdSelected.id, 'tp', thirdSelected.tp)" />
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Sexo:</label>
@@ -258,6 +266,15 @@ const newThirdBlood = ref({})
 const newThirdSex = ref({})
 const newThirdType = ref('')
 const isPolice = ref(false)
+const newThirdSelectedStatus_full = ref({})
+const newThirdSelectedDate_birth = ''
+const newThirdSelectedOccupation_full = ref({})
+const newThirdSelectedAddress = ''
+const newThirdSelectedPhone = ''
+const newthirdSelectedZone_full = ref({})
+const newThirdSelectedCity_full = ref({})
+const newThirdSelectedEmail = ''
+
 
 const showModalPolice = () => {
 
@@ -328,9 +345,13 @@ const propEvent = async (value: any) => {
     thirdSelected.value.maternity_pregnancy_full = await getCHOICE(value.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
     thirdSelected.value.maternity_violance_full = await getCHOICE(value.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
     thirdSelected.value.type_document_full = await getCHOICE(value.type_document, "TYPE_DOCUMENT_CHOICES")
+    thirdSelected.value.status_full = await getCHOICE(value.state, "STATUS_CHOICES")
+    thirdSelected.value.occupation_full = await getCHOICE(value.occupation, "OCCUPATION_CHOICES")
+    thirdSelected.value.zone_full = await getCHOICE(value.zone, "ZONE_CHOICES")
     typeThird.value = props.typeT
 
 }
+
 
 const saveItem = async (index: number, field: string, value: string) => {
     const response = await $fetch(`api/thirds/${index}`, {
@@ -411,6 +432,15 @@ const createThird = async () => {
         typeThird.value = ''
         newThirdSex.value = ''
         newThirdBlood.value = ''
+        newThirdSelectedStatus_full.value = ''
+        newThirdSelectedDate_birth = ''
+        newThirdSelectedOccupation_full.value = ''
+        newThirdSelectedAddress = ''
+        newThirdSelectedPhone = ''
+        newthirdSelectedZone_full.value = ''
+        newThirdSelectedCity_full.value = ''
+        newThirdSelectedEmail = ''
+
 
         return
     }
@@ -442,7 +472,16 @@ const createThird = async () => {
             second_last_name: newThirdSecondLastName.value,
             type: newThirdType.value.id,
             blood_type: newThirdBlood.value.id,
-            sex: newThirdSex.value.id
+            sex: newThirdSex.value.id,
+            status: newThirdSelectedStatus_full.id,
+            date_birth: newThirdSelectedDate_birth,
+            occupation: newThirdSelectedOccupation_full.id,
+            address: newThirdSelectedAddress,
+            phone: newThirdSelectedPhone,
+            zone: newthirdSelectedZone_full.id,
+            city: newThirdSelectedCity_full.id,
+            email: newThirdSelectedEmail
+
         },
     })
 

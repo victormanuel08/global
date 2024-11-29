@@ -25,6 +25,10 @@ from io import BytesIO
 from PIL import Image
 from datetime import datetime
 
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from users.models import User  # Importa el modelo de usuario predeterminado de Django
+
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Services.objects.all().order_by('speciality__description', 'description')
     serializer_class = ServiceSerializer
@@ -443,21 +447,40 @@ class RecordListView(ListView):
         context = super().get_context_data(**kwargs)
         template_id = self.kwargs.get('template_id')
         record = Records.objects.filter(id=template_id).first()
-        record.glassgow_total = int(record.glasgow_ro) + int(record.glasgow_rv) + int(record.glasgow_rm)
+        
+        if record:
+            try:
+                glasgow_ro = int(record.glasgow_ro) if record.glasgow_ro is not None else 0
+                glasgow_rv = int(record.glasgow_rv) if record.glasgow_rv is not None else 0
+                glasgow_rm = int(record.glasgow_rm) if record.glasgow_rm is not None else 0
+                record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
+    
+                imgcc = record.imghd.url if record.imghd else None
+                imgso = record.imgso.url if record.imgso else None
+                imgtp = record.imgtp.url if record.imgtp else None
+                imgic = record.imgic.url if record.imgic else None
+                imglc = record.imglc.url if record.imglc else None
+    
+            except (TypeError, ValueError):
+                return HttpResponse("No está totalmente diligenciado", status=400)
+        
         context['document'] = record
         return context
-
+    
     
 class RecordPdf(RecordListView, View): 
     def get(self, request, *args, **kwargs): 
-        self.object_list = self.get_queryset() 
-        context = self.get_context_data(object_list=self.object_list) 
-        pdf = render_to_pdf(self.template_name, context) 
-        response = HttpResponse(pdf, content_type='application/pdf') 
-        response['Content-Disposition'] = 'attachment; filename="report.pdf"'
-        return response
-
-
+        try:
+            self.object_list = self.get_queryset() 
+            context = self.get_context_data(object_list=self.object_list) 
+            if isinstance(context, HttpResponse):
+                return context
+            pdf = render_to_pdf(self.template_name, context) 
+            response = HttpResponse(pdf, content_type='application/pdf') 
+            response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+            return response
+        except Exception as e:
+            return HttpResponse("No está totalmente diligenciado", status=400)
   
 class GeocodeView(APIView):
     def get(self, request, *args, **kwargs):
@@ -593,5 +616,13 @@ def kc(request):
     response = HttpResponse("Cookie borrada")
     response.delete_cookie('token')
     return response
-        
-        
+
+class SetPasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        user.set_password(request.data['new_password'])
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)

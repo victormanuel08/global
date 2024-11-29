@@ -32,11 +32,13 @@
                 </SelectThird>
             </div>
             <div class="m-2">
-                <label class="block text-sm font-medium text-gray-700">Ambulancia:</label>
-                <SelectVehicle v-model="record.vehicle_full"
-                    @change="saveItem(record.id, 'vehicle', record.vehicle_full.id)"
-                    :vehicleType="'AM'" />
+                <label class="block text-sm font-medium text-gray-700">Medico Clinica: <span
+                        @click="typeT = 'M', showModalThird('')">➕</span></label>
+                <SelectThird :third-type="'M'" v-model="record.third_medic_clinic_full"
+                    @change="saveItem(record.id, 'third_medic_clinic', record.third_medic_clinic_full.id)">
+                </SelectThird>
             </div>
+
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Conductor: <span
                         @click="typeT = 'P', showModalThird('')">➕</span></label>
@@ -48,11 +50,15 @@
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Auxiliar: <span
                         @click="typeT = 'M', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'M'" v-model="record.third_medic_clinic_full"
-                    @change="saveItem(record.id, 'third_medic_clinic', record.third_medic_clinic_full.id)">
+                <SelectThird :third-type="'M'" v-model="record.third_medic_full"
+                    @change="saveItem(record.id, 'third_medic', record.third_medic_full.id)">
                 </SelectThird>
             </div>
-
+            <div class="m-2">
+                <label class="block text-sm font-medium text-gray-700">Ambulancia:</label>
+                <SelectVehicle v-model="record.vehicle_full"
+                    @change="saveItem(record.id, 'vehicle', record.vehicle_full.id)" :vehicleType="'AM'" />
+            </div>
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">N° Id. Reporte Ingreso clinica</label>
                 <UInput v-model="record.number_report" placeholder="N° Id. Reporte Ingreso clinica"
@@ -81,44 +87,45 @@
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgcc')">
                     📷 CEDULA
-                </button>                
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgcc"  v-if="record.imgcc" @click="imgPreview(record.imgcc)" />
+                </button>
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgcc" v-if="record.imgcc"
+                    @click="imgPreview(record.imgcc)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgso')">
                     📷 SOAT
-                </button>                
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgso"  v-if="record.imgso" @click="imgPreview(record.imgso)" />
+                </button>
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgso" v-if="record.imgso"
+                    @click="imgPreview(record.imgso)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgtp')">
                     📷 T.PROPIEDAD
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgtp"  v-if="record.imgtp" @click="imgPreview(record.imgtp)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgtp" v-if="record.imgtp"
+                    @click="imgPreview(record.imgtp)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imglc')">
                     📷 LICENCIA
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imglc"  v-if="record.imglc" @click="imgPreview(record.imglc)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imglc" v-if="record.imglc"
+                    @click="imgPreview(record.imglc)" />
             </div>
-            <div class="border rounded p-1 m-2">
-                <button @click="photoRecord('imgco')">
-                    📷 CONSENTIMIENTO
-                </button>
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgco"  v-if="record.imgco" @click="imgPreview(record.imgco)" />
-            </div>
+          
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imgic')">
                     📷 IN. CLINICA
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgic"  v-if="record.imgic" @click="imgPreview(record.imgic)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgic" v-if="record.imgic"
+                    @click="imgPreview(record.imgic)" />
             </div>
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imghd')">
                     📷 Huella
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghd"  v-if="record.imghd" @click="imgPreview(record.imghd)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghd" v-if="record.imghd"
+                    @click="imgPreview(record.imghd)" />
                 <!--<a :href="record.imghd" download="huella_original.jpg" v-if="record.imghd">
                     Descargar imagen
                 </a>
@@ -128,86 +135,98 @@
                 <button @click="RegenerateHD(record.id)">
                     📷 Huella P.
                 </button>
-                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghdr"  v-if="record.imghd" @click="imgPreview(record.imghdr)" />
+                <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghdr" v-if="record.imghd"
+                    @click="imgPreview(record.imghdr)" />
             </div>
         </div>
 
-        <div class="grid grid-cols-1  md:grid-cols-5">
-
+        <div class="grid grid-cols-1  md:grid-cols-6">
 
 
             <div class="m-5">
-                <button @click="signedRecord('signed_recived')">
+
+            </div>
+       
+
+            <div class="m-5">
+                <button @click="signedRecord('signed_medic_clinic')" v-if="record.third_clinic_full?.id && record.third_medic_clinic_full?.id">
                     🖋️ Firmar
                 </button>
-                <img :src="record.signed_recived" alt="Imagen Base64" width="60%" height="auto"
-                    v-if="record.signed_recived" />
+                <img :src="record.third_medic_clinic_full?.signed" alt="Imagen Base64" width="60%" height="auto"
+                    v-if="record.third_medic_clinic_full?.signed" />
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
-                        Dr(a). {{ record.third_clinic_full?.name }} {{ record.third_clinic_full?.second_name }} {{
-                            record.third_clinic_full?.last_name }} {{ record.third_clinic_full?.second_last_name }}
-                            <span v-if="!record.signed_recived">. NO FIRMA.</span>
+                        Dr(a).  {{ record.third_clinic_full?.name }} {{  record.third_medic_clinic_full?.name }} {{  record.third_medic_clinic_full?.second_name }}  {{  record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name
+                        }} T.P {{  record.third_medic_clinic_full?.tp }}<span v-if="!record.third_medic_clinic_full?.id">. NO FIRMA.</span>
+                    </p>
+                </strong>
+            </div>
+            <div>
+                <button @click="signedRecord('signed_medic')">
+                    🖋️Firmar.
+                </button>
+                <img :src="record.third_medic_full?.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.third_medic_full?.signed" />
+                <strong>
+                    <hr style="border: 1px solid black; font-weight: bold;">
+                    <p>
+                        Dr(a). Auxiliar {{ record.third_medic_full?.name }} {{ record.third_medic_full?.second_name }} {{
+                            record.third_medic_full?.last_name }} {{ record.third_medic_full?.second_last_name }}
+                    </p>
+                    <p>
+                        Esp. {{ record.third_medic_full?.speciality_full?.description }} T.P {{ record.third_medic_full?.tp }}
                     </p>
                 </strong>
             </div>
 
             <div class="m-5">
-                <button @click="signedRecord('signed')">
+                <button @click="signedRecord('signed_driver')" v-if="record.third_driver">
                     🖋️ Firmar
                 </button>
-                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
-                <strong>
-                    <hr style="border: 1px solid black; font-weight: bold;">
-                    <p>
-                        Dr(a). Auxiliar{{ record.third_medic_clinic_full?.name }} {{ record.third_medic_clinic_full?.second_name
-                        }} {{
-                            record.third_medic_clinic_full?.last_name }} {{ record.third_medic_clinic_full?.second_last_name
-                        }}<span v-if="!record.signed">. NO FIRMA.</span>
-                    </p>
-                </strong>
-            </div>
-
-            <div class="m-5">
-                <button @click="signedRecord('signed_driver')">
-                    🖋️ Firmar
-                </button>
-                <img :src="record.signed_driver" alt="Imagen Base64" width="60%" height="auto"
-                    v-if="record.signed_driver" />
+                <img :src="record.third_driver_full?.signed" alt="Imagen Base64" width="60%" height="auto"
+                    v-if="record.third_driver_full?.signed" />
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
                         Conductor: {{ record.third_driver_full?.name }} {{ record.third_driver_full?.second_name }} {{
                             record.third_driver_full?.last_name }} {{ record.third_driver_full?.second_last_name }}
-                            <span v-if="!record.signed_driver">. NO FIRMA.</span>
+                        <span v-if="!record.third_driver_full?.signed">. NO FIRMA.</span>
                     </p>
                 </strong>
             </div>
             <div class="m-5">
-                <button @click="signedRecord('signed_patient')">
+                <button @click="signedRecord('signed_patient')" v-if="record.third_patient">
                     🖋️ Firmar
                 </button>
                 <span class="flex grid-flow-col">
                     <img :src="record.signed_patient" alt="Imagen Base64" width="60%" height="auto"
                         v-if="record.signed_patient" />
-          
-                    <NuxtImg  class="rotated-image-transform" sizes="20vw sm:20vw md:20px" :src="record.imghdr"  v-if="record.imghdr" @click="imgPreview(record.imghdr)" />
+
+                    <NuxtImg class="rotated-image-transform" sizes="20vw sm:20vw md:20px" :src="record.imghdr"
+                        v-if="record.imghdr" @click="imgPreview(record.imghdr)" />
                 </span>
                 <strong>
                     <hr style="border: 1px solid black; font-weight: bold;">
                     <p>
                         Paciente: {{ record.third_patient_full?.name }} {{ record.third_patient_full?.second_name }} {{
                             record.third_patient_full?.last_name }} {{ record.third_patient_full?.second_last_name }}
-                            <span v-if="!record.signed_patient">. NO FIRMA.</span><span v-if="!record.imghdr">. NO HUELLA.</span>
+                        <span v-if="!record.signed_patient">. NO FIRMA.</span><span v-if="!record.imghdr">. NO
+                            HUELLA.</span>
                     </p>
                 </strong>
             </div>
+            <div class="m-5">
+                
+            </div>
         </div>
     </div>
-    <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="typeSing" />
-    <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
-    <ModalEditThird :typeT="typeT" v-model="isThird" />
+    <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :third="third" :typeThird="typeSing" />
+    
+
  
+    <ModalPhoto :record="record" @close="handleModalClose" v-model="isPhoto" :detail="detail" :typeImg="typeImg" />
+    <ModalEditThirdAmbulance :typeT="typeT" v-model="isThird" />
+
     <ModalImgpreview :imgRoute="imgRoute" @close="handleModalClose" v-model="isPreview" />
 
 </template>
@@ -215,6 +234,7 @@
 <script lang="ts" setup>
 
 const typeSing = ref('')
+const third = ref({} as any)
 const imgRoute = ref('')
 
 const typeImg = ref('')
@@ -263,7 +283,7 @@ const fetchProps = async () => {
 
     props.calendarEvent.condition_full = await getCHOICE(props.calendarEvent.condition, 'TYPE_ACCIDENT_CHOICES')
 
-}   
+}
 
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
@@ -279,6 +299,15 @@ const fetchRecord = async (q: any) => {
 
 const signedRecord = async (q: string) => {
     typeSing.value = q
+    if (q === 'signed_driver') {
+        third.value = record.value.third_driver 
+    } else if (q === 'signed_medic') {
+        third.value = record.value.third_medic
+    } else if (q === 'signed_medic_clinic') {
+        third.value = record.value.third_medic_clinic
+     } else{
+        third.value = null
+     }
     isSing.value = true
 }
 

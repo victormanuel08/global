@@ -127,6 +127,7 @@
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
+                  
                   <SelectDays                     
                     :class="{
                       'border rounded p-1 w-40': newAvailabilityThird.speciality_full?.code === '012',
