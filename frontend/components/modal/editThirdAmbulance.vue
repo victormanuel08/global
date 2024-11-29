@@ -245,9 +245,7 @@
     </UModal>
 
 </template>
-
 <script lang="ts" setup>
-
 
 import { useThirdObject } from '~/stores/thirds';
 
@@ -267,31 +265,26 @@ const newThirdSex = ref({})
 const newThirdType = ref('')
 const isPolice = ref(false)
 const newThirdSelectedStatus_full = ref({})
-const newThirdSelectedDate_birth = ''
-const newThirdSelectedOccupation_full = ref({})
-const newThirdSelectedAddress = ''
-const newThirdSelectedPhone = ''
-const newthirdSelectedZone_full = ref({})
-const newThirdSelectedCity_full = ref({})
-const newThirdSelectedEmail = ''
-
+let newThirdSelectedDate_birth = ''
+let newThirdSelectedOccupation_full = ref({})
+let newThirdSelectedAddress = ''
+let newThirdSelectedPhone = ''
+let newthirdSelectedZone_full = ref({})
+let newThirdSelectedCity_full = ref({})
+let newThirdSelectedEmail = ''
 
 const showModalPolice = () => {
-
     isPolice.value = true
 }
 
 const handleModalClose = async (value: any) => {
-
     isPolice.value = false
-
 }
 
 type Props = {
     third?: object
     typeT?: string
     typeTA?: string
-
 }
 
 const props = defineProps<Props>()
@@ -302,12 +295,9 @@ const query = ref("")
 
 const clear = () => {
     thirdSelected.value = ''
-
 }
 
-
 watch(() => props.third, async (value: any) => {
-
     if (value) {
         newThirdNit.value = ''
         newThirdDocument.value = ''
@@ -318,17 +308,12 @@ watch(() => props.third, async (value: any) => {
 watch(() => props.typeT, async (value: any) => {
     newThirdType.value = await getCHOICE(value, 'TYPE_CHOICES')
     if (value === 'E' || value === 'C') {
-
         newThirdDocument.value = await getCHOICE('NI', 'TYPE_DOCUMENT_CHOICES')
-
     } else {
         newThirdDocument.value = await getCHOICE('CC', 'TYPE_DOCUMENT_CHOICES')
-
     }
     newThirdType.value = await getCHOICE(value, 'TYPE_CHOICES')
 })
-
-
 
 const propEvent = async (value: any) => {
     thirdSelected.value = value
@@ -349,9 +334,7 @@ const propEvent = async (value: any) => {
     thirdSelected.value.occupation_full = await getCHOICE(value.occupation, "OCCUPATION_CHOICES")
     thirdSelected.value.zone_full = await getCHOICE(value.zone, "ZONE_CHOICES")
     typeThird.value = props.typeT
-
 }
-
 
 const saveItem = async (index: number, field: string, value: string) => {
     const response = await $fetch(`api/thirds/${index}`, {
@@ -360,24 +343,16 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-
 };
+
 const saveItems = async (index: number, injuries: object[]) => {
     try {
-        // Obtener los policys existentes del tercero
         const response = await $fetch<any>(`api/thirds/${index}`);
         const existingPolicys = response.policys;
-
-        // Extraer solo los IDs de los nuevos policys
         const newPolicyIds = injuries.map((policy: any) => policy.id);
-
-        // Combinar los policys existentes con los nuevos, eliminando duplicados
         const updatedPolicys = [...new Set([...existingPolicys, ...newPolicyIds])];
-
-        // Eliminar los undefined
         const updatedPolicys2 = updatedPolicys.filter((item) => item !== undefined);
 
-        // Guardar los policys actualizados
         await $fetch(`api/thirds/${index}`, {
             method: 'PATCH',
             body: JSON.stringify({
@@ -391,17 +366,12 @@ const saveItems = async (index: number, injuries: object[]) => {
     }
 };
 
-
-
 const validateNit = async () => {
-
     const queryParams = {
         search: query.value,
         nit: newThirdNit?.value,
         type_document: newThirdDocument.value.id
     }
-
-
 
     if (newThirdNit.value !== '') {
         const response = await $fetch<any>("api/thirds", {
@@ -414,12 +384,9 @@ const validateNit = async () => {
     } else {
         alert('El campo de identificacion no puede estar vacio')
     }
-
-
 }
 
 const createThird = async () => {
-
     const message = confirm('¿Estás seguro de crear este Tercero?')
 
     if (!message) {
@@ -440,7 +407,6 @@ const createThird = async () => {
         newthirdSelectedZone_full.value = ''
         newThirdSelectedCity_full.value = ''
         newThirdSelectedEmail = ''
-
 
         return
     }
@@ -481,7 +447,6 @@ const createThird = async () => {
             zone: newthirdSelectedZone_full.id,
             city: newThirdSelectedCity_full.id,
             email: newThirdSelectedEmail
-
         },
     })
 
@@ -493,28 +458,19 @@ const createThird = async () => {
     newThirdSecondLastName.value = ''
 
     alert('Tercero creado con exito')
-    // validateNit()
-
 }
-
-
-
 
 onMounted(async () => {
     console.log('third?¿', thirdSelected.value)
     if (props.typeT === 'E' || props.typeT === 'C') {
         newThirdDocument.value = await getCHOICE('NI', 'TYPE_DOCUMENT_CHOICES')
-
     } else {
         newThirdDocument.value = await getCHOICE('CC', 'TYPE_DOCUMENT_CHOICES')
         newThirdSex.value = await getCHOICE('M', 'SEX_CHOICES')
     }
 
     newThirdType.value = await getCHOICE(props.typeT, 'TYPE_CHOICES')
-
 })
-
-
 
 </script>
 
