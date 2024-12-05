@@ -1,5 +1,4 @@
 <template>
-
   <div class="max-w-5xl mx-auto">
     <UCard class="my-2">
       <template #header>
@@ -7,64 +6,73 @@
           <h2 class="font-bold">Usuarios</h2>
           <div class="flex gap-3 my-3">
             <UInput v-model="search" placeholder="Buscar" />
-            <UPagination v-model="pagination.page" :page-count="pagination.pageSize" :total="pagination.resultsCount" />
+            <UPagination v-model="pagination.page" 
+                         :page-count="pagination.pageSize" 
+                         :total="pagination.resultsCount" 
+            />
           </div>
         </div>
       </template>
-      <div class="flex justify-center items-center">
-        <h3 v-if="users.length === 0">No hay Usuarios</h3>
+
+      <div v-if="users.length === 0" class="flex justify-center items-center">
+        <h3>No hay Usuarios</h3>
       </div>
+
       <table class="table-auto w-full permission-table">
         <thead>
           <tr>
             <th :class="ui.th">Usuario</th>
-            <th :class="ui.th"><span
-                title="Indica si el usuario debe ser tratado como activo. Desmarque esta opción en lugar de borrar la cuenta.">Activo</span>
+            <th :class="ui.th">
+              <span title="Indica si el usuario debe ser tratado como activo.">Activo</span>
             </th>
-            <th :class="ui.th"><span
-                title="Indica si el usuario puede entrar en este sitio de Super Administración de Backend.">Staff</span>
+            <th :class="ui.th">
+              <span title="Indica si el usuario puede entrar en este sitio.">Staff</span>
             </th>
-            <th :class="ui.th"><span
-                title="Indica que este usuario tiene todos los permisos sin asignárselos explícitamente.">SuperUser</span>
+            <th :class="ui.th">
+              <span title="Indica que este usuario tiene todos los permisos.">SuperUser</span>
             </th>
             <th :class="ui.th">Acciones</th>
           </tr>
         </thead>
         <tbody>
-
+          <!-- Usuarios existentes -->
           <tr v-for="(user, index) in users" :key="index">
             <td :class="ui.td">
               <div class="flex items-center justify-center">
-                <UInput v-model="user.username" @blur="saveItem(index, 'username', user.username)"
-                  class="border rounded p-1 w-48" />
+                <UInput v-model="user.username" 
+                        @blur="saveItem(index, 'username', user.username)" 
+                        class="border rounded p-1 w-48" 
+                />
               </div>
-              <div class="grid grid-cols-3 justify-center" v-if="showUserGroups && user.id === selectedUserId">
+              <div v-if="showUserGroups && user.id === selectedUserId" class="grid grid-cols-3 justify-center">
                 <div v-for="(group, index) in groups" :key="index" class="justify-center">
-                  <input type="checkbox" :checked="validateGroupUser(group.id, selectedUserId)"
-                    @change="saveUserGroups(group.id, selectedUserId)" :data-group-id="group.id" />
+                  <input type="checkbox" 
+                         :checked="validateGroupUser(group.id, selectedUserId)" 
+                         @change="saveUserGroups(group.id, selectedUserId)" 
+                         :data-group-id="group.id" 
+                  />
                   {{ group.name }}
                 </div>
               </div>
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UCheckbox v-model="user.is_active" @change="saveItem(index, 'is_active', user.is_active)"
-                  class="border rounded p-1" />
-              </div>
+              <UCheckbox v-model="user.is_active" 
+                         @change="saveItem(index, 'is_active', user.is_active)" 
+                         class="border rounded p-1" 
+              />
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UCheckbox v-model="user.is_staff" @change="saveItem(index, 'is_staff', user.is_staff)"
-                  class="border rounded p-1" />
-              </div>
+              <UCheckbox v-model="user.is_staff" 
+                         @change="saveItem(index, 'is_staff', user.is_staff)" 
+                         class="border rounded p-1" 
+              />
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UCheckbox v-model="user.is_superuser" @change="saveItem(index, 'is_superuser', user.is_superuser)"
-                  class="border rounded p-1" />
-              </div>
+              <UCheckbox v-model="user.is_superuser" 
+                         @change="saveItem(index, 'is_superuser', user.is_superuser)" 
+                         class="border rounded p-1" 
+              />
             </td>
-
             <td :class="ui.td">
               <div class="flex items-center justify-center">
                 <span @click="toggleUserGroups(user.id)" :class="ui.span">🔍</span>
@@ -73,31 +81,22 @@
             </td>
           </tr>
 
+          <!-- Formulario para nuevo usuario -->
           <tr>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UInput v-model="newUserUsername" placeholder="Usuario" class="border rounded p-1 w-48" />
-              </div>
+              <UInput v-model="newUserUsername" placeholder="Usuario" class="border rounded p-1 w-48" />
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UCheckbox v-model="newUserActive" placeholder="Nombre" class="border rounded p-1" />
-              </div>
+              <UCheckbox v-model="newUserActive" class="border rounded p-1" />
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UCheckbox v-model="newUserStaff" placeholder="Staff" class="border rounded p-1" />
-              </div>
+              <UCheckbox v-model="newUserStaff" class="border rounded p-1" />
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <UCheckbox v-model="newUserSuperuser" placeholder="Super User" class="border rounded p-1" />
-              </div>
+              <UCheckbox v-model="newUserSuperuser" class="border rounded p-1" />
             </td>
             <td :class="ui.td">
-              <div class="flex items-center justify-center">
-                <span @click="createUser" :class="ui.span">💾</span>
-              </div>
+              <span @click="createUser" :class="ui.span">💾</span>
             </td>
           </tr>
         </tbody>
@@ -106,167 +105,133 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
-const newUserUsername = ref('')
-const newUserActive = ref(0)
-const newUserStaff = ref(0)
-const newUserSuperuser = ref(0)
-const groups = ref([] as any[])
-const showUserGroups = ref(false)
-const selectedUserId = ref()
-const saving = ref(false)
-const groupSelected = ref([] as number[]);
+// Estado
+const newUserUsername = ref('');
+const newUserActive = ref(false);
+const newUserStaff = ref(false);
+const newUserSuperuser = ref(false);
+const groups = ref<any[]>([]);
+const showUserGroups = ref(false);
+const selectedUserId = ref<number | null>(null);
+const groupSelected = ref<number[]>([]);
+const toast = useToast();
 
-const {
-  data: users,
-  pagination,
-  search,
-  pending,
-} = usePaginatedFetch<any>("/api/auth/users/");
+const { data: users, pagination, search, refresh } = usePaginatedFetch<any>('/api/auth/users/');
 
-const toggleUserGroups = async (user_id: number) => {
-  showUserGroups.value = !showUserGroups.value
-  const response = await $fetch<any>(`api/auth/users/${user_id}`, {
-    method: 'GET',
-  });
-  groupSelected.value = response?.groups
-  selectedUserId.value = user_id
-}
+// Métodos
+const fetchUsers = () => refresh();
 
-const validateGroupUser = (group_id: number, user_id: number) => {
-  if (groupSelected.value.includes(group_id)) {
-    return true;
-  } else {
-    return false;
+const fetchGroups = async () => {
+  const response = await $fetch<any>('api/auth/groups/');
+  groups.value = response.results;
+};
+
+const toggleUserGroups = async (userId: number) => {
+  showUserGroups.value = !showUserGroups.value;
+  const response = await $fetch<any>(`api/auth/users/${userId}`, { method: 'GET' });
+  groupSelected.value = response?.groups || [];
+  selectedUserId.value = userId;
+};
+
+const validateGroupUser = (groupId: number, userId: number): boolean => {
+  return groupSelected.value.includes(groupId);
+};
+
+const saveItem = async (index: number, field: string, value: any) => {
+  try {
+    const user = users.value[index];
+    user[field] = value;
+    const response = await $fetch(`api/auth/users/${user.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ [field]: value }),
+    });
+    refresh();
+    toast.add({ title: `Usuario actualizado correctamente.` });
+  } catch (error: any) {
+    toast.add({ title: `Error al actualizar usuario: ${error.message}` });
   }
 };
 
-const fetchUsers = async () => {
-  const {
-    data: users,
-    pagination,
-    search,
-    pending,
-  } = usePaginatedFetch<any>("/api/auth/users/");
-}
-
-const fetchGroups = async () => {
-  const response = await $fetch<any>('api/auth/groups/')
-  groups.value = response.results
-}
+const saveUserGroups = async (groupId: number, userId: number) => {
+  try {
+    const response = await $fetch<any>(`api/auth/users/${userId}`, { method: 'GET' });
+    const currentGroups = response?.groups || [];
+    const isChecked = document.querySelector(`input[data-group-id="${groupId}"]`)?.checked;
+    const updatedGroups = isChecked
+      ? [...currentGroups, groupId]
+      : currentGroups.filter((id: number) => id !== groupId);
+    await $fetch(`api/auth/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ groups: updatedGroups }),
+    });
+    toast.add({ title: `Grupos de usuario actualizados correctamente.` });
+  } catch (error: any) {
+    toast.add({ title: `Error al actualizar grupos: ${error.message}` });
+  }
+};
 
 const deleteUser = async (id: number) => {
-  const message = confirm('¿Estás seguro de eliminar este Usuario?')
-  if (message) {
-    const response = await $fetch(`api/auth/users/${id}/`, {
-      method: 'DELETE'
-    })
-    fetchUsers()
+  if (confirm('¿Estás seguro de eliminar este Usuario?')) {
+    try {
+      await $fetch(`api/auth/users/${id}/`, { method: 'DELETE' });
+      refresh();
+      toast.add({ title: `Usuario eliminado correctamente.` });
+    } catch (error: any) {
+      toast.add({ title: `Error al eliminar usuario: ${error.message}` });
+    }
   }
-}
-
+};
 
 const createUser = async () => {
-  const message = confirm('¿Estás seguro de crear este Usuario?')
-
-  if (!message) {
-    newUserUsername.value = ''
-    newUserActive.value = 0
-    newUserStaff.value = 0
-    newUserSuperuser.value = 0
-    fetchUsers()
-    return
-  }
-
-  const response = await $fetch('api/auth/users/', {
-    method: 'POST',
-    body: {
-      username: newUserUsername.value,
-      is_active: newUserActive.value,
-      is_staff: newUserStaff.value,
-      is_superuser: newUserSuperuser.value
+  if (confirm('¿Estás seguro de crear este Usuario?')) {
+    try {
+      await $fetch('api/auth/users/', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: newUserUsername.value,
+          is_active: newUserActive.value,
+          is_staff: newUserStaff.value,
+          is_superuser: newUserSuperuser.value,
+        }),
+      });
+      refresh();
+      resetNewUser();
+      toast.add({ title: `Usuario creado correctamente.` });
+    } catch (error: any) {
+      toast.add({ title: `Error al crear usuario: ${error.message}` });
     }
-  })
-  fetchUsers()
-  newUserSuperuser.value = 0
-  newUserStaff.value = 0
-  newUserActive.value = 0
-  newUserUsername.value = ''
-}
+  }
+};
 
+const resetNewUser = () => {
+  newUserUsername.value = '';
+  newUserActive.value = false;
+  newUserStaff.value = false;
+  newUserSuperuser.value = false;
+};
+
+// Inicialización
 onMounted(() => {
-  fetchUsers()
-  fetchGroups()
-})
+  fetchUsers();
+  fetchGroups();
+});
 
+// Estilos
 const ui = {
   td: 'p-1 border',
   th: 'p-2 border',
-  check: 'align-center justify-center',
-  span: 'cursor-pointer'
-}
-
-const saveItem = async (index: number, field: string, value: string) => {
-  const user = users.value[index];
-  user[field] = value;
-  const userResponse = await $fetch<any>(`api/auth/users/${user.id}/`, {
-    method: 'GET',
-  });
-  console.log('Grupos actuales del usuario:', userResponse?.groups);
-  const currentGroups = Array.isArray(userResponse?.groups) ? userResponse.groups : [];
-  const response = await $fetch(`api/auth/users/${user.id}`, {
-    method: 'PATCH',
-    body: JSON.stringify({
-      [field]: value,
-      groups: currentGroups,
-    }),
-  });
-  fetchUsers();
+  span: 'cursor-pointer',
 };
-
-
-const saveUserGroups = async (groupId: number, userId: number) => {
-  console.log('Guardando', groupId, userId);
-
-  try {
-    const userResponse = await $fetch<any>(`api/auth/users/${userId}/`, {
-      method: 'GET',
-    });
-    console.log('Grupos actuales del usuario:', userResponse?.groups);
-    const currentGroups = Array.isArray(userResponse?.groups) ? userResponse.groups : [];
-    const checkbox = document.querySelector(`input[type="checkbox"][data-group-id="${groupId}"]`);
-    console.log("Checkbox:", checkbox);
-    const isChecked = checkbox?.checked;
-    let updatedGroups;
-    if (isChecked) {
-      // Añadir el grupo a la lista si está marcado
-      updatedGroups = [...currentGroups, groupId];
-      console.log('Grupos actualizados1:', updatedGroups);
-    } else {
-      // Eliminar el grupo de la lista si está desmarcado
-      updatedGroups = currentGroups.filter(id => id !== groupId);
-      console.log('Grupos actualizados1:', updatedGroups);
-    }
-
-    console.log('Grupos actualizados0:', updatedGroups);
-
-    // Actualizar los grupos del usuario
-    const response = await $fetch<any>(`api/auth/users/${userId}/`, {
-      method: 'PATCH',
-      body: JSON.stringify({
-        groups: updatedGroups,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    console.log('Respuesta de actualización:', response);
-  } catch (error) {
-    console.error('Error al actualizar:', error);
-  }
-};
-
-
 </script>
+
+<style scoped>
+.table-auto {
+  width: 100%;
+  border-collapse: collapse;
+}
+.permission-table th,
+.permission-table td {
+  text-align: center;
+}
+</style>

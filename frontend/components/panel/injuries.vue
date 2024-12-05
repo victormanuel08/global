@@ -3,52 +3,36 @@
         <h1>Antecedentes</h1>
         <div class="grid grid-cols-1 md:grid-cols-1 m-4">
             <div class="m-2 g-4">
-                <label class="block text-sm font-medium w-full break-words">Alergias: {{
-                    record.third_patient_full?.allergies }}. {{ newRecordAllergies }}</label>
+                <label class="block text-sm font-medium w-full break-words">Alergias: {{ record.third_patient_full?.allergies }}. {{ newRecordAllergies }}</label>
                 <UTextarea v-model="newRecordAllergies" variant="outline" style="height: 2em;" />
             </div>
             <div class="m-2 g-4">
-                <label class="block text-sm font-medium w-full break-words">Patologías: {{
-                    record.third_patient_full?.pathologies }}. {{ newRecordPathologies }}</label>
+                <label class="block text-sm font-medium w-full break-words">Patologías: {{ record.third_patient_full?.pathologies }}. {{ newRecordPathologies }}</label>
                 <UTextarea v-model="newRecordPathologies" variant="outline" style="height: 2em;" />
             </div>
             <div class="m-2 g-4">
-                <label class="block text-sm font-medium w-full break-words">Medicación: {{
-                    record.third_patient_full?.medications }}. {{ newRecordMedications }}</label>
+                <label class="block text-sm font-medium w-full break-words">Medicación: {{ record.third_patient_full?.medications }}. {{ newRecordMedications }}</label>
                 <UTextarea v-model="newRecordMedications" variant="outline" style="height: 2em;" />
             </div>
             <div class="m-2 g-4">
-                <label class="block text-sm font-medium w-full break-words">Líquidos y Alimentos: {{
-                    record.third_patient_full?.liquids_foods }}. {{ newRecordLiquidsFoods }}</label>
+                <label class="block text-sm font-medium w-full break-words">Líquidos y Alimentos: {{ record.third_patient_full?.liquids_foods }}. {{ newRecordLiquidsFoods }}</label>
                 <UTextarea v-model="newRecordLiquidsFoods" variant="outline" style="height: 2em;" />
             </div>
         </div>
 
         <div class="m-2 g-4">
             <UButton class="mt-2" variant="soft" block @click="saveHistory">Guardar Antecedentes</UButton>
-
         </div>
 
     </div>
+
     <h1>Lesiones</h1>
-    <div class="container grid grid-cols-1   lg:grid-cols-2  m-4">
-        <div style="overflow: auto;">
-            <div class="grid-container2" style="width: 450px; height: 500px; position: relative;">
+    <div class="container grid grid-cols-1 lg:grid-cols-2 m-4">
+        <div class="image-container overflow-x-auto">
+            <div class="grid-container2">
                 <img src="@/assets/img/body.png" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
                 <img src="@/assets/img/body2.png" alt="Imagen" v-else />
-                <div class="grid-container">
-                    <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">
-                        <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
-                            <div class="square" v-if="injurie.point === n">
-                                <div class="circle">
-                                    {{ index + 1 }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-
         </div>
 
         <div class="m-2">
@@ -56,24 +40,23 @@
                 <label class="block text-sm font-medium text-gray-700">Descripcion del Procedimiento:</label>
                 <UTextarea v-model="record.descript_procedures" variant="outline"
                     placeholder="Descripcion del Procedimiento"
-                    @change="saveItem(record.id, 'descript_procedures', record.descript_procedures)"></UTextarea>
+                    @change="saveItem(record.id, 'descript_procedures', record.descript_procedures)" class="w-full" />
             </div>
 
             <div class="m-2">
                 <label>Parte Principal:</label>
-                <SelectChoice :choiceType="'BODY_PART_CHOICES'" v-model="record.body_part_full" />
+                <SelectChoice :choiceType="'BODY_PART_CHOICES'" v-model="record.body_part_full" class="w-full" />
             </div>
             <div v-if="record.body_part_full?.id === 'MI'" class="m-2">
                 <label>Miembro Inferior: </label>
-                <SelectChoice :choiceType="'BODY_PART_SIDE_CHOICES'" v-model="record.body_part_side_full" />
+                <SelectChoice :choiceType="'BODY_PART_SIDE_CHOICES'" v-model="record.body_part_side_full" class="w-full" />
             </div>
 
             <div class="m-2" hidden>
-                <UTextarea v-model="newInjurie" variant="outline" placeholder="Descripcion de la Lesion" />
+                <UTextarea v-model="newInjurie" variant="outline" placeholder="Descripcion de la Lesion" class="w-full" />
             </div>
             <div class="m-2">
-                <button
-                    @click="createListInjuries(record.body_part_full, record.body_part_side_full, newInjurie, point, record.third_patient_full?.sex)">
+                <button @click="createListInjuries(record.body_part_full, record.body_part_side_full, newInjurie, point, record.third_patient_full?.sex)">
                     ✅ Lesion
                 </button>
             </div>
@@ -94,21 +77,22 @@
                     <button @click="saveInjuries(record.id, listInjuries, listBody, listInjuries2)">
                         💾 Listado Lesiones
                     </button>
-
                 </div>
             </div>
         </div>
     </div>
+
     <PanelProcedures :calendarEvent="props.calendarEvent" />
+
     <div class="m-2">
         <label>Diagnostico Principal:</label>
         <SelectDiagnoses v-model="record.diagnosis_full"
-            @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)" />
+            @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)" class="w-full" />
     </div>
     <div class="m-2">
         <label>{{ record.diagnosis_multi_full?.length || 0 }} Diagnosticos Secundarios:</label>
 
-        <SelectDiagnosesMulti v-model="record.diagnosis_multi_full" @change="handleDiagnosesChange">
+        <SelectDiagnosesMulti v-model="record.diagnosis_multi_full" @change="handleDiagnosesChange" class="w-full">
             <template #selected="{ selectedOptions }">
                 <span v-if="selectedOptions.length == 0">Seleccionar Diagnósticos</span>
             </template>
@@ -116,8 +100,11 @@
 
     </div>
 
-
 </template>
+
+
+
+
 
 <script lang="ts" setup>
 import html2canvas from 'html2canvas';
@@ -389,12 +376,7 @@ const saveServices = async () => {
 
 }
 
-.grid-container2 {}
 
-.grid-item {
-    /* border: 1px solid #ccc;*/
-
-}
 
 .square {
     position: relative;
@@ -426,4 +408,29 @@ const saveServices = async () => {
     justify-content: center;
     align-items: center;
 }
+
+
+.w-full {
+    width: 100%;
+}
+
+.image-container {
+    width: 100%;
+    overflow-x: auto; /* Habilitar desplazamiento horizontal */
+    display: flex;
+    justify-content: center;
+}
+
+.grid-container2 img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .image-container {
+        max-width: 450px; /* Limitar ancho de imagen */
+    }
+}
 </style>
+

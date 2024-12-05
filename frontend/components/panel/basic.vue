@@ -1,68 +1,109 @@
 <template>
-    <div>
-        <h1>Datos Basicos</h1>
+    <div class="p-4">
+        <h1 class="text-lg font-bold text-gray-700 mb-6 text-center md:text-left">Datos Básicos</h1>
 
-        <div class="grid grid-cols-1  md:grid-cols-1 m-4">
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Motivo Servicio:</label>
-                <UTextarea v-model="record.reason_consultation" variant="outline" placeholder="Motivo de la Consulta"
-                    @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)" />
-            </div>
-        </div>
-        <div class="grid grid-cols-1  md:grid-cols-4 m-4">
-
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Coordenadas:</label>
-                <UInput type="text" :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude"
-                    readonly />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Sugerencias:</label>
-                <SelectAddress :coordinates="coordinates" v-model="addressOption" @change="validate(record.id)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Direccion:</label>
-                <UInput variant="outline" v-model="record.address"
-                    @change="saveItem(record.id, 'address', record.address)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Poliza: <span
-                        @click="typeT = 'E', showModalPolice('')">➕</span></label>
-
-                <SelectInsurance v-model="record.policy_full" :third="record.third_patient_full?.id"
-                    @change="handlePolicyChange" :placeholder="'Aseguradora'"> </SelectInsurance>
-            </div>
-        </div>
-        <div class="grid grid-cols-1  md:grid-cols-4 m-4">
-
-            <div class="mr-2" v-if="false">
-                <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
-                <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
-                    @change="saveItem(record.id, 'priority', record.priority_full?.id), console.log(record.priority_full)"
-                    :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
-                    :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
-                </SelectChoice>
-            </div>
-
-            <div class="mr-2" v-if="false">
-                <label class="block text-sm font-medium text-gray-700">Condicion Accidentado:</label>
-                <SelectChoice :choiceType="'TYPE_ACCIDENT_CHOICES'" v-model="record.condition_full"
-                    @change="saveItem(record.id, 'condition', record.condition_full.id)" />
-            </div>
-
-
-
+        <!-- Motivo Servicio -->
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Motivo Servicio:</label>
+            <UTextarea 
+                v-model="record.reason_consultation" 
+                variant="outline" 
+                placeholder="Motivo de la Consulta"
+                @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)" 
+                class="w-full"
+            />
         </div>
 
+        <!-- Coordenadas, Sugerencias, Dirección y Póliza -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <!-- Coordenadas -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Coordenadas:</label>
+                <UInput 
+                    type="text" 
+                    :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude" 
+                    readonly 
+                    class="w-full"
+                />
+            </div>
 
-      
+            <!-- Sugerencias -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Sugerencias:</label>
+                <SelectAddress 
+                    :coordinates="coordinates" 
+                    v-model="addressOption" 
+                    @change="validate(record.id)" 
+                    class="w-full"
+                />
+            </div>
 
+            <!-- Dirección -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Dirección:</label>
+                <UInput 
+                    variant="outline" 
+                    v-model="record.address" 
+                    @change="saveItem(record.id, 'address', record.address)" 
+                    class="w-full"
+                />
+            </div>
 
+            <!-- Póliza -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Póliza: 
+                    <span 
+                        class="text-blue-500 cursor-pointer hover:underline" 
+                        @click="typeT = 'E'; showModalPolice('')">➕
+                    </span>
+                </label>
+                <SelectInsurance 
+                    v-model="record.policy_full" 
+                    :third="record.third_patient_full?.id" 
+                    @change="handlePolicyChange" 
+                    :placeholder="'Aseguradora'" 
+                    class="w-full"
+                />
+            </div>
+        </div>
+
+        <!-- Campos Ocultos -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4 mt-6" v-if="false">
+            <!-- Prioridad -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Prioridad:</label>
+                <SelectChoice 
+                    :choiceType="'PRIORITY_CHOICES'" 
+                    v-model="record.priority_full" 
+                    @change="saveItem(record.id, 'priority', record.priority_full?.id)" 
+                    :style="getPriorityStyle(record.priority_full?.id)" 
+                    class="w-full"
+                />
+            </div>
+
+            <!-- Condición Accidentado -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Condición Accidentado:</label>
+                <SelectChoice 
+                    :choiceType="'TYPE_ACCIDENT_CHOICES'" 
+                    v-model="record.condition_full" 
+                    @change="saveItem(record.id, 'condition', record.condition_full.id)" 
+                    class="w-full"
+                />
+            </div>
+        </div>
     </div>
-  
-    <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
+
+    <!-- Modal Póliza -->
+    <ModalNewPolice 
+        :third="record.third_patient_full" 
+        :typeT="'C'" 
+        @close="handleModalClose" 
+        v-model="isPolice" 
+    />
 </template>
+
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
 

@@ -151,6 +151,7 @@ const {
     pagination,
     search,
     pending,
+    refresh
 } = usePaginatedFetch<any>("/api/records/" + modelValue.calendarEvent?.id + "/records_details/");
 
 

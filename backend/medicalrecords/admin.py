@@ -70,3 +70,7 @@ class ServiceAdmin(admin.ModelAdmin):
 class ValueAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(MedicamentsRecords)
+class MedicamentsRecordsAdmin(admin.ModelAdmin):
+    pass
+

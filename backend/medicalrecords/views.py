@@ -24,6 +24,9 @@ from django.core.files.base import ContentFile
 from io import BytesIO
 from PIL import Image
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -197,7 +200,7 @@ class ThirdViewSet(viewsets.ModelViewSet):
     queryset = Thirds.objects.all()
     serializer_class = ThirdSerializer
     search_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality__description']
-    filterset_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality']
+    filterset_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality','user']
 
     def perform_create(self, serializer):
         instance = serializer.save()
@@ -422,66 +425,87 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-
 class RecordListView(ListView):
     context_object_name = "records"
 
-    def get_queryset(self):
-        template_type = self.kwargs.get('template_type')
-        template_id = self.kwargs.get('template_id')
+    # Definir un mapping para modelos y plantillas
+    TEMPLATE_MAPPING = {
+        "ambulancia": (Records, "record_list.html"),
+        "thirds": (Thirds, "thirds_list.html"),
+        "medicamnetos": (MedicamentsRecords, "medicamentos_list.html"),
+    }
 
-        if template_type == 'ambulancia':
-            self.template_name = "record_list.html"
-            return Records.objects.filter(id=template_id)
-        elif template_type == 'thirds':
-            self.template_name = "thirds_list.html"
-            return Thirds.objects.filter(id=template_id)
-        elif template_type == 'police':
-            self.template_name = "police_list.html"
-            return Policy.objects.filter(id=template_id)
-        else:
-            self.template_name = "default_list.html"
-            return Records.objects.all()
+    def get_queryset(self):
+        template_type = self.kwargs.get("template_type")
+        template_id = self.kwargs.get("template_id")
+
+        # Validar el tipo de plantilla y obtener modelo/plantilla
+        model, template_name = self.TEMPLATE_MAPPING.get(
+            template_type, (Records, "default_list.html")
+        )
+        self.template_name = template_name
+
+        # Realizar la consulta con el modelo correspondiente
+        if template_type == "medicamnetos":
+            return model.objects.filter(record=template_id)  # Relación con `record`
+        return model.objects.filter(id=template_id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        template_id = self.kwargs.get('template_id')
+        template_id = self.kwargs.get("template_id")
         record = Records.objects.filter(id=template_id).first()
-        
+    
         if record:
             try:
-                glasgow_ro = int(record.glasgow_ro) if record.glasgow_ro is not None else 0
-                glasgow_rv = int(record.glasgow_rv) if record.glasgow_rv is not None else 0
-                glasgow_rm = int(record.glasgow_rm) if record.glasgow_rm is not None else 0
+                # Calcular el total de Glasgow
+                glasgow_ro = int(record.glasgow_ro or 0)
+                glasgow_rv = int(record.glasgow_rv or 0)
+                glasgow_rm = int(record.glasgow_rm or 0)
                 record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
     
-                imgcc = record.imghd.url if record.imghd else None
-                imgso = record.imgso.url if record.imgso else None
-                imgtp = record.imgtp.url if record.imgtp else None
-                imgic = record.imgic.url if record.imgic else None
-                imglc = record.imglc.url if record.imglc else None
+                # Agregar imágenes si están presentes
+                context.update({
+                    "imgcc": record.imghd.url if record.imghd else None,
+                    "imgso": record.imgso.url if record.imgso else None,
+                    "imgtp": record.imgtp.url if record.imgtp else None,
+                    "imgic": record.imgic.url if record.imgic else None,
+                    "imglc": record.imglc.url if record.imglc else None,
+                })
+    
+                # Agregar los medicamentos al contexto
+                medicaments = MedicamentsRecords.objects.filter(record=record)
+                context['medicaments'] = medicaments
     
             except (TypeError, ValueError):
                 return HttpResponse("No está totalmente diligenciado", status=400)
-        
-        context['document'] = record
+    
+        # Añadir el documento al contexto
+        context["document"] = record
         return context
     
-    
-class RecordPdf(RecordListView, View): 
-    def get(self, request, *args, **kwargs): 
+
+
+class RecordPdf(RecordListView, View):
+    def get(self, request, *args, **kwargs):
         try:
-            self.object_list = self.get_queryset() 
-            context = self.get_context_data(object_list=self.object_list) 
+            self.object_list = self.get_queryset()
+            context = self.get_context_data(object_list=self.object_list)
+
+            # Validar si el contexto devuelve un error
             if isinstance(context, HttpResponse):
                 return context
-            pdf = render_to_pdf(self.template_name, context) 
-            response = HttpResponse(pdf, content_type='application/pdf') 
-            response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+
+            # Generar y devolver el PDF
+            pdf = render_to_pdf(self.template_name, context)
+            response = HttpResponse(pdf, content_type="application/pdf")
+            response["Content-Disposition"] = 'attachment; filename="report.pdf"'
             return response
+
         except Exception as e:
+            logger.error(f"Error generando PDF: {e}")
             return HttpResponse("No está totalmente diligenciado", status=400)
-  
+
+
 class GeocodeView(APIView):
     def get(self, request, *args, **kwargs):
         coordinates_str = request.query_params.get("coordinates")
@@ -521,58 +545,70 @@ class GeocodeView(APIView):
         except requests.RequestException as e:           
             pass
         return Response(response_data)
-
-
+    
+    
 @api_view(['POST'])
 @csrf_exempt
 def sendemail(request):
-    template_id = request.data.get('id', None)    
-    records = Records.objects.filter(id=template_id)
-    record = Records.objects.filter(id=template_id).first()
-    paciente = Thirds.objects.filter(nit=record.third_patient).first()
-    medico = Thirds.objects.filter(nit=record.third_medic).first()
-    auxiliar = Thirds.objects.filter(nit=record.third_medic_clinic).first()
-    conductor = Thirds.objects.filter(nit=record.third_driver).first()
-    clinica = Thirds.objects.filter(nit=record.third_clinic).first()
+    template_id = request.data.get('id', None)
+    template_type = request.data.get('type', 'ambulancia')  # Por defecto, "ambulancia"
     emails = Values.objects.filter(type_values='ED').values_list('val', flat=True)
     
-    if record:
-        fecha = record.date_time
-        cedula = paciente.nit   
-        nombre_paciente = paciente.name + ' ' + paciente.second_name
-        apellido_paciente = paciente.last_name + ' ' + paciente.second_last_name
-        nombre_medico = medico.name + ' ' + medico.second_name
-        apellido_medico = medico.last_name + ' ' + medico.second_last_name
-        nombre_auxiliar = auxiliar.name + ' ' + auxiliar.second_last_name
-        apellido_auxiliar = auxiliar.last_name + ' ' + auxiliar.second_last_name
-        nombre_conductor = conductor.name + ' ' + conductor.second_last_name
-        apellido_conductor = conductor.last_name + ' ' + conductor.second_last_name
-        mensaje = f"**Paciente:** {nombre_paciente} {apellido_paciente}\n**Medico:** {nombre_medico} {apellido_medico}\n**Auxiliar:** {nombre_auxiliar} {apellido_auxiliar}\n**Conductor** {nombre_auxiliar} {apellido_auxiliar}"   
+    if not template_id:
+        return Response({'error': 'ID del template no proporcionado'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if template_type == 'ambulancia':
+        record = Records.objects.filter(id=template_id).first()
+        if not record:
+            return Response({'error': 'No se encontró el registro de ambulancia'}, status=status.HTTP_404_NOT_FOUND)
+        
+        paciente = Thirds.objects.filter(nit=record.third_patient).first()
+        medico = Thirds.objects.filter(nit=record.third_medic).first()
+        auxiliar = Thirds.objects.filter(nit=record.third_medic_clinic).first()
+        conductor = Thirds.objects.filter(nit=record.third_driver).first()
+        
+        mensaje = f"""
+        **Paciente:** {paciente.name} {paciente.last_name}
+        **Médico:** {medico.name} {medico.last_name}
+        **Auxiliar:** {auxiliar.name} {auxiliar.last_name}
+        **Conductor:** {conductor.name} {conductor.last_name}
+        """
+        filename = f"GATA-HC-{paciente.nit}"
+        template_name = "record_list.html"
+        data = {'document': record}
+    
+    elif template_type == 'medicamentos':
+        record = Records.objects.filter(id=template_id).first()
+        medicamentos = MedicamentsRecords.objects.filter(record=template_id)
+        if not medicamentos.exists():
+            return Response({'error': 'No se encontraron medicamentos asociados'}, status=status.HTTP_404_NOT_FOUND)
+        
+        mensaje = f"Se encontraron {medicamentos.count()} medicamentos asociados al registro."
+        for med in medicamentos:
+            mensaje += f"\n- {med.service.description} ({med.quantity}) - {med.dose} vía {med.route}"
+        
+        filename = f"GATA-MEDS-{template_id}"
+        template_name = "medicamentos_list.html"
+        data = {'document': record, 'medicamentos': medicamentos}
+    
     else:
-        mensaje = "No se encontró información del paciente"
+        return Response({'error': 'Tipo de template no reconocido'}, status=status.HTTP_400_BAD_REQUEST)
     
-    filename = 'GATA-HC-' + cedula   
-    asunto = 'Reporte Ambulancia ' + filename
+    pdf = render_to_pdf(template_name, data)
     
-    destinatarios = list(emails)
-    from_email = 'noreply@globalsafeips.com.co'
-    template_name = "record_list.html"
-    
-    data = {'document': record}
-    pdf = render_to_pdf(template_name, data)   
     try:
-        pdf_response = pdf
         email = EmailMessage(
-            subject=asunto,
+            subject=f'Reporte {template_type.capitalize()} {filename}',
             body=mensaje,
-            from_email=from_email,
-            to=destinatarios,
+            from_email='noreply@globalsafeips.com.co',
+            to=list(emails),
         )
-        email.attach(filename + '.pdf', pdf_response.content, 'application/pdf')
+        email.attach(f"{filename}.pdf", pdf.content, 'application/pdf')
         email.send()
         return Response({'mensaje': 'Correo enviado correctamente'})
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 
@@ -626,3 +662,12 @@ class SetPasswordView(generics.UpdateAPIView):
         user.set_password(request.data['new_password'])
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class MedicamentsRecordsViewSet(viewsets.ModelViewSet):
+    queryset = MedicamentsRecords.objects.all()
+    serializer_class = MedicamentsRecordsSerializer
+    search_fields = ['record','services__description','services__code']
+    filterset_fields = ['record']
+    
+
+    

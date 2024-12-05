@@ -37,6 +37,7 @@ router.register('polices', PoliceViewSet)
 router.register('fees', FeeViewSet)
 router.register('services', ServiceViewSet)
 router.register('values', ValuesViewSet)
+router.register('medicaments', MedicamentsRecordsViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

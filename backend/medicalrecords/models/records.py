@@ -569,6 +569,31 @@ class Values(models.Model):
         ordering = ['type_values']
         verbose_name = 'Valor'
         verbose_name_plural = 'Valores'
+        
+class MedicamentsRecords(models.Model):
+    record = models.ForeignKey(
+        'Records',
+        on_delete=models.PROTECT,
+        verbose_name="Registro",
+        related_name="medical_records",
+        #limit_choices_to={"thirds__name": "Medico"},
+        null=True,
+        blank=True,
+    )  
+    service=models.ForeignKey(
+        'Services', 
+        on_delete=models.PROTECT, 
+        verbose_name="Servicio",
+        related_name="service_medical_records",
+        null=True, 
+        blank=True)
+    quantity = models.IntegerField(default=1)
+    dose= models.CharField(max_length=100,null=True, blank=True)
+    route= models.CharField(max_length=100,null=True, blank=True)
     
+    class Meta:
+        ordering = ['record','service__description']
+        verbose_name = 'Historia Medica'
+        verbose_name_plural = 'Historias Medicas'
 
     

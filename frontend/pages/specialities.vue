@@ -27,24 +27,29 @@
             <tr v-for="(speciality, index) in specialities" :key="index">
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  <span v-if="speciality.code ==='AMB' || speciality.code==='012'">{{speciality.code}}</span>
+                  <span
+                    v-if="speciality.code === 'AMB' || speciality.code === '012' || speciality.code === '002' || speciality.code === '008'">{{ speciality.code }}</span>
                   <UInput v-model="speciality.code" @blur="saveItem(index, 'code', speciality.code)"
-                    class="border rounded p-1 w-14" v-else/>
-                  
+                    class="border rounded p-1 w-14" v-else />
+
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
-                  
-                    <span v-if="speciality.code ==='AMB' || speciality.code==='012'">{{speciality.description}}</span>
-                    <UInput v-model="speciality.description" @blur="saveItem(index, 'description', speciality.description)"
-                    class="border rounded p-1" v-else/>
+
+                  <span
+                    v-if="speciality.code === 'AMB' || speciality.code === '012' || speciality.code === '002' || speciality.code === '008'">{{ speciality.description }}</span>
+                  <UInput v-model="speciality.description"
+                    @blur="saveItem(index, 'description', speciality.description)" class="border rounded p-1" v-else />
                 </div>
               </td>
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <span @click="deleteSpeciality(speciality.id)" :class="ui.span"
-                    v-if="speciality.code !== 'AMB'">🗑️</span>
+                    v-if="!['AMB', '012', '002', '008'].includes(speciality.code)">
+                    🗑️
+                  </span>
+
                 </div>
               </td>
             </tr>

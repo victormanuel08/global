@@ -81,32 +81,44 @@ const downloadReport = async () => {
   }
 };
 
+
 const sendEmail = async () => {
   try {
-    const formData = new FormData();
-    formData.append('id', record.value.id);
-    formData.append('asunto', affair.value);
-    formData.append('mensaje', messaje.value);
-    formData.append('destinatario', 'rinconvargasvictormanuel@gmail.com');
-    //formData.append('archivo',downloadReport()); // Asegúrate de proporcionar el archivo adjunto
+    // Verifica que el registro tenga un ID válido
+    if (!record.value || !record.value.id) {
+      alert('No se encontró un registro válido para enviar el correo.');
+      return;
+    }
 
+    // Crea el objeto FormData con los datos necesarios
+    const formData = new FormData();
+    formData.append('id', record.value.id); // ID del registro
+    formData.append('type', 'ambulancia'); // Tipo de template (ambulancia)
+    formData.append('asunto', affair.value); // Asunto del correo
+    formData.append('mensaje', messaje.value); // Mensaje personalizado
+    formData.append('destinatario', 'rinconvargasvictormanuel@gmail.com'); // Destinatario predeterminado o dinámico
+
+    // Realiza la solicitud al endpoint del backend
     const response = await fetch('/api/sendemail/', {
       method: 'POST',
       body: formData,
     });
 
+    // Maneja la respuesta del servidor
     if (response.ok) {
       const data = await response.json();
       console.log('Respuesta del servidor:', data);
       alert('Correo enviado correctamente');
     } else {
       console.error('Error al enviar el correo:', response.statusText);
-      alert('Error al enviar el correo:' + response.statusText);
+      alert('Error al enviar el correo: ' + response.statusText);
     }
   } catch (error) {
     console.error('Error en la solicitud:', error);
+    alert('Ocurrió un error al enviar el correo. Revisa la consola para más detalles.');
   }
 };
+
 </script>
 
 <style></style>

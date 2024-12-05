@@ -69,8 +69,8 @@
               </td>
               <td :class="ui.td" v-if="third.id != '2'">
                 <div class="flex items-center justify-center">
-
-                  <span @click="showModalThird(third)" :class="ui.span" v-if="third.id != '2'">🖊️</span>
+                  <span @click="signedThird(third)" :class="ui.span">🖊️</span>
+                  <span @click="showModalThird(third)" :class="ui.span" v-if="third.id != '2'">📝</span>
                   <span @click="deleteThird(third.id)" :class="ui.span" v-if="third.id != '2'">🗑️</span>
                 </div>
               </td>
@@ -121,11 +121,13 @@
 
   </div>
   <ModalEditThird :third="thirdSelected" :typeT="'P'" v-model="isThird" @update:modelValue="modalClosedHandler" />
+  <ModalSign  @close="handleModalClose" v-model="isSing"  :third="third" :typeThird="'signed'" />
+    
 </template>
 
 
 <script setup lang="ts">
-import { getUniqueDomId } from '@fullcalendar/core/internal';
+
 
 
 
@@ -153,6 +155,8 @@ const isThird = ref(false)
 const isAmbulance = ref(false)
 const thirdSelected = ref({})
 const user_full = ref({})
+const isSing = ref(false)
+const third = ref({} as any)
 
 const close = defineEmits(['close'])
 
@@ -161,19 +165,12 @@ const {
   pagination,
   search,
   pending,
+  refresh
 } = usePaginatedFetch<any>("/api/thirds/");
 
-const fetchThirds = async () => {
-  const {
-    data: thirds,
-    pagination,
-    search,
-    pending,
-  } = usePaginatedFetch<any>("/api/thirds/");
 
 
 
-}
 
 const fetchChoices = async () => {
   const response = await $fetch<any>('api/api/choices/')
@@ -197,13 +194,29 @@ const deleteThird = async (id: number) => {
     const response = await $fetch(`api/thirds/${id}/`, {
       method: 'DELETE'
     })
-    fetchThirds()
+    refresh()
   }
 }
 
 const saveItem = async (index: number, field: string, value: string) => {
   const third = thirds.value[index];
+  console.log("value", value)
   third[field] = value;
+  if (field === 'user' && value) {
+    const response: { results: any[] } = await $fetch(`api/thirds/`, {
+      method: 'GET',
+      query: {
+        user: value
+      }
+    });
+    console.log("hjhjhjh",response)
+    if (response.results.length > 0 && response.results[0].id !== third.id) {
+      
+      toast.add({ title: "El usuario ya esta asignado" });
+      refresh();
+      return
+    }
+  }
   const response = await $fetch(`api/thirds/${third.id}`, {
     method: 'PATCH',
     body: JSON.stringify({
@@ -211,7 +224,7 @@ const saveItem = async (index: number, field: string, value: string) => {
     }),
   });
 
-  fetchThirds();
+  refresh();
 };
 
 const createThird = async () => {
@@ -229,7 +242,7 @@ const createThird = async () => {
     newThirdSex.value = ''
     newThirdBlood.value = ''
     newThirdUser.value = ''
-    fetchThirds()
+    refresh();
     return
   }
 
@@ -249,7 +262,7 @@ const createThird = async () => {
 
     },
   })
-  fetchThirds()
+  refresh();
   newThirdDocument.value = ''
   newThirdNit.value = ''
   newThirdName.value = ''
@@ -265,7 +278,7 @@ onMounted(() => {
   window.onload = function () {
     window.scrollTo(0, 0);
   };
-  fetchThirds()
+  refresh();
   fetchChoices()
 })
 
@@ -290,6 +303,7 @@ watch(() => close, () => {
 const modalClosedHandler = (value: any) => {
   if (!value) { // Si el valor es false, significa que la modal se ha cerrado
     // alert('close')
+    refresh();
   }
 }
 
@@ -519,6 +533,18 @@ const uploadListFile = async (event: any) => {
   };
   reader.readAsText(file);
 };
+
+const handleModalClose = (value: any) => {
+  if (!value) {
+    isSing.value = false
+    refresh();
+  }
+}
+
+const signedThird = (value: any) => {
+  third.value = value.id
+  isSing.value = true
+}
 
 
 </script>

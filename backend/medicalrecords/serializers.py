@@ -243,5 +243,10 @@ class ValueSerializer(serializers.ModelSerializer):
         model = Values
         fields = '__all__'
         
-
+class MedicamentsRecordsSerializer(serializers.ModelSerializer):
+    service_full =ServiceSerializer(source = 'service', read_only=True)
+    
+    class Meta:
+        model = MedicamentsRecords
+        fields = '__all__'
    

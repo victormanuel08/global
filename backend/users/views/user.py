@@ -6,7 +6,8 @@ from rest_framework import viewsets, decorators, response
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    queryset = User.objects.filter(is_active=True).order_by('username')
+    #queryset = User.objects.filter(is_active=True).order_by('username')
+    queryset = User.objects.all().order_by('username')
     search_fields = ['username', 'email','first_name','last_name']
     filterset_fields = ['is_active', 'is_staff', 'is_superuser','username']
     

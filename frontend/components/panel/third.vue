@@ -1,6 +1,6 @@
 <template>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-6 mt-4" >
-        <div class="mr-2">
+        <div class="mr-2" v-if="record.third_medic_full?.speciality_full?.code==='AMB'">
             <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
             <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
                 @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
@@ -8,20 +8,20 @@
                 :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
             </SelectChoice>
         </div>
-        <div class="mr-2">
+        <div class="mr-2" v-if="record.third_medic_full?.speciality_full?.code==='AMB'">
                 <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
                 <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
                     @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
             </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Seleccion Paciente: <span
-                    @click="showModalThirdAmbulance('')">➕</span><span @click="showModalThirdAmbulance(record.third_patient_full)"
+                    @click="showModalThirdAmbulance('')"v-if="record.third_medic_full?.speciality_full?.code==='AMB'">➕</span><span @click="showModalThirdAmbulance(record.third_patient_full)"
                     v-if="record.third_patient_full?.nit !== '222222222222'">🖊️</span></label>
 
 
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
-                @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)" />
-
+                @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)" v-if="record.third_medic_full?.speciality_full?.code==='AMB'"/>
+            <label>{{ record.third_patient_full?.name }} {{ record.third_patient_full?.last_name}}</label>
         </div>
         <div >
                 <label class="block text-sm font-medium text-gray-700">Identificacion Temporal</label>

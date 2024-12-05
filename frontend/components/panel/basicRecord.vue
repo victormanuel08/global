@@ -1,87 +1,124 @@
 <template>
-    <div>
-        <h1>Datos Basicos</h1>
-        <div class="grid grid-cols-1  md:grid-cols-4 m-4">
+    <div class="p-4">
+        <h1 class="text-lg font-bold text-gray-700 mb-6 text-center md:text-left">Datos Básicos</h1>
 
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Frecuencia Cardiaca:</label>
-                <UInput v-model="record.ef_fc" @change="saveItem(record.id, 'ef_fc', record.ef_fc)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Frecuencia Respiratoria:</label>
-                <UInput v-model="record.ef_fr" @change="saveItem(record.id, 'ef_fr', record.ef_fr)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Presion Arterial:</label>
-                <UInput v-model="record.ef_pa" @change="saveItem(record.id, 'ef_pa', record.ef_pa)" />
-            </div>
-            <div class="mr-2">
-                <label class="block text-sm font-medium text-gray-700">Temperatura Corporal:</label>
-                <UInput v-model="record.ef_temp" @change="saveItem(record.id, 'ef_temp', record.ef_temp)" />
+        <!-- Grid principal -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+
+            <!-- Frecuencia Cardiaca -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Frecuencia Cardiaca:</label>
+                <UInput 
+                    v-model="record.ef_fc" 
+                    @change="saveItem(record.id, 'ef_fc', record.ef_fc)" 
+                    class="w-full"
+                />
             </div>
 
+            <!-- Frecuencia Respiratoria -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Frecuencia Respiratoria:</label>
+                <UInput 
+                    v-model="record.ef_fr" 
+                    @change="saveItem(record.id, 'ef_fr', record.ef_fr)" 
+                    class="w-full"
+                />
+            </div>
 
-           
-        </div>
-  
+            <!-- Presión Arterial -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Presión Arterial:</label>
+                <UInput 
+                    v-model="record.ef_pa" 
+                    @change="saveItem(record.id, 'ef_pa', record.ef_pa)" 
+                    class="w-full"
+                />
+            </div>
 
-        <div class="grid grid-cols-1  md:grid-cols-1 m-4">
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Motivo Servicio:</label>
-                <UTextarea v-model="record.reason_consultation" variant="outline" placeholder="Motivo de la Consulta"
-                    @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)" />
-            </div>
-        </div>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-4 m-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Diagnostico Original: </label>
-                <SelectDiagnoses v-model="record.diagnosis_full"
-                    @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Diagnostico Primario: </label>
-                <SelectDiagnoses v-model="record.diagnosis_1_full"
-                    @change="saveItem(record.id, 'diagnosis_1', record.diagnosis_1_full?.id)" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Diagnostico Secundario: </label>
-                <SelectDiagnoses v-model="record.diagnosis_2_full"
-                    @change="saveItem(record.id, 'diagnosis_2', record.diagnosis_2_full?.id)" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700">Diagnostico Terceario: </label>
-                <SelectDiagnoses v-model="record.diagnosis_3_full"
-                    @change="saveItem(record.id, 'diagnosis_3', record.diagnosis_3_full?.id)" />
+            <!-- Temperatura Corporal -->
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Temperatura Corporal:</label>
+                <UInput 
+                    v-model="record.ef_temp" 
+                    @change="saveItem(record.id, 'ef_temp', record.ef_temp)" 
+                    class="w-full"
+                />
             </div>
         </div>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-4 border-solid mt-6">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div>
-                <button @click="signedRecord()">
-                    🖋️ Click para firmar y aceptar.
-                </button>
-                <img :src="record.signed" alt="Imagen Base64" width="60%" height="auto" v-if="record.signed" />
-                <strong>
-                    <hr style="border: 1px solid black; font-weight: bold;">
-                    <p>
-                        Dr(a). {{ record.third_medic_full?.name }} {{ record.third_medic_full?.second_name }} {{
-                            record.third_medic_full?.last_name }} {{ record.third_medic_full?.second_last_name }}
-                    </p>
-                    <p>
-                        Esp. {{ record.third_medic_full?.speciality_full?.description }}
-                    </p>
+
+        <!-- Motivo Servicio -->
+        <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Motivo Servicio:</label>
+            <UTextarea 
+                v-model="record.reason_consultation" 
+                variant="outline" 
+                placeholder="Motivo de la Consulta"
+                @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)"
+                class="w-full"
+            />
+        </div>
+
+        <!-- Diagnósticos -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4 mt-6">
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Diagnóstico Original:</label>
+                <SelectDiagnoses 
+                    v-model="record.diagnosis_full"
+                    @change="saveItem(record.id, 'diagnosis', record.diagnosis_full?.id)"
+                    class="w-full"
+                />
+            </div>
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Diagnóstico Primario:</label>
+                <SelectDiagnoses 
+                    v-model="record.diagnosis_1_full"
+                    @change="saveItem(record.id, 'diagnosis_1', record.diagnosis_1_full?.id)"
+                    class="w-full"
+                />
+            </div>
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Diagnóstico Secundario:</label>
+                <SelectDiagnoses 
+                    v-model="record.diagnosis_2_full"
+                    @change="saveItem(record.id, 'diagnosis_2', record.diagnosis_2_full?.id)"
+                    class="w-full"
+                />
+            </div>
+            <div class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Diagnóstico Terciario:</label>
+                <SelectDiagnoses 
+                    v-model="record.diagnosis_3_full"
+                    @change="saveItem(record.id, 'diagnosis_3', record.diagnosis_3_full?.id)"
+                    class="w-full"
+                />
+            </div>
+        </div>
+
+        <!-- Firma -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4 mt-6 items-center">
+            <div class="col-span-full md:col-span-1 md:col-start-4 text-center md:text-right">
+      
+                <img 
+                    :src="record.third_medic_full?.signed" 
+                    alt="Imagen Base64" 
+                    width="60%" 
+                    height="auto" 
+                    v-if="record.signed" 
+                    class="mt-4 mx-auto md:mx-0"
+                />
+                <strong class="block mt-4 text-sm text-gray-700">
+                    <p>Dr(a). {{ record.third_medic_full?.name }} {{ record.third_medic_full?.second_name }} {{ record.third_medic_full?.last_name }} {{ record.third_medic_full?.second_last_name }}</p>
+                    <p>Esp. {{ record.third_medic_full?.speciality_full?.description }}</p>
                 </strong>
             </div>
-
         </div>
-
     </div>
+
+    <!-- Modales -->
     <ModalSign :record="record" @close="handleModalClose" v-model="isSing" :detail="detail" :typeThird="'signed'" />
     <ModalEditThird :third="thirdSelected" :typeT="'E'" @close="handleModalClose" v-model="isThird" />
 </template>
+
 
 <script lang="ts" setup>
 

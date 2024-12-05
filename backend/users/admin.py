@@ -26,7 +26,6 @@ class GroupDetailsAdmin(admin.ModelAdmin):
     model = GroupDetails
     can_delete = False
     list_display = ['name', 'description', 'sets']
-    
+
     def sets(self, obj):
-        return [str(s) for s in obj.permissions_set.all()]
-    
+        return [str(s) for s in obj.permissions_set.all()] if hasattr(obj, 'permissions_set') else []

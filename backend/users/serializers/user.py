@@ -18,13 +18,9 @@ class UserSerializer(serializers.ModelSerializer):
     union_permissions_full = serializers.SerializerMethodField()
 
     def get_union_permissions_all(self, obj):
-        groups_full = self.get_groups_full(obj)
-        permissions = set()
-        for group in groups_full:
-            group_permissions = group['permissions']
-            for permission in group_permissions:
-                permissions.add(permission)
-        return PermissionSerializer(Permission.objects.filter(id__in=permissions), many=True).data
+        permissions_ids = Permission.objects.filter(group__user=obj).values_list("id", flat=True).distinct()
+        return PermissionSerializer(Permission.objects.filter(id__in=permissions_ids), many=True).data
+
 
     def get_union_permissions(self, obj):
         groups_full = self.get_groups_full(obj)
@@ -50,11 +46,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
     def get_third(self, obj):
-        thirds = Thirds.objects.filter(user=obj)
-        if thirds.exists():
-            return ThirdSerializer(thirds.first()).data
-        else:
+        try:
+            third = Thirds.objects.filter(user=obj).first()
+            return ThirdSerializer(third).data if third else None
+        except Thirds.DoesNotExist:
             return None
+
 
     def sort_items(self, items):
         
@@ -62,10 +59,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_menu_items(self, obj):
         groups = obj.groups.all()
-        gd = [group.groupdetails.id for group in groups]
+        gd = []
+        for group in groups:
+            if hasattr(group, 'groupdetails'):
+                gd.append(group.groupdetails.id)
+
         ps = PermissionsSet.objects.filter(groups__in=gd).order_by("id").distinct()
-        
-        menu_items = {}  
+
+        menu_items = {}
         missing = {}
 
         for p in ps:
@@ -75,37 +76,28 @@ class UserSerializer(serializers.ModelSerializer):
                 "order_index": p.order_index,
                 "label": p.label,
                 "parent_id": p.parent_id,
-                "childs": [] , 
-                
+                "childs": [],
             }
-            menu_items[p.id] = menu_item  
-           
+            menu_items[p.id] = menu_item
 
             if p.parent_id:
-               
                 parent_item = menu_items.get(p.parent_id)
                 if parent_item:
                     parent_item["childs"].append(menu_item)
                 else:
-                  
                     missing[p.parent_id] = menu_item
-        
-     
+
         for parent_id, child in missing.items():
             parent_item = menu_items.get(parent_id)
             if parent_item:
                 parent_item["childs"].append(child)
 
-     
         root_items = [item for item in menu_items.values() if not item["parent_id"]]
-        
         for item in root_items:
             item["childs"] = self.sort_items(item["childs"])
-            
+
         menu_items = self.sort_items(root_items)
-
         return menu_items
-
 
     class Meta:
         model = User

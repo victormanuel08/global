@@ -1,132 +1,185 @@
 <template>
-    <UCard class="m-6">
-        <div class="tabs-container">
-            <div v-for="(item, index) in items" :key="index" :class="['tab-item', { active: isActive(item) }]"
-                @click="onChange(index)">
-                <Icon :name="item.icon" style="font-size: 1.5em;" class="w-4 h-4 flex-shrink-0" />
-                <span :class="{ 'active-tab': isActive(item) }">{{ item.label }}</span>
-            </div>
+  <UCard class="m-6">
+    <!-- Menú adaptable -->
+    <div class="mb-4">
+      <!-- Dropdown para móviles -->
+      <div class="block md:hidden">
+        <select
+          v-model="selectedPanel"
+          class="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 appearance-none"
+          @change="onChangeDropdown"
+        >
+          <option v-for="(item, index) in items" :key="index" :value="item.panel">
+            {{ item.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Pestañas para pantallas grandes -->
+      <div class="hidden md:flex tabs-container">
+        <div
+          v-for="(item, index) in items"
+          :key="index"
+          :class="['tab-item', { active: isActive(item) }]"
+          @click="onChange(index)"
+        >
+          <Icon :name="item.icon" class="tab-icon" />
+          <span :class="{ 'active-tab': isActive(item) }">{{ item.label }}</span>
         </div>
-        <div class="p-4">
-            <component :is="creationPanelSelected.component" :calendar-event="props.calendarEvent" />
-        </div>
-    </UCard>
+      </div>
+    </div>
+
+    <!-- Panel de contenido -->
+    <div class="p-4">
+      <component :is="creationPanelSelected.component" :calendar-event="props.calendarEvent" />
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { PanelReports, PanelBasicRecord, PanelThirdscheduled, PanelPregnancy, PanelProcedures, PanelRecords, PanelEvolution, PanelGeneral, PanelSystems } from "#components";
-const props = defineProps({
-    calendarEvent: Object,
-})
-onMounted(() => { 
-    console.log('onMountedce', props.calendarEvent)
-    if (props.calendarEvent?.third_medic_full.speciality_full.code === "012") {       
-        items.push({
-            label: 'Evolucion',
-            icon: 'i-heroicons-information-circle',
-            panel: 'Evolution',
-        });
-    }     
-    creationPanelSelected.value = creationPanels['Third']
-});
-const isActive = (item: any) => { 
-  return item.panel === creationPanelSelected.value;
-};
-const creationPanels = {
-    'Basic': markRaw({
-        component: PanelBasicRecord,
-        title: 'Basic',
-    }),
-    'Third': { component: PanelThirdscheduled, title: 'Datos Paciente' },
-    'Records': { component: PanelRecords, title: 'Records' },
-    'Systems': markRaw({
-        component: PanelSystems,
-        title: 'Sistemas',
-    }),
-    'General': { component: PanelGeneral, title: 'General' },
-    'Pregnancy': { component: PanelPregnancy, title: 'Maternidad' },
-    'Evolution': { component: PanelEvolution, title: 'Evolucion' },   
-    'Procedures': markRaw({
-        component: PanelProcedures,
-        title: 'Procedures',
-    }),     
-    'Reports': { component: PanelReports, title: 'Reports' },
-}
-const creationPanelSelected = ref(creationPanels['Third'])
-const items = [
-{
-    label: 'Datos Paciente',
-    icon: 'i-heroicons-information-circle',
-    panel: 'Third',
-},
-{
-    label: 'Historia Medica',
-    icon: 'i-heroicons-information-circle',
-    panel: 'Records',
-},
-{
-    label: 'Datos Consulta',
-    icon: 'i-heroicons-information-circle',
-    panel: 'Basic',
-},
-{
-    label: 'Revision Sistemas',
-    icon: 'i-heroicons-information-circle',
-    panel: 'Systems',
-}, {
-    label: 'Examen General',
-    icon: 'i-heroicons-information-circle',
-    panel: 'General',
-},
-{
-    label: 'Procedimientos',
-    icon: 'uil:surgical-mask',
-    panel: 'Procedures',
-}, 
-{
-    label: 'Reportes',
-    icon: 'uil:document',
-    panel: 'Reports',
-},
-]
+import { ref, onMounted } from "vue";
+import {
+  PanelBasicRecord,
+  PanelThird,
+  PanelPregnancy,
+  PanelProcedures,
+  PanelGeneral,
+  PanelRecords,
+  PanelSystems,
+  PanelMedicaments,
+} from "#components";
 
-function onChange(index: any) {   
-    const item = items[index]
-    creationPanelSelected.value = creationPanels[item.panel]
-    console.log('onChange', creationPanelSelected.value.title)
+const props = defineProps({
+  calendarEvent: Object,
+});
+
+onMounted(() => {
+  creationPanelSelected.value = creationPanels["Third"];
+  selectedPanel.value = "Third"; // Inicializar con el primer panel
+});
+
+// Configuración de paneles y su contenido
+const creationPanels = {
+  Third: { component: PanelThird, title: "Datos Paciente" },
+  Records: { component: PanelRecords, title: "Historia Médica" },
+  BasicRecord: { component: PanelBasicRecord, title: "Datos Consulta" },
+  Pregnancy: { component: PanelPregnancy, title: "Maternidad" },
+  Systems: { component: PanelSystems, title: "Sistemas de Revisión" },
+  General: { component: PanelGeneral, title: "Exámenes Generales" },
+  Procedures: { component: PanelProcedures, title: "Procedimientos" },
+  Medicaments: { component: PanelMedicaments, title: "Medicamentos" },
+};
+
+const items = [
+  { label: "Datos Paciente", icon: "uil:user", panel: "Third" },
+  { label: "Historia Médica", icon: "uil:file-medical", panel: "Records" },
+  { label: "Datos Consulta", icon: "uil:clipboard", panel: "BasicRecord" },
+  { label: "Sistemas de Revisión", icon: "uil:medkit", panel: "Systems" },
+  { label: "Exámenes Generales", icon: "uil:briefcase", panel: "General" },
+  { label: "Procedimientos", icon: "uil:document", panel: "Procedures" },
+  { label: "Medicamentos", icon: "uil:report", panel: "Medicaments" },
+];
+
+const creationPanelSelected = ref(creationPanels["Third"]);
+const selectedPanel = ref("Third");
+
+function onChange(index: number) {
+  const item = items[index];
+  creationPanelSelected.value = creationPanels[item.panel];
+  selectedPanel.value = item.panel;
+}
+
+function onChangeDropdown() {
+  const panel = items.find((item) => item.panel === selectedPanel.value);
+  if (panel) {
+    creationPanelSelected.value = creationPanels[panel.panel];
+  }
+}
+
+function isActive(item: any) {
+  return item.panel === creationPanelSelected.value;
 }
 </script>
 
 <style scoped>
+/* Contenedor de pestañas */
 .tabs-container {
-    display: flex;
-    justify-content: center;
-    border-bottom: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 2px solid #e0e0e0;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
+/* Estilo de cada pestaña */
 .tab-item {
-    padding: 16px 24px;
-    cursor: pointer;
-    font-size: 16px;
-    color: #757575;
-    transition: color 0.3s, background-color 0.3s, box-shadow 0.3s;
-    text-align: center;
-    border-radius: 20px;
-    margin: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #757575;
+  text-align: center;
+  border-radius: 12px;
+  margin: 0 8px;
+  transition: all 0.3s ease-in-out;
+  gap: 8px;
 }
 
 .tab-item.active {
-    color: #6200ea;
-    background-color: #e0e0e0;
-    box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2);
-    /* Sombreado azul claro */
+  color: white;
+  background-color: #6200ea;
+  box-shadow: 0 4px 8px rgba(0, 0, 255, 0.2);
 }
 
 .tab-item:hover {
-    color: #6200ea;
+  color: #6200ea;
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.tab-icon {
+  font-size: 1.5em;
 }
 
 .active-tab {
-    font-weight: bold;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Estilo para el dropdown */
+select {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+  appearance: none;
+}
+
+select:focus {
+  border-color: #6200ea;
+  outline: none;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+/* Responsividad */
+@media (max-width: 640px) {
+  .tabs-container {
+    display: none; /* Ocultar las pestañas en móviles */
+  }
+}
+
+@media (min-width: 641px) {
+  select {
+    display: none; /* Ocultar el dropdown en pantallas grandes */
+  }
 }
 </style>
+
