@@ -451,43 +451,50 @@ class RecordListView(ListView):
         return model.objects.filter(id=template_id)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        template_id = self.kwargs.get("template_id")
-        record = Records.objects.filter(id=template_id).first()
-    
-        if record:
-            try:
-                # Calcular el total de Glasgow
-                glasgow_ro = int(record.glasgow_ro or 0)
-                glasgow_rv = int(record.glasgow_rv or 0)
-                glasgow_rm = int(record.glasgow_rm or 0)
-                record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
-    
-                # Agregar imágenes si están presentes
-                context.update({
-                    "imgcc": record.imghd.url if record.imghd else None,
-                    "imgso": record.imgso.url if record.imgso else None,
-                    "imgtp": record.imgtp.url if record.imgtp else None,
-                    "imgic": record.imgic.url if record.imgic else None,
-                    "imglc": record.imglc.url if record.imglc else None,
-                })
-    
-                # Agregar los medicamentos al contexto
-                medicaments = MedicamentsRecords.objects.filter(record=record)
-                context['medicaments'] = medicaments
-    
-            except (TypeError, ValueError):
-                return HttpResponse("No está totalmente diligenciado", status=400)
-    
-        # Añadir el documento al contexto
-        context["document"] = record
-        return context
-    
+     context = super().get_context_data(**kwargs)
+     template_id = self.kwargs.get("template_id")
+     record = Records.objects.filter(id=template_id).first()
+ 
+     if record:
+         try:
+             # Verificar y registrar los valores de glasgow
+             glasgow_ro = int(record.glasgow_ro or 0)
+             glasgow_rv = int(record.glasgow_rv or 0)
+             glasgow_rm = int(record.glasgow_rm or 0)
+             record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
+             
+             logger.info(f"Glasgow values: RO={glasgow_ro}, RV={glasgow_rv}, RM={glasgow_rm}, Total={record.glassgow_total}")
 
+             # Agregar imágenes si están presentes
+             context.update({
+                 "imgcc": record.imghd.url if record.imghd else None,
+                 "imgso": record.imgso.url if record.imgso else None,
+                 "imgtp": record.imgtp.url if record.imgtp else None,
+                 "imgic": record.imgic.url if record.imgic else None,
+                 "imglc": record.imglc.url if record.imglc else None,
+             })
 
+             # Agregar los medicamentos al contexto
+             medicaments = MedicamentsRecords.objects.filter(record=record)
+             context['medicaments'] = medicaments
+
+         except (TypeError, ValueError) as e:
+             logger.error(f"Error al procesar el contexto: {e}")
+             return HttpResponse("No está totalmente diligenciado L", status=400)
+ 
+     # Añadir el documento al contexto
+     context["document"] = record
+     return context
+
+    
 class RecordPdf(RecordListView, View):
     def get(self, request, *args, **kwargs):
         try:
+            # imprimir los originales
+            
+            template_id = kwargs.get('template_id')
+            template_type = request.GET.get('template_type')  # Si no se proporciona, usar 'ambulancia' por defecto
+            
             self.object_list = self.get_queryset()
             context = self.get_context_data(object_list=self.object_list)
 
@@ -495,15 +502,30 @@ class RecordPdf(RecordListView, View):
             if isinstance(context, HttpResponse):
                 return context
 
-            # Generar y devolver el PDF
+            # Modificar la lógica para procesar según el tipo de template
+            if template_type == 'medicamentos':
+                # Se obtiene la lista de medicamentos
+                medicaments = MedicamentsRecords.objects.filter(record=template_id)
+                context['medicaments'] = medicaments
+                print(f"Generando PDF para {template_type} con {medicaments.count()} medicamentos1")
+
+            elif template_type == 'ambulancia':
+                # Se obtiene el registro de ambulancia
+                record = Records.objects.filter(id=template_id).first()
+                context['document'] = record
+                print(f"Generando PDF para {template_type} con ID {template_id}2")
+
+            # Generar el PDF
             pdf = render_to_pdf(self.template_name, context)
             response = HttpResponse(pdf, content_type="application/pdf")
-            response["Content-Disposition"] = 'attachment; filename="report.pdf"'
+            response["Content-Disposition"] = f'attachment; filename="report-{template_type}.pdf"'
             return response
 
         except Exception as e:
             logger.error(f"Error generando PDF: {e}")
             return HttpResponse("No está totalmente diligenciado", status=400)
+
+   
 
 
 class GeocodeView(APIView):

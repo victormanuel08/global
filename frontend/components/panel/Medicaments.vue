@@ -205,86 +205,89 @@ onMounted(() => {
     loadSpeciality();
     refresh();
 });
+
 const downloadReport = async () => {
-  try {
-    const response = await fetch("api/api/printpdf/medicamentos/" + props.calendarEvent?.id, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/pdf', // Asegúrate de aceptar el tipo de contenido correcto
-      },
-    });
+    try {
+        // Suponiendo que 'type' se pasa correctamente como parámetro
+        const response = await fetch(`api/api/printpdf/medicamentos/${props.calendarEvent?.id}/`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/pdf', // Asegúrate de aceptar el tipo de contenido correcto
+            },
+        });
 
-    if (!response.ok) {
-      // Leer el mensaje de error devuelto por el backend
-      const errorText = await response.text();
-      console.error('Error al descargar el archivo:', errorText);
+        if (!response.ok) {
+            // Leer el mensaje de error devuelto por el backend
+            const errorText = await response.text();
+            console.error('Error al descargar el archivo:', errorText);
 
-      // Mostrar el mensaje de error en el toast
-      toast.add({ title: `Error al descargar: ${errorText}` });
-      return;
+            // Mostrar el mensaje de error en el toast
+            toast.add({ title: `Error al descargar: ${errorText}` });
+            return;
+        }
+
+        const blob = await response.blob();
+        const filename = 'Formula ' + props.calendarEvent?.id + '.pdf';
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+
+        // Revocar la URL del objeto después de un tiempo
+        setTimeout(() => {
+            window.URL.revokeObjectURL(link.href);
+        }, 250);
+
+        toast.add({ title: 'Archivo descargado correctamente.' });
+    } catch (error) {
+        console.error('Error en la descarga:', error);
+        toast.add({ title: 'Ocurrió un error al intentar descargar el archivo.' });
     }
-
-    const blob = await response.blob();
-    const filename = 'Formula ' + props.calendarEvent?.id + '.pdf';
-
-    // Crear un enlace para descargar el archivo
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-
-    // Revocar la URL del objeto después de un tiempo
-    setTimeout(() => {
-      window.URL.revokeObjectURL(link.href);
-    }, 250);
-
-    toast.add({ title: 'Archivo descargado correctamente.' });
-  } catch (error) {
-    console.error('Error en la descarga:', error);
-    toast.add({ title: 'Ocurrió un error al intentar descargar el archivo.' });
-  }
 };
 
 
+
 const sendEmail = async () => {
-  try {
-    // Verifica que el registro tenga un ID válido
-    if (!props.calendarEvent || !props.calendarEvent?.id) {
-      toast.add({ title: 'No se encontró un registro válido para enviar el correo.' });
-      return;
+    try {
+        // Verifica que el registro tenga un ID válido
+        if (!props.calendarEvent || !props.calendarEvent?.id) {
+            toast.add({ title: 'No se encontró un registro válido para enviar el correo.' });
+            return;
+        }
+
+        // Crea el objeto FormData con los datos necesarios
+        const formData = new FormData();
+        formData.append('id', props.calendarEvent.id); // ID del registro
+        formData.append('type', 'medicamentos'); // Tipo de template, aquí es 'medicamentos'
+        formData.append('asunto', "Formula Medica"); // Asunto del correo
+        formData.append('mensaje', "messaje.value"); // Mensaje personalizado
+        formData.append('destinatario', 'rinconvargasvictormanuel@gmail.com'); // Destinatario predeterminado o dinámico
+
+        // Realiza la solicitud al endpoint del backend
+        const response = await fetch('/api/sendemail/', {
+            method: 'POST',
+            body: formData,
+        });
+        const text = await response.text();
+        // Maneja la respuesta del servidor
+        if (!response.ok) {
+            // Leer el mensaje de error devuelto por el backend
+
+            console.error(text);
+
+            // Mostrar el mensaje de error en el toast
+            toast.add({ title: ` ${text}` });
+            return;
+        } else {
+            toast.add({ title: ` ${text}` });
+        }
+
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+        //toast.add({ title: 'Ocurrió un error al enviar el correo. Revisa la consola para más detalles.' });
     }
-
-    // Crea el objeto FormData con los datos necesarios
-    const formData = new FormData();
-    formData.append('id', props.calendarEvent.id); // ID del registro
-    formData.append('type', 'medicamentos'); // Tipo de template, aquí es 'medicamentos'
-    formData.append('asunto', "Formula Medica"); // Asunto del correo
-    formData.append('mensaje', "messaje.value"); // Mensaje personalizado
-    formData.append('destinatario', 'rinconvargasvictormanuel@gmail.com'); // Destinatario predeterminado o dinámico
-
-    // Realiza la solicitud al endpoint del backend
-    const response = await fetch('/api/sendemail/', {
-      method: 'POST',
-      body: formData,
-    });
-    const text = await response.text();
-    // Maneja la respuesta del servidor
-    if (!response.ok) {
-      // Leer el mensaje de error devuelto por el backend
-      
-      console.error( text);
-
-      // Mostrar el mensaje de error en el toast
-      toast.add({ title: ` ${text}` });
-      return;
-    }else{
-        toast.add({ title: ` ${text}` });
-    }
-   
-  } catch (error) {
-    console.error('Error en la solicitud:', error);
-    //toast.add({ title: 'Ocurrió un error al enviar el correo. Revisa la consola para más detalles.' });
-  }
 };
 
 
