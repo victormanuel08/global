@@ -385,24 +385,30 @@ class SearchChoiceAPIView(APIView):
 class SearchBodyAPIView(APIView):
     def get_choice_by_id(self, choice_list, choice_id, sex):
         for choice in choice_list:
-            if sex == "M" and len(choice) >= 2 and choice[2] and choice_id in choice[2]:
-                return {"id": choice[0], "name": choice[1], "details": choice[2]}
-            elif sex == "F" and len(choice) >= 2 and choice[3] and choice_id in choice[3]:
-                return {"id": choice[0], "name": choice[1], "details": choice[3]}
+            # Verifica que la estructura sea la esperada antes de acceder a los índices
+            if len(choice) >= 4:
+                if sex == "M" and choice[2] and choice_id in choice[2].split(','):
+                    return {"id": choice[0], "name": choice[1], "details": choice[2]}
+                elif sex == "F" and choice[3] and choice_id in choice[3].split(','):
+                    return {"id": choice[0], "name": choice[1], "details": choice[3]}
         return None
 
     def get(self, request, choice_type, choice_id, sex):
+        # Verifica que choice_type sea válido
         choices_data = {
             "BODY_PART_CHOICES": BODY_PART_CHOICES,
             "BODY_PART_SIDE_CHOICES": BODY_PART_SIDE_CHOICES,
         }
 
-        selected_choice = self.get_choice_by_id(choices_data.get(choice_type, []), choice_id, sex)
+        if choice_type not in choices_data:
+            return Response({"error": "Tipo de elección no válido"}, status=status.HTTP_400_BAD_REQUEST)
+
+        selected_choice = self.get_choice_by_id(choices_data[choice_type], choice_id, sex)
 
         if selected_choice:
             return Response(selected_choice, status=status.HTTP_200_OK)
         else:
-            return Response({}, status=status.HTTP_200_OK)
+            return Response({"error": "Opción no encontrada"}, status=status.HTTP_404_NOT_FOUND)
 
 
 
@@ -424,7 +430,7 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(date=date)
 
         return queryset
-
+    
 class RecordListView(ListView):
     context_object_name = "records"
 
@@ -451,50 +457,53 @@ class RecordListView(ListView):
         return model.objects.filter(id=template_id)
 
     def get_context_data(self, **kwargs):
-     context = super().get_context_data(**kwargs)
-     template_id = self.kwargs.get("template_id")
-     record = Records.objects.filter(id=template_id).first()
- 
-     if record:
-         try:
-             # Verificar y registrar los valores de glasgow
-             glasgow_ro = int(record.glasgow_ro or 0)
-             glasgow_rv = int(record.glasgow_rv or 0)
-             glasgow_rm = int(record.glasgow_rm or 0)
-             record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
-             
-             logger.info(f"Glasgow values: RO={glasgow_ro}, RV={glasgow_rv}, RM={glasgow_rm}, Total={record.glassgow_total}")
+        context = super().get_context_data(**kwargs)
+        template_id = self.kwargs.get("template_id")
+        record = Records.objects.filter(id=template_id).first()
+        
+        if record:
+            try:
+                # Función para verificar si el campo de imagen tiene archivo adjunto
+                def get_image_url(field):
+                    if field and hasattr(field, 'name') and field.name:
+                        return field.url
+                    return 'records/HCBASIC.jpeg'  # Imagen por defecto
 
-             # Agregar imágenes si están presentes
-             context.update({
-                 "imgcc": record.imghd.url if record.imghd else None,
-                 "imgso": record.imgso.url if record.imgso else None,
-                 "imgtp": record.imgtp.url if record.imgtp else None,
-                 "imgic": record.imgic.url if record.imgic else None,
-                 "imglc": record.imglc.url if record.imglc else None,
-             })
+                # Actualización de imágenes
+                context.update({
+                    "imgcc": get_image_url(record.imghd),
+                    "imgso": get_image_url(record.imgso),
+                    "imgtp": get_image_url(record.imgtp),
+                    "imgic": get_image_url(record.imgic),
+                    "imglc": get_image_url(record.imglc),
+                    "imgls": get_image_url(record.imgls),  # Verificar imgls correctamente
+                })
 
-             # Agregar los medicamentos al contexto
-             medicaments = MedicamentsRecords.objects.filter(record=record)
-             context['medicaments'] = medicaments
+                # Verificar y registrar los valores de glasgow
+                glasgow_ro = int(record.glasgow_ro or 0)
+                glasgow_rv = int(record.glasgow_rv or 0)
+                glasgow_rm = int(record.glasgow_rm or 0)
+                record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
 
-         except (TypeError, ValueError) as e:
-             logger.error(f"Error al procesar el contexto: {e}")
-             return HttpResponse("No está totalmente diligenciado L", status=400)
- 
-     # Añadir el documento al contexto
-     context["document"] = record
-     return context
+                # Agregar los medicamentos al contexto
+                medicaments = MedicamentsRecords.objects.filter(record=record)
+                context['medicaments'] = medicaments
 
-    
+            except (TypeError, ValueError) as e:
+                return HttpResponse("No está totalmente diligenciado", status=400)
+        
+        context["document"] = record
+        return context
+
+
 class RecordPdf(RecordListView, View):
     def get(self, request, *args, **kwargs):
         try:
-            # imprimir los originales
-            
+            # Obtener el ID de la plantilla y el tipo de plantilla
             template_id = kwargs.get('template_id')
-            template_type = request.GET.get('template_type')  # Si no se proporciona, usar 'ambulancia' por defecto
-            
+            template_type = request.GET.get('template_type', 'ambulancia')  # Usar 'ambulancia' como valor predeterminado si no se proporciona
+
+            # Obtener el contexto con el queryset
             self.object_list = self.get_queryset()
             context = self.get_context_data(object_list=self.object_list)
 
@@ -502,30 +511,33 @@ class RecordPdf(RecordListView, View):
             if isinstance(context, HttpResponse):
                 return context
 
-            # Modificar la lógica para procesar según el tipo de template
+            # Lógica para manejar diferentes tipos de plantillas
             if template_type == 'medicamentos':
-                # Se obtiene la lista de medicamentos
+                # Obtener la lista de medicamentos asociados al registro
                 medicaments = MedicamentsRecords.objects.filter(record=template_id)
                 context['medicaments'] = medicaments
-                print(f"Generando PDF para {template_type} con {medicaments.count()} medicamentos1")
 
             elif template_type == 'ambulancia':
-                # Se obtiene el registro de ambulancia
+                # Obtener el registro de ambulancia
                 record = Records.objects.filter(id=template_id).first()
+                if not record:
+                    # Si no se encuentra el registro, generar un error
+                    return HttpResponse("Registro no encontrado", status=404)
                 context['document'] = record
-                print(f"Generando PDF para {template_type} con ID {template_id}2")
 
             # Generar el PDF
             pdf = render_to_pdf(self.template_name, context)
+            if not pdf:
+                return HttpResponse("Error al generar el PDF", status=500)
+
+            # Preparar la respuesta con el PDF generado
             response = HttpResponse(pdf, content_type="application/pdf")
             response["Content-Disposition"] = f'attachment; filename="report-{template_type}.pdf"'
             return response
 
         except Exception as e:
-            logger.error(f"Error generando PDF: {e}")
-            return HttpResponse("No está totalmente diligenciado", status=400)
-
-   
+            # Manejar cualquier otra excepción
+            return HttpResponse(f"Error al procesar la solicitud: {e}", status=500)
 
 
 class GeocodeView(APIView):

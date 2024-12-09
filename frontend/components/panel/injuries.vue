@@ -35,7 +35,7 @@
         <div style="overflow: auto;">
             <div class="grid-container2" style="width: 450px; height: 500px; position: relative;">
                 <img src="@/assets/img/body.png" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
-                <img src="@/assets/img/body2.png" alt="Imagen" v-else />
+                <img src="@/assets/img/body.png" alt="Imagen" v-else />
                 <div class="grid-container">
                     <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
@@ -73,7 +73,7 @@
             </div>
             <div class="m-2">
                 <button
-                    @click="createListInjuries(record.body_part_full, record.body_part_side_full, newInjurie, point, record.third_patient_full?.sex)">
+                    @click="createListInjuries(record.body_part_full, record.body_part_side_full, newInjurie, point, 'M')">
                     ✅ Lesion
                 </button>
             </div>
@@ -331,10 +331,12 @@ const deleteInjury = async (injuryToDelete: any) => {
 };
 
 const showRegion = async (n: number) => {
-    record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', record.value.third_patient_full?.sex);
-    record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', record.value.third_patient_full?.sex);
+    record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', 'M');
+    record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', 'M');
     point.value = n
     console.log('pointshowregion', point.value)
+    console.log('body_part_full', record.value.body_part_full)
+    console.log('body_part_side_full', record.value.body_part_side_full)
 
 }
 

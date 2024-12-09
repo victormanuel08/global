@@ -14,11 +14,11 @@
       <div style="text-align: center;">
         <h2>Las imagenes no seran mostradas en la previsualizacion</h2>
       </div>
-      <div v-if="pagerecord">
-        <iframe :src="pagerecord" width="100%" height="600px"></iframe>
+      <div v-if="pagerecord && !iframeError">
+        <iframe :src="pagerecord" width="100%" height="600px" />
       </div>
       <div v-else>
-        <p>El documento no está disponible. Por favor, inténtalo de nuevo más tarde, asegurate de guardar las Lesiones Adecuadamente.</p>
+        <p>El documento no está disponible. Por favor, inténtalo de nuevo más tarde, asegúrate de guardar las Lesiones Adecuadamente.</p>
       </div>
     </div>
   </div>
@@ -30,25 +30,42 @@ const props = defineProps({
 });
 const record = ref({} as any);
 const pagerecord = ref('');
-const to = ref('');
-const affair = ref('');
-const messaje = ref('');
+const iframeError = ref(false); // Nueva propiedad para manejar el error del iframe
 
+// Cuando se monta el componente, obtenemos el registro
 onMounted(() => {
   fetchRecord(props.calendarEvent?.id);
 });
 
+// Función para obtener el registro y la URL del PDF
 const fetchRecord = async (q: any) => {
   try {
     const response = await $fetch<any>("api/records/" + q);
+    
+    if (!response || !response.id) {
+      throw new Error('El registro no tiene un ID válido o no está disponible');
+    }
+    
     record.value = response;
+
+    // Verifica si el PDF está disponible (en caso de error 500)
+    const pdfResponse = await fetch('api/api/pdf/ambulancia/' + record.value.id);
+    if (!pdfResponse.ok) {
+      throw new Error(`Error al cargar el PDF: ${pdfResponse.statusText}`);
+    }
+
+    // Si la respuesta del PDF es correcta, actualiza la URL del iframe
     pagerecord.value = 'api/api/pdf/ambulancia/' + record.value.id;
+    iframeError.value = false; // Si todo está bien, no hay error en el iframe
+
   } catch (error) {
-    console.error('Error al obtener el registro:', error);
+    console.error('Error al obtener el registro o el PDF:', error);
     pagerecord.value = ''; // Asegúrate de que pagerecord esté vacío en caso de error
+    iframeError.value = true; // Marca que hubo un error al obtener el archivo PDF
   }
 };
 
+// Función para descargar el reporte
 const downloadReport = async () => {
   try {
     const response = await fetch("api/api/printpdf/ambulancia/" + record.value.id, {
@@ -60,6 +77,7 @@ const downloadReport = async () => {
 
     if (!response.ok) {
       console.error('Error al descargar el archivo:', response.statusText);
+      alert('Error al generar el PDF: ' + response.statusText);
       return;
     }
 
@@ -78,10 +96,11 @@ const downloadReport = async () => {
     }, 250);
   } catch (error) {
     console.error('Error en la descarga:', error);
+    alert('Hubo un error al intentar descargar el reporte. Revisa la consola para más detalles.');
   }
 };
 
-
+// Función para enviar el correo
 const sendEmail = async () => {
   try {
     // Verifica que el registro tenga un ID válido
@@ -118,7 +137,6 @@ const sendEmail = async () => {
     alert('Ocurrió un error al enviar el correo. Revisa la consola para más detalles.');
   }
 };
-
 </script>
 
 <style></style>

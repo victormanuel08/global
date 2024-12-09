@@ -1,6 +1,6 @@
 <template>
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-6 mt-4" >
-        <div class="mr-2" v-if="record.third_medic_full?.speciality_full?.code==='AMB'">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-6 mt-4">
+        <div class="mr-2" v-if="record.third_medic_full?.speciality_full?.code == 'AMB'">
             <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
             <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
                 @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
@@ -8,26 +8,30 @@
                 :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
             </SelectChoice>
         </div>
-        <div class="mr-2" v-if="record.third_medic_full?.speciality_full?.code==='AMB'">
-                <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
-                <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
-                    @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
-            </div>
+        <div class="mr-2" v-if="record.third_medic_full?.speciality_full?.code == 'AMB'">
+            <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
+            <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
+                @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
+        </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700">Seleccion Paciente: <span
-                    @click="showModalThirdAmbulance('')"v-if="record.third_medic_full?.speciality_full?.code==='AMB'">➕</span><span @click="showModalThirdAmbulance(record.third_patient_full)"
+            <label class="block text-sm font-medium text-gray-700">Seleccion Paciente:{{
+                record.third_medic_full?.speciality_full?.code }} <span @click="showModalThirdAmbulance('')"
+                    v-if="record.third_medic_full?.speciality_full?.code == 'AMB'">➕</span><span
+                    @click="showModalThirdAmbulance(record.third_patient_full)"
                     v-if="record.third_patient_full?.nit !== '222222222222'">🖊️</span></label>
 
 
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
-                @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)" v-if="record.third_medic_full?.speciality_full?.code==='AMB'"/>
-            <label>{{ record.third_patient_full?.name }} {{ record.third_patient_full?.last_name}}</label>
+                @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)"
+                />
+            {{ record.third_medic_full?.speciality_full?.code }}
+            <label>{{ record.third_patient_full?.name }} {{ record.third_patient_full?.last_name }}</label>
         </div>
-        <div >
-                <label class="block text-sm font-medium text-gray-700">Identificacion Temporal</label>
-                <UInput v-model="record.number_report_id" placeholder="TI. Reporte Clinica"
-                    @change="saveItem(record.id, 'number_report_id', record.number_report_id)" />
-            </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Identificacion Temporal</label>
+            <UInput v-model="record.number_report_id" placeholder="TI. Reporte Clinica"
+                @change="saveItem(record.id, 'number_report_id', record.number_report_id)" />
+        </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Acompañante: <span
                     @click="showModalThirdAmbulanceBuddy('')">➕</span></label>
@@ -43,7 +47,7 @@
     </div>
 
     <h1>Informacion Paciente </h1>
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-4" v-if="record.third_patient_full?.type_document === 'AS'">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-4" v-if="record.third_patient_full?.type_document == 'AS'">
         <div>
             <label class="block text-sm font-medium text-gray-700">Identificacion:</label>
             {{ record.third_patient_full?.nit }}
@@ -87,19 +91,19 @@
             <label class="block text-sm font-medium text-gray-700">Sexo: </label>
             {{ record.third_patient_full?.sex_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
+        <div v-if="record.third_patient_full?.sex_full?.id == 'F'">
             <label class="block text-sm font-medium text-gray-700">Amamantamiento Complemntario: </label>
             {{ record.maternity_complementary_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
+        <div v-if="record.third_patient_full?.sex_full?.id == 'F'">
             <label class="block text-sm font-medium text-gray-700">Amamantamiento extendido: </label>
             {{ record.third_patient_full?.maternity_extend_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
+        <div v-if="record.third_patient_full?.sex_full?.id =='F'">
             <label class="block text-sm font-medium text-gray-700">Embarazo</label>
             {{ record.third_patient_full?.maternity_pregnancy_full?.name }}
         </div>
-        <div v-if="record.third_patient_full?.sex_full?.id === 'F'">
+        <div v-if="record.third_patient_full?.sex_full?.id == 'F'">
             <label class="block text-sm font-medium text-gray-700">Violencia :</label>
             {{ record.third_patient_full?.maternity_violance_full?.name }}
         </div>
@@ -130,7 +134,7 @@
             <div class="m-2 g-4">
                 <label class="block text-sm font-medium">Alergias: {{ record.third_patient_full?.allergies }}. {{
                     newRecordAllergies
-                }}</label>
+                    }}</label>
                 <UTextarea v-model="newRecordAllergies" variant="outline" />
             </div>
             <div class="m-2 g-4">
