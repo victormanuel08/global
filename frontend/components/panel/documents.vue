@@ -41,8 +41,8 @@
 
             <div class="m-2">
                 <label class="block text-sm font-medium text-gray-700">Conductor: <span
-                        @click="typeT = 'P', showModalThird('')">➕</span></label>
-                <SelectThird :third-type="'P'" v-model="record.third_driver_full"
+                        @click="typeT = 'M', showModalThird('')">➕</span></label>
+                <SelectThird :third-type="'M'" v-model="record.third_driver_full"
                     @change="saveItem(record.id, 'third_driver', record.third_driver_full.id)"
                     :placeholder="'Conductor'">
                 </SelectThird>
