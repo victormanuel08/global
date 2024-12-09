@@ -15,8 +15,9 @@ ETNIAS_CHOICES = (
 SEX_CHOICES = (("M", "Masculino"), ("F", "Femenino"), ("O", "Otros"))
 
 TYPE_CHOICES = (
-    ('P', 'Paciente / Otros'),
+    ('P', 'Paciente'),
     ('M', 'Medico'),
+    ('O', 'Conductor'),
     ('E', 'Entidad'),
     ('C', 'Clinica')
 )
