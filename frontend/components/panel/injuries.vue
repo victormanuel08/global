@@ -38,11 +38,10 @@
                 <img src="@/assets/img/body.png" alt="Imagen" v-else />
                 <div class="grid-container">
                     <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">
+                      
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
                             <div class="square" v-if="injurie.point === n">
-                                <div class="circle">
-                                    {{ index + 1 }}
-                                </div>
+                                <div class="circle">{{ index + 1 }}</div>
                             </div>
                         </div>
                     </div>
@@ -297,7 +296,7 @@ const createListInjuries = async (body_part: any, body_part_side: any, injurie: 
     }
 
     if (!point) {
-
+        console.log('no point')
         if (sex === 'F') {
             const valoresFemeninos = pointStart.female.split(',').map(Number);
             point = Math.min(...valoresFemeninos);
@@ -331,10 +330,13 @@ const deleteInjury = async (injuryToDelete: any) => {
 };
 
 const showRegion = async (n: number) => {
+    console.log('pointshowregion    1', n)
+    point.value = n
     record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', 'M');
     record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', 'M');
-    point.value = n
-    console.log('pointshowregion', point.value)
+
+    console.log('pointshowregion2', point.value)
+    console.log('injuries', listInjuries.value)
     console.log('body_part_full', record.value.body_part_full)
     console.log('body_part_side_full', record.value.body_part_side_full)
 
@@ -373,7 +375,9 @@ const saveServices = async () => {
 };
 
 </script>
+
 <style>
+
 .image-container {
     width: 200px;
     height: auto;
@@ -381,52 +385,49 @@ const saveServices = async () => {
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(16, 1fr);
+    grid-template-columns: repeat(12, 1fr); /* 12 columnas iguales */
+    grid-template-rows: repeat(16, 1fr); /* 16 filas iguales */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-
 }
 
-.grid-container2 {}
-
 .grid-item {
-    /* border: 1px solid #ccc;*/
-
+    position: relative; /* Necesario para usar elementos absolutos dentro */
+    /*border: 1px solid #ccc;  Para ver las celdas */
+    display: flex; /* Habilita la alineación del contenido */
+    justify-content: center; /* Centra horizontalmente el contenido */
+    align-items: center; /* Centra verticalmente el contenido */
 }
 
 .square {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    /* border: 1px solid #ccc;*/
+    width: 50%; /* Ajusta el tamaño del cuadrado */
+    height: 50%; /* Ajusta el tamaño del cuadrado */
+    position: relative; /* Posición relativa para contener elementos absolutos */
+    display: flex; /* Habilita alineación dentro del cuadrado */
+    justify-content: center; /* Centra horizontalmente el contenido */
+    align-items: center; /* Centra verticalmente el contenido */
+    border: 1px solid #ccc; /* Para depuración */
 }
 
 .circle {
     position: absolute;
-    top: 10%;
-    /* Centrar verticalmente */
-    left: 50%;
-    /* Centrar horizontalmente */
-    transform: translate(-50%, 25%);
-    /* Ajustar al centro */
-    width: 20px;
-    /* Tamaño del círculo */
+    top: 50%; /* Posiciona verticalmente en el centro */
+    left: 50%; /* Posiciona horizontalmente en el centro */
+    transform: translate(-100%, -50%); /* Ajusta el centro real */
+    width: 20px; /* Tamaño del círculo */
     height: 20px;
-    background-color: #d41616;
-    /* Color del círculo */
-    border-radius: 50%;
-    /* Hacerlo circular */
-    color: #f9f9f9;
-    /* Color del número */
-    font-weight: bold;
-    /* Grosor del número */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #d41616; /* Color del círculo */
+    border-radius: 50%; /* Hacerlo circular */
+    color: #f9f9f9; /* Color del texto */
+    font-weight: bold; /* Grosor del texto */
+    display: flex; /* Centra el texto dentro del círculo */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
 }
-</style>
 
+
+
+</style>
