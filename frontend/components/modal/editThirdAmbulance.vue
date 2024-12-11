@@ -403,13 +403,13 @@ const createNewThird = async () => {
         newThirdSex.value = '';
         newThirdBlood.value = '';
         newThirdSelectedStatus_full.value = '';
-        newThirdSelectedDate_birth = '';
+        newThirdSelectedDate_birth.value = '';
         newThirdSelectedOccupation_full.value = '';
-        newThirdSelectedAddress = '';
-        newThirdSelectedPhone = '';
+        newThirdSelectedAddress.value = '';
+        newThirdSelectedPhone.value = '';
         newthirdSelectedZone_full.value = '';
         newThirdSelectedCity_full.value = '';
-        newThirdSelectedEmail = '';
+        newThirdSelectedEmail.value = '';
         return;
     }
 
