@@ -1,4 +1,5 @@
 <template>
+  
   <div class="grid grid-cols-1  md:grid-cols-4 m-4" v-if="record.third_medic_full?.speciality_full.code === 'AMB'">
     <div class="mr-2" >
       <label class="block text-sm font-medium text-gray-700">Frecuencia Cardiaca:</label>
@@ -114,7 +115,7 @@ const retrieveFromApi = async (q: any) => {
   record.value.glasgow_ro_full = await getCHOICE(response.glasgow_ro, 'GLASGOW_RO_CHOICES')
   record.value.glasgow_rv_full = await getCHOICE(response.glasgow_rv, 'GLASGOW_RV_CHOICES')
   record.value.glasgow_rm_full = await getCHOICE(response.glasgow_rm, 'GLASGOW_RM_CHOICES')
-  record.value.condition_full = await getCHOICE(record.value.condition, 'TYPE_ACCIDENT_CHOICES')
+  //record.value.condition_full = await getCHOICE(record.value.condition, 'TYPE_ACCIDENT_CHOICES')
 
 }
 

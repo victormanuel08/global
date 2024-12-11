@@ -22,7 +22,8 @@ const create = async (value: any) => {
         console.log('recordObject', recordObject.value)
 }
 onMounted(() => {
-  const message = confirm('¿Estás seguro de crear un Rgeistro de Ambulancia?')
+  console.log('store', authUserStorage?.value)
+  const message = confirm('¿Estás seguro de crear un Registro de Ambulancia?')
   if (message) {
     create(2)
     isAmbulance.value = true

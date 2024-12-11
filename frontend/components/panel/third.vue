@@ -1,14 +1,14 @@
 <template>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-6 mt-4">
-        <div class="mr-2" >
+        <div class="mr-2" v-if="record.third_medic_full?.speciality_full.code === 'AMB'">
             <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
             <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
                 @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
-                :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
-                :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
+                :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
+                :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
             </SelectChoice>
         </div>
-        <div class="mr-2">
+        <div class="mr-2" v-if="record.third_medic_full?.speciality_full.code === 'AMB'">
             <label class="block text-sm font-medium text-gray-700">Causa Externa:</label>
             <SelectChoice :choiceType="'EXTERNAL_CAUSE_CHOICES'" v-model="record.external_cause_full"
                 @change="saveItem(record.id, 'external_cause', record.external_cause_full.id)" />
@@ -23,8 +23,8 @@
             <SelectThird :placeholder="'Tercero'" :third-type="'P'" v-model="record.third_patient_full"
                 @change="saveItem(record.id, 'third_patient', record.third_patient_full.id)"
                 />
-            {{ record.third_medic_full?.speciality_full?.code }}
-            <label>{{ record.third_patient_full?.name }} {{ record.third_patient_full?.last_name }}</label>
+        
+            
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Identificacion Temporal</label>
@@ -162,8 +162,20 @@
         </div>
 
     </div>
-    <ModalEditThirdAmbulance :third="thirdSelectedThird" :typeT="'P'" v-model="isThird" />
-    <ModalEditThirdAmbulanceBuddy :third="thirdSelectedThird" :typeT="'P'" v-model="isThirdBuddy" />
+    <ModalEditThirdAmbulance 
+      :third="thirdSelectedThird" 
+      :typeT="'P'" 
+      v-model="isThird" 
+      @thirdCreated="handleThirdCreated" 
+      @update:isThird="handleModalClose" 
+    />
+    <ModalEditThirdAmbulanceBuddy 
+        :third="thirdSelectedThird" 
+        :typeT="'P'" 
+        v-model="isThirdBuddy" 
+        @thirdCreated="handleThirdCreated" 
+        @update:isThird="handleModalClose" 
+     />
 
 </template>
 
@@ -176,6 +188,69 @@ const newRecordPathologies = ref('')
 const newRecordMedications = ref('')
 const newRecordLiquidsFoods = ref('')
 const isThirdBuddy = ref(false)
+const typeT = ref('')
+const typeTT = ref('')
+const toast = useToast()
+
+interface Choice {
+    id: string;
+    name: string;
+}
+
+interface ThirdPatient {
+    id: number;
+    nit: string;
+    name: string;
+    second_name?: string;
+    last_name: string;
+    second_last_name?: string;
+    type_document: string;
+    type_document_full?: Choice;
+    type_full?: Choice;
+    sex: string;
+    sex_full?: Choice;
+    blood_type: string;
+    blood_full?: Choice;
+    ethnicity: string;
+    etnia_full?: Choice;
+    zone: string;
+    zone_full?: Choice;
+    occupation: string;
+    occupation_full?: Choice;
+    maternity_breasfeeding?: string;
+    maternity_full?: Choice;
+    maternity_breasfeeding_complementary?: string;
+    maternity_complementary_full?: Choice;
+    maternity_breasfeeding_extend?: string;
+    maternity_extend_full?: Choice;
+    maternity_pregnancy?: string;
+    maternity_pregnancy_full?: Choice;
+    maternity_violence?: string;
+    maternity_violance_full?: Choice;
+    date_birth?: string;
+    city_birth_full?: { name: string };
+    phone?: string;
+    address?: string;
+    email?: string;
+    allergies?: string;
+    pathologies?: string;
+    medications?: string;
+    liquids_foods?: string;
+}
+
+interface Record {
+    id: number;
+    third_patient_full: ThirdPatient;
+    third_medic_full?: { speciality_full?: { code: string } };
+    priority_full?: Choice;
+    priority?: string;
+    external_cause_full?: Choice;
+    relationship_full?: Choice;
+    number_report_id?: string;
+    third_buddy_full?: ThirdPatient;
+}
+
+const createdThird = ref<ThirdPatient | null>(null);
 
 
 const props = defineProps({
@@ -188,26 +263,66 @@ const fetchRecord = async (q: any) => {
     if (!q) return
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
+    record.value.priority_full = await getCHOICE(response.priority, 'PRIORITY_CHOICES')
+    record.value.external_cause_full = await getCHOICE(response.external_cause, 'EXTERNAL_CAUSE_CHOICES')
+    record.value.relationship_full = await getCHOICE(response.relationship, 'RELATIONSHIP_CHOICES')
 }
 
-onMounted(() => {
-    fetchProps()
-    record.value = props.calendarEvent
+onMounted(async () => {
+    await fetchProps();
+    record.value = props.calendarEvent;
+    if (props.calendarEvent) {
+        await fetchRecord(props.calendarEvent.id);
+    }
+});
 
-    //fetchRecord(props.calendarEvent?.id)
-})
+watch(() => props.calendarEvent, async (newVal) => {
+    if (newVal) {
+        await fetchProps();  // Recarga los `choices` cuando `calendarEvent` cambia
+        record.value = newVal;
+    }
+});
 
-//await record.value;
+watch(record, (newRecord) => {
+    // Si el record cambia, actualiza los `choices`
+    fetchProps();
+});
+
 
 const showModalThirdAmbulance = (value: any) => {
     thirdSelectedThird.value = value
     isThird.value = true
+    typeT.value = 'P'
+    typeTT.value = 'Paciente'
 }
 
 const showModalThirdAmbulanceBuddy = (value: any) => {
     thirdSelectedThird.value = value
     isThirdBuddy.value = true
+    typeTT.value = 'Acompañante'
 }
+
+const handleModalClose = () => {
+    isThird.value = false;  // Cerrar la modal
+    isThirdBuddy.value = false;  // Cerrar la modal
+};
+
+
+const handleThirdCreated = (newThird: any) => {
+  createdThird.value = newThird; // Aquí puedes manejar el tercero creado (por ejemplo, mostrarlo en una lista)
+  console.log('Nuevo tercero creado:', createdThird.value);
+  if (typeTT.value =='Paciente') {
+    record.value.third_patient_full = newThird;
+    saveItem(record.value.id, 'third_patient', newThird.id);
+    toast.add({ title: `Paciente Actulizado` });
+  }else if (typeTT.value =='Acompañante') {
+    record.value.third_buddy_full = newThird;
+    saveItem(record.value.id, 'third_buddy', newThird.id);
+    toast.add({ title: `Acompañante  actulizado` });
+  }
+  fetchRecord(record.value.id);
+  
+};
 
 const fetchProps = async () => {
 
@@ -239,7 +354,7 @@ const saveItem = async (index: number, field: string, value: string) => {
         }),
     });
     if (field === 'third_patient') {
-        alert('Tercero Actualizado')
+        toast.add({ title: `Paciente Actulizado` });
         props.calendarEvent.third_patient_full = response.third_patient_full
         props.calendarEvent.third_patient = response.third_patient
     }

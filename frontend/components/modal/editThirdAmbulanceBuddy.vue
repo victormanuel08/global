@@ -245,6 +245,9 @@ const newThirdSex = ref({})
 const newThirdType = ref('')
 const isPolice = ref(false)
 
+const emit = defineEmits(['thirdCreated', 'update:isThird'])
+
+
 const showModalPolice = () => {
 
     isPolice.value = true
@@ -439,8 +442,9 @@ const createThird = async () => {
     newThirdLastName.value = ''
     newThirdSecondLastName.value = ''
 
-    alert('Tercero creado con exito')
-    // validateNit()
+       // Emitir el tercero creado y cerrar la modal
+    emit('thirdCreated', response);  // Emitir el tercero creado
+    emit('update:isThird', false);   // Cerrar la modal
 
 }
 

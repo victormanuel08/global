@@ -130,10 +130,10 @@ const newServices = ref([] as number[]);
 
 const selectedDiagnoses = ref<{ id: number }[]>([]);
 
-const newRecordAllergies = ref('')
-const newRecordPathologies = ref('')
-const newRecordMedications = ref('')
-const newRecordLiquidsFoods = ref('')
+const newRecordAllergies = ref('Niega alergias')
+const newRecordPathologies = ref('Niega patologías')
+const newRecordMedications = ref('Niega medicación')
+const newRecordLiquidsFoods = ref('Niega líquidos y alimentos')
 
 // const selectedDiagnoses = ref([]);
 

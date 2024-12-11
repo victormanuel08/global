@@ -89,33 +89,32 @@ export const getCHOICE = async (value: string, choices: string) => {
     return [];
   }
 
-  // Crear una clave de almacenamiento basada en los parámetros
   const storageKey = `choices_${choices}_${value}`;
-
-  // Intentar obtener los datos almacenados desde el almacenamiento local
   let storedData = localStorage.getItem(storageKey);
 
-  // Si los datos no están en el almacenamiento local, intentar obtenerlos desde la cookie
+  console.log("Datos almacenados en localStorage:", storedData);
+
   if (!storedData) {
     const cookie = useCookie(storageKey);
     storedData = cookie.value ?? null;
+    console.log("Datos obtenidos de la cookie:", storedData);
   }
 
-  // Si los datos están en el almacenamiento, devolverlos
   if (storedData) {
+    console.log("Datos encontrados, devolviendo:", storedData);
     return JSON.parse(storedData);
   }
 
-  // Si no están en el almacenamiento, hacer la consulta
   const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);
+  console.log("Datos obtenidos de la API:", response);
 
-  // Guardar los datos en el almacenamiento local y en la cookie
   localStorage.setItem(storageKey, JSON.stringify(response));
   const cookie = useCookie(storageKey);
   cookie.value = JSON.stringify(response);
 
   return response;
 };
+
 
 
 export const getBODYPART = async (value: number, choices: string, field: string) => {

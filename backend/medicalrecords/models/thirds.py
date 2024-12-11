@@ -138,6 +138,7 @@ class Thirds(models.Model):
     blood_type= models.CharField(max_length=3, choices=BLOOD_CHOICES, null=True, blank=True)
     status= models.CharField(max_length=2, choices=STATUS_CHOICES, null=True, blank=True)
     occupation = models.CharField(max_length=2, choices=OCCUPATION_CHOICES, null=True, blank=True)
+    profesion = models.CharField(max_length=100, null=True, blank=True)
     zone = models.CharField(max_length=2, choices=ZONE_CHOICES, null=True, blank=True)
     allergies = models.CharField(max_length=200, null=True, blank=True)
     pathologies = models.CharField(max_length=200, null=True, blank=True)

@@ -142,7 +142,7 @@
                         @change="saveItem(thirdSelected.id, 'date_birth', thirdSelected.date_birth)" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Ocupacion:</label>
+                    <label class="block text-sm font-medium text-gray-700">Ocupacion1:</label>
                     <SelectChoice :choiceType="'OCCUPATION_CHOICES'" v-model="thirdSelected.occupation_full"
                         @change="saveItem(thirdSelected.id, 'occupation', thirdSelected.occupation_full.id)" />
                 </div>
@@ -450,6 +450,7 @@ const createThird = async () => {
             type: newThirdType.value.id,
             blood_type: newThirdBlood.value.id,
             sex: newThirdSex.value.id
+          
         },
     })
 

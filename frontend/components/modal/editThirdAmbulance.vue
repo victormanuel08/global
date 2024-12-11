@@ -2,7 +2,7 @@
     <UModal>
         <div class="border rounded m-4 ">
             <div class=" m-4 ">
-                <span :onClick="clear">🧹</span>
+                <span :onClick="clear">🧹 Limpiar Campos</span>
                 <div v-if="thirdSelected?.id > 0">
                     <h3><strong>Nombre:</strong> {{ thirdSelected?.name }} {{ thirdSelected?.second_name }} {{
                         thirdSelected?.last_name }} {{ thirdSelected?.second_last_name }}</h3>
@@ -17,15 +17,10 @@
                     <h3>Crear Tercero {{ props.typeT }} {{ props.typeTA }} </h3>
                     <Label class="block text-sm font-medium text-gray-700">Identificacion:</label>
                     <div class="grid grid-cols-1 gap-2 md:grid-cols-2 mt-4">
-
                         <div>
-
-
                             <UInput v-model="newThirdNit" placeholder="Identificacion" />
-
                         </div>
                         <div>
-
                             <SelectChoice :choiceType="'TYPE_DOCUMENT_CHOICES'" v-model="newThirdDocument"
                                 @change="validateNit" />
                         </div>
@@ -82,6 +77,10 @@
                             <SelectChoice :choiceType="'OCCUPATION_CHOICES'"
                                 v-model="newThirdSelectedOccupation_full" />
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Profesion:</label>
+                            <UInput  v-model="newThirdSelectedProfesion" />
+                        </div>
                     </div>
 
                 </div>
@@ -126,7 +125,7 @@
 
                 <div v-if="!thirdSelected?.id">
                     <div class="flex items-center justify-center mt-4">
-                        <span @click="createThird">💾</span>
+                        <span @click="createNewThird">💾</span>
                     </div>
                 </div>
 
@@ -249,7 +248,7 @@
 
 import { useThirdObject } from '~/stores/thirds';
 
-const { thirdObject } = useThirdObject();
+
 
 const toast = useToast()
 const newthirdSelectedPolices = ref([])
@@ -265,13 +264,15 @@ const newThirdSex = ref({})
 const newThirdType = ref('')
 const isPolice = ref(false)
 const newThirdSelectedStatus_full = ref({})
-let newThirdSelectedDate_birth = ''
-let newThirdSelectedOccupation_full = ref({})
-let newThirdSelectedAddress = ''
-let newThirdSelectedPhone = ''
-let newthirdSelectedZone_full = ref({})
-let newThirdSelectedCity_full = ref({})
-let newThirdSelectedEmail = ''
+const newThirdSelectedDate_birth = ref('')
+const newThirdSelectedOccupation_full = ref({})
+const newThirdSelectedAddress =  ref('')
+const newThirdSelectedPhone =  ref('')
+const newthirdSelectedZone_full = ref({})
+const newThirdSelectedCity_full = ref({})
+const newThirdSelectedEmail =  ref('')
+const newThirdSelectedProfesion =  ref('')
+const emit = defineEmits();
 
 const showModalPolice = () => {
     isPolice.value = true
@@ -386,45 +387,56 @@ const validateNit = async () => {
     }
 }
 
-const createThird = async () => {
-    const message = confirm('¿Estás seguro de crear este Tercero?')
+
+
+const createNewThird = async () => {
+    const message = confirm('¿Estás seguro de crear este Tercero?');
 
     if (!message) {
-        newThirdDocument.value = ''
-        newThirdNit.value = ''
-        newThirdName.value = ''
-        newThirdSecondName.value = ''
-        newThirdLastName.value = ''
-        newThirdSecondLastName.value = ''
-        typeThird.value = ''
-        newThirdSex.value = ''
-        newThirdBlood.value = ''
-        newThirdSelectedStatus_full.value = ''
-        newThirdSelectedDate_birth = ''
-        newThirdSelectedOccupation_full.value = ''
-        newThirdSelectedAddress = ''
-        newThirdSelectedPhone = ''
-        newthirdSelectedZone_full.value = ''
-        newThirdSelectedCity_full.value = ''
-        newThirdSelectedEmail = ''
+        newThirdDocument.value = '';
+        newThirdNit.value = '';
+        newThirdName.value = '';
+        newThirdSecondName.value = '';
+        newThirdLastName.value = '';
+        newThirdSecondLastName.value = '';
+        typeThird.value = '';
+        newThirdSex.value = '';
+        newThirdBlood.value = '';
+        newThirdSelectedStatus_full.value = '';
+        newThirdSelectedDate_birth = '';
+        newThirdSelectedOccupation_full.value = '';
+        newThirdSelectedAddress = '';
+        newThirdSelectedPhone = '';
+        newthirdSelectedZone_full.value = '';
+        newThirdSelectedCity_full.value = '';
+        newThirdSelectedEmail = '';
+        return;
+    }
 
-        return
-    }
     if (typeThird.value === 'E' || typeThird.value === 'C') {
-        newThirdDocument.value.id = 'NI'
-        newThirdType.value = await getCHOICE(typeThird.value, 'TYPE_CHOICES')
+        newThirdDocument.value.id = 'NI';
+        newThirdType.value = await getCHOICE(typeThird.value, 'TYPE_CHOICES');
     }
-    validateNit()
+
+    validateNit();
+
     const consult = await $fetch('api/thirds/', {
         query: {
             nit: newThirdNit.value,
             type_document: newThirdDocument.value.id
         }
-    })
+    });
 
     if (consult.results.length > 0) {
-        alert('El tercero ya existe')
-        return
+        alert('El tercero ya existe');
+        return;
+    }
+    if (newThirdSelectedDate_birth.value === '' && newThirdDocument.value.id !== 'NI') {
+        alert('La fecha de nacimiento no puede estar vacia');
+        return;
+    }
+    if (newThirdSelectedDate_birth.value === '' && newThirdDocument.value.id === 'NI') {
+        newThirdSelectedDate_birth.value = '1900-01-01'
     }
 
     const response = await $fetch('api/thirds/', {
@@ -439,26 +451,34 @@ const createThird = async () => {
             type: newThirdType.value.id,
             blood_type: newThirdBlood.value.id,
             sex: newThirdSex.value.id,
-            status: newThirdSelectedStatus_full.id,
-            date_birth: newThirdSelectedDate_birth,
-            occupation: newThirdSelectedOccupation_full.id,
-            address: newThirdSelectedAddress,
-            phone: newThirdSelectedPhone,
-            zone: newthirdSelectedZone_full.id,
-            city: newThirdSelectedCity_full.id,
-            email: newThirdSelectedEmail
-        },
-    })
+            status: newThirdSelectedStatus_full.value.id,            
+            occupation: newThirdSelectedOccupation_full.value.id,
+            profesion: newThirdSelectedProfesion.value,
+            address: newThirdSelectedAddress.value,
+            phone: newThirdSelectedPhone.value,
+            zone: newthirdSelectedZone_full.value.id,
+            city: newThirdSelectedCity_full.value.id,
+            email: newThirdSelectedEmail.value,
+            date_birth: newThirdSelectedDate_birth.value
+        }
+    });
 
-    newThirdDocument.value = ''
-    newThirdNit.value = ''
-    newThirdName.value = ''
-    newThirdSecondName.value = ''
-    newThirdLastName.value = ''
-    newThirdSecondLastName.value = ''
+    // Limpiar los valores después de crear el tercero
+    newThirdDocument.value = '';
+    newThirdNit.value = '';
+    newThirdName.value = '';
+    newThirdSecondName.value = '';
+    newThirdLastName.value = '';
+    newThirdSecondLastName.value = '';
 
-    alert('Tercero creado con exito')
-}
+    toast.add({ title: `Tercero creado` });
+
+    // Emitir el tercero creado y cerrar la modal
+    emit('thirdCreated', response);  // Emitir el tercero creado
+    emit('update:isThird', false);   // Cerrar la modal
+};
+
+
 
 onMounted(async () => {
     console.log('third?¿', thirdSelected.value)

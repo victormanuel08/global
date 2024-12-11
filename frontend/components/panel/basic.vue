@@ -62,7 +62,7 @@
                     v-model="record.policy_full" 
                     :third="record.third_patient_full?.id" 
                     @change="handlePolicyChange" 
-                    :placeholder="'Aseguradora'" 
+                    :placeholder="'Aseguradora-Póliza-Fecha Inicio-Fecha Fin'" 
                     class="w-full"
                 />
             </div>

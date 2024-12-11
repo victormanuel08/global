@@ -14,6 +14,8 @@ from django.core.mail import EmailMessage
 from rest_framework.decorators import api_view, action
 from django.views.decorators.csrf import csrf_exempt
 
+from django_filters import rest_framework as filters
+
 import cv2
 import numpy as np 
 from django.shortcuts import get_object_or_404
@@ -195,12 +197,53 @@ class ProceduresViewSet(viewsets.ModelViewSet):
     queryset = Procedures.objects.all()
     serializer_class = ProcedureSerializer
     search_fields = ['code','description']
+    
+
+
+
+class ThirdFilter(filters.FilterSet):
+    type = filters.CharFilter(field_name='type', method='filter_type')
+    nit = filters.CharFilter(field_name='nit', method='filter_nit')  # Filtro para nit
+    user = filters.NumberFilter(field_name='user', method='filter_user')  # Filtro personalizado para user
+
+    class Meta:
+        model = Thirds
+        fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality']
+
+    def filter_type(self, queryset, name, value):
+        if value:
+            types = value.split(',')  # Separa los valores por coma
+            return queryset.filter(**{f'{name}__in': types})
+        return queryset
+
+    def filter_nit(self, queryset, name, value):
+        if value:
+            return queryset.filter(**{f'{name}__icontains': value})  # Filtra por nit parcial
+        return queryset
+
+    def filter_user(self, queryset, name, value):
+        if value is not None:
+            return queryset.filter(**{f'{name}': value})  # Filtro exacto por ID de usuario
+        return queryset
 
 class ThirdViewSet(viewsets.ModelViewSet):
     queryset = Thirds.objects.all()
     serializer_class = ThirdSerializer
+    filterset_class = ThirdFilter  
     search_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality__description']
-    filterset_fields = ['type', 'name', 'last_name', 'second_name', 'second_last_name', 'nit', 'type_document', 'speciality','user']
+    filterset_fields = {
+        'type': ['in', 'exact'],  # Usamos '__in' para permitir varios valores
+        'name': ['icontains'],
+        'last_name': ['icontains'],
+        'second_name': ['icontains'],
+        'second_last_name': ['icontains'],
+        'nit': ['icontains'],  # Cambio a 'icontains' para buscar parcialmente el nit
+        'type_document': ['exact'],
+        'speciality': ['exact'],
+        'user': ['exact'],  # Este es solo un filtro adicional que no será utilizado
+    }
+
+
 
     def perform_create(self, serializer):
         instance = serializer.save()

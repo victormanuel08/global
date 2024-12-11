@@ -371,8 +371,8 @@ class Records(models.Model):
         #limit_choices_to={"thirds__name": "Paciente"},
         null=True,
         blank=True,
-    )  
-    reason_consultation = models.CharField(max_length=100,null=True, blank=True)
+    ) 
+    reason_consultation = models.CharField(max_length=2000,null=True, blank=True)
     history = models.CharField(max_length=100,null=True, blank=True)    
     systems_review = models.CharField(max_length=100,null=True, blank=True)    
     general_exam = models.CharField(max_length=100,null=True, blank=True)         
@@ -476,7 +476,7 @@ class Records(models.Model):
     glasgow_rm = models.CharField(max_length=10,choices=GLASGOW_RM_CHOICES,null=True, blank=True)
     procedures = models.ManyToManyField(Procedures, blank=True)
     procedures_others=models.CharField(max_length=300,null=True, blank=True)
-    descript_procedures=models.CharField(max_length=300,null=True, blank=True)
+    descript_procedures=models.CharField(max_length=3000,null=True, blank=True)
     half = models.CharField(max_length=2,choices=HALF_CHOICES,null=True, blank=True)
     time_start = models.TimeField( null=True, blank=True)
     time_end = models.TimeField( null=True, blank=True)
