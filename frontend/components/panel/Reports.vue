@@ -113,8 +113,8 @@ const sendEmail = async () => {
     const formData = new FormData();
     formData.append('id', record.value.id); // ID del registro
     formData.append('type', 'ambulancia'); // Tipo de template (ambulancia)
-    formData.append('asunto', affair.value); // Asunto del correo
-    formData.append('mensaje', messaje.value); // Mensaje personalizado
+    //formData.append('asunto', affair.value); // Asunto del correo
+    //formData.append('mensaje', messaje.value); // Mensaje personalizado
     formData.append('destinatario', 'rinconvargasvictormanuel@gmail.com'); // Destinatario predeterminado o dinámico
 
     // Realiza la solicitud al endpoint del backend
