@@ -135,20 +135,20 @@ const showModalVehicle = (type: string) => {
 
 
 const createPolice = async () => {
-    if (newTypePolice.value.id === "SE") {
-        const year = await formatDateYYYY0101(newDateStart.value)
-        const valueSOAT = await getVALUE('SE', year)
-        if (valueSOAT.results && valueSOAT.results.length > 0) {
-            const amount = valueSOAT.results[0].amount;
-            newAmountTotal.value = amount;
-        } else {
-            alert('No se encontro el valor del SOAT en ese año debe agregar el valor en configuracion')
-            return
-        }
+    //if (newTypePolice.value.id === "SE") {
+        //const year = await formatDateYYYY0101(newDateStart.value)
+        // const valueSOAT = await getVALUE('SE', year)
+        // if (valueSOAT.results && valueSOAT.results.length > 0) {
+        //     const amount = valueSOAT.results[0].amount;
+        //     newAmountTotal.value = amount;
+        // } else {
+        //     alert('No se encontro el valor del SOAT en ese año debe agregar el valor en configuracion')
+        //     return
+        // }
 
-        newAmountTotal.value = valueSOAT.results[0].amount
-        console.log('newAmountTotal', newAmountTotal.value)
-    }
+        //newAmountTotal.value = valueSOAT.results[0].amount
+        //console.log('newAmountTotal', newAmountTotal.value)
+    //}
     const response = await $fetch<any>('api/polices/', {
         method: 'POST',
         body: {
@@ -208,6 +208,27 @@ const validate = async () => {
     }
 
 }
+
+watch(newDateStart, (newVal) => {
+    if (newVal) {
+        // Asegúrate de que `newDateEnd` sea un año después de `newDateStart`
+        const startDate = new Date(newVal);
+        const endDate = new Date(startDate);
+        endDate.setFullYear(startDate.getFullYear() + 1);
+        newDateEnd.value = endDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    }
+});
+
+watch(newDateEnd, (newVal) => {
+    if (newVal) {
+        // Si `newDateEnd` cambia, ajusta `newDateStart` a un año antes de `newDateEnd`
+        const endDate = new Date(newVal);
+        const startDate = new Date(endDate);
+        startDate.setFullYear(endDate.getFullYear() - 1);
+        newDateStart.value = startDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    }
+});
+
 
 
 

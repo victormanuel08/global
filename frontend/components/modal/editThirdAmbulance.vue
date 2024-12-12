@@ -22,7 +22,7 @@
                         </div>
                         <div>
                             <SelectChoice :choiceType="'TYPE_DOCUMENT_CHOICES'" v-model="newThirdDocument"
-                                @change="validateNit" />
+                                @change="validateNit()" />
                         </div>
                     </div>
                     <div class="grid grid-cols-1 gap-2 md:grid-cols-2 mt-4" v-if="newThirdDocument?.id !== 'NI'">
@@ -381,6 +381,10 @@ const validateNit = async () => {
 
         if (response.results.length > 0) {
             propEvent(response.results[0])
+            toast.add({ title: `El tercero ya existe` });
+            // Emitir el tercero creado y cerrar la modal
+            emit('thirdCreated', response.results[0]);  // Emitir el tercero creado
+            emit('update:isThird', false);   // Cerrar la modal
         }
     } else {
         alert('El campo de identificacion no puede estar vacio')
@@ -420,7 +424,7 @@ const createNewThird = async () => {
 
     validateNit();
 
-    const consult = await $fetch('api/thirds/', {
+    const consult: { results: any[] } = await $fetch('api/thirds/', {
         query: {
             nit: newThirdNit.value,
             type_document: newThirdDocument.value.id
@@ -428,8 +432,12 @@ const createNewThird = async () => {
     });
 
     if (consult.results.length > 0) {
-        alert('El tercero ya existe');
-        return;
+   
+        toast.add({ title: `El tercero ya existe` });
+            // Emitir el tercero creado y cerrar la modal
+        emit('thirdCreated', consult.results[0]);  // Emitir el tercero creado
+        emit('update:isThird', false);   // Cerrar la modal
+        
     }
     if (newThirdSelectedDate_birth.value === '' && newThirdDocument.value.id !== 'NI') {
         alert('La fecha de nacimiento no puede estar vacia');
