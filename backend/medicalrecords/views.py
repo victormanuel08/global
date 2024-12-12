@@ -593,6 +593,7 @@ class GeocodeView(APIView):
         api_key = settings.DISTANCE_MATRIX_API_KEY
         distance_matrix_url = f"https://api-v2.distancematrix.ai/maps/api/geocode/json?latlng={lat},{lng}&key={api_key}"
         nominatim_url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=18&addressdetails=1"
+        headers = { 'User-Agent': 'GLOBALSAFEIPS/1.0 (ambulancia.globalsafe@gmail.com)' }
         response_data = []
         try:
             distance_matrix_response = requests.get(distance_matrix_url)
@@ -601,10 +602,11 @@ class GeocodeView(APIView):
                 "formatted_address": distance_matrix_data["result"][0]["formatted_address"],
                 "address_components": distance_matrix_data["result"][0]["address_components"],
             })
+            print(f"DistanciaMatriz: {distance_matrix_data['result'][0]['formatted_address']}")
         except requests.RequestException as e:           
             pass
         try:
-            nominatim_response = requests.get(nominatim_url)
+            nominatim_response = requests.get(nominatim_url, headers=headers)
             nominatim_data = nominatim_response.json()
             response_data.append({
                 "formatted_address": nominatim_data["display_name"],
@@ -614,11 +616,12 @@ class GeocodeView(APIView):
                     "city_district": nominatim_data["address"]["city_district"],
                     "city": nominatim_data["address"]["city"],
                     "county": nominatim_data["address"]["county"],
-                    "state": nominatim_data["address"]["state"],
+                   
                     "postcode": nominatim_data["address"]["postcode"],
                     "country": nominatim_data["address"]["country"],
                 },
             })
+            print(f"Nominatim: {nominatim_data['display_name']}")
         except requests.RequestException as e:           
             pass
         return Response(response_data)
