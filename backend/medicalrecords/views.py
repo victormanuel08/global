@@ -77,7 +77,14 @@ class VehicleViewSet(viewsets.ModelViewSet):
     serializer_class = VehicleSerializer
     search_fields = ['plate', 'brand','vehicle_type','third_driver__nit','third_driver__name','third_driver__second_name','third_driver__last_name','third_driver__second_last_name']
     filterset_fields=['plate', 'brand','vehicle_type','third_driver__nit','third_driver__name','third_driver__second_name','third_driver__last_name','third_driver__second_last_name']
-       
+
+class AccidentViewSet(viewsets.ModelViewSet):
+    queryset = Accidents.objects.order_by('-date_time') # entrega el primer registro , osea el mas reciente
+    
+    serializer_class = AccidentSerializer
+    search_fields = ['date_time','external_cause','half','vehicle_type']
+    filterset_fields=['date_time','external_cause','half','vehicle_type']
+    
 class ValuesViewSet(viewsets.ModelViewSet):
     queryset = Values.objects.all()
     serializer_class = ValueSerializer

@@ -173,6 +173,8 @@ class Vehicles(models.Model):
     brand = models.CharField(max_length=100)
     plate = models.CharField(max_length=100)
     vehicle_type = models.CharField(max_length=2,choices=VEHICLE_TYPE_CHOICES)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6,null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6,null=True, blank=True)
     third_driver = models.ForeignKey(
         'Thirds',
         on_delete=models.PROTECT,
@@ -199,6 +201,25 @@ class Vehicles(models.Model):
         
     def __str__(self):
         return self.brand
+    
+class Accidents(models.Model):
+    id = models.AutoField(primary_key=True)
+    date_time = models.DateTimeField(auto_now_add=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6,null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6,null=True, blank=True)
+    external_cause = models.CharField(max_length=2,choices=EXTERNAL_CAUSE_CHOICES,null=True, blank=True)
+    half = models.CharField(max_length=2,choices=HALF_CHOICES,null=True, blank=True)
+    vehicle_type = models.CharField(max_length=2,choices=VEHICLE_TYPE_CHOICES,null=True, blank=True)
+    description = models.CharField(max_length=100,null=True, blank=True)
+    
+    class Meta:
+        ordering = ['date_time']
+        verbose_name = 'Accidente'
+        verbose_name_plural = 'Accidentes'
+    
+    def __str__(self):
+        return self.id
+    
 
 class Policy(models.Model):    
     description= models.CharField(max_length=30)

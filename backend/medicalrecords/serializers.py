@@ -34,6 +34,13 @@ class VehicleOnlySerializer(serializers.ModelSerializer):
         model = Vehicles
         fields = '__all__'
         
+class AccidentSerializer(serializers.ModelSerializer):
+ 
+    
+    class Meta:
+        model = Accidents
+        fields = '__all__'
+        
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
