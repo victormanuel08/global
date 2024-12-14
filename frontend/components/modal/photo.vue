@@ -163,7 +163,7 @@ watch(innerShow, async (newValue) => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 800px; /* Ajusta el ancho máximo según sea necesario */
+  max-width: 800px; 
 }
 
 .video-container {
