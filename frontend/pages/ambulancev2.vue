@@ -24,10 +24,10 @@ const create = async (value: any) => {
       },
     });
     console.log('response', response);
-    
+
     // Guardar el ID del último registro en el almacenamiento
     authUserStorage.value.lastRecord = response.id; // Guardamos el ID o la referencia del último registro
-    
+
     // Actualizamos el objeto recordObject con el nuevo registro
     recordObject.value = response;
     console.log('recordObject', recordObject.value);
@@ -72,7 +72,7 @@ onMounted(async () => {
       }
     });
   } else {
-    
+
     create(2); // Cambia el valor según lo que necesites
     isAmbulance.value = true;
   }
