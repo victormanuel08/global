@@ -72,7 +72,7 @@ onMounted(async () => {
       }
     });
   } else {
-    // Si no hay registro guardado, simplemente creamos un nuevo registro
+    
     create(2); // Cambia el valor según lo que necesites
     isAmbulance.value = true;
   }
