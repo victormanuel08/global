@@ -14,17 +14,17 @@
           <button class="round-button large-icon" @click="toggleCamera">
             🔄
           </button>
-           Botón de tomar foto 
+          
           <button class="round-button large-icon" @click="takePhoto">
             📷
           </button>
           -->
-       
-          <input type="file" accept="image/*" @change="uploadPhoto" class="hidden" ref="fileInput"/>
+
+          <input type="file" accept="image/*" @change="uploadPhoto" class="hidden" ref="fileInput" />
 
           <!-- Botón que activa el input de archivo -->
           <UButton variant="soft" @click="triggerFileInput" class="round-button large-icon">
-            <i class="fas fa-camera"></i> <!-- Icono más grande -->
+            <i class="fas fa-camera"></i>
           </UButton>
         </div>
       </div>
@@ -111,7 +111,7 @@ const takePhoto = () => {
 
 const saveImage = async (index: number, field: string, blob: Blob) => {
   try {
-    const file = new File([blob], 'HC-' + field +'-'+ index+'.jpeg', { type: 'image/jpeg' })
+    const file = new File([blob], 'HC-' + field + '-' + index + '.jpeg', { type: 'image/jpeg' })
     const formData = new FormData()
     formData.append(field, file)
 
@@ -163,7 +163,7 @@ watch(innerShow, async (newValue) => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 800px; 
+  max-width: 800px;
 }
 
 .video-container {
@@ -174,8 +174,10 @@ watch(innerShow, async (newValue) => {
 .button-container {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centrado vertical */
-  align-items: center;    /* Centrado horizontal */
+  justify-content: center;
+  /* Centrado vertical */
+  align-items: center;
+  /* Centrado horizontal */
   gap: 1rem;
   flex: 1;
   max-width: 30%;
@@ -190,7 +192,8 @@ watch(innerShow, async (newValue) => {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  font-size: 40px; /* Tamaño de ícono más grande */
+  font-size: 40px;
+  /* Tamaño de ícono más grande */
 }
 
 button-container {
