@@ -40,21 +40,6 @@ const uploadPhoto = (event: any) => {
   saveImage(props.record.id, props.typeImg, selectedFile);
 };
 
-
-const stopStream = () => {
-  if (cameraVideoEl.value && cameraVideoEl.value.srcObject) {
-    const mediaStream = cameraVideoEl.value.srcObject as MediaStream;
-    const tracks = mediaStream.getTracks() as MediaStreamTrack[];
-    tracks.forEach((track) => track.stop());
-  }
-};
-
-const initStream = async () => {
-  stopStream();
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-  if (cameraVideoEl.value) cameraVideoEl.value.srcObject = stream;
-};
-
 watch(innerShow, () => {
   if (innerShow.value) {
     initStream();
@@ -63,9 +48,24 @@ watch(innerShow, () => {
   }
 });
 
+const initStream = async () => {
+  stopStream();
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  if (cameraVideoEl.value) cameraVideoEl.value.srcObject = stream;
+};
+
 const toggleCamera = () => {
   currentCamera.value = currentCamera.value === 'user' ? 'environment' : 'user';
   initStream();
+};
+
+
+const stopStream = () => {
+  if (cameraVideoEl.value && cameraVideoEl.value.srcObject) {
+    const mediaStream = cameraVideoEl.value.srcObject as MediaStream;
+    const tracks = mediaStream.getTracks() as MediaStreamTrack[];
+    tracks.forEach((track) => track.stop());
+  }
 };
 
 const takePhoto = () => {

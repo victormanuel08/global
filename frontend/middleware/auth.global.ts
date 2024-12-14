@@ -58,6 +58,7 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   const accessToken = useCookie('token');
+  const refreshToken = useCookie('refresh_token');
 
   if (!accessToken.value) {
     return navigateTo("/");
@@ -75,11 +76,26 @@ export default defineNuxtRouteMiddleware((to) => {
     return navigateTo("/");
   }
 
-  const expDT = new Date(decodedToken.exp * 1000);
+  const expDT = new Date(decodedToken.exp * 1000); // Convertimos el tiempo de expiración a milisegundos
   const nowDT = new Date();
+  const remainingTime = expDT.getTime() - nowDT.getTime();
 
-  if (expDT < nowDT) {
-    return navigateTo("/");
+  // Si queda menos de 60 segundos, renovamos el token
+  if (remainingTime < 300000) {
+    console.log("Token está por caducar, intentando renovarlo...");
+
+    if (refreshToken.value) {
+      $fetch("/api/auth/refresh", {
+        method: "POST",
+        body: { refreshToken: refreshToken.value },
+      }).then((response) => {
+        if (response.accessToken) {
+          console.log("Token renovado exitosamente."); // Log cuando se renueva el token
+          accessToken.value = response.accessToken;
+          useCookie('token').value = response.accessToken;
+        }
+      });
+    }
   } else {
     const CURRENT_USER_PATH = '/api/auth/users/me/';
     const useUserStorage = useAuthUserStorage();
@@ -92,5 +108,10 @@ export default defineNuxtRouteMiddleware((to) => {
         useUserStorage.value = response;
       });
     }
+  }
+
+  if (expDT < nowDT) {
+    console.log("El token ha caducado, redirigiendo a login...");
+    return navigateTo("/");
   }
 });

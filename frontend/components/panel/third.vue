@@ -114,6 +114,10 @@
             <label class="block text-sm font-medium text-gray-700">Ocupacion: </label>
             {{ record.third_patient_full?.occupation_full?.name }}
         </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Profesion: </label>
+            {{ record.third_patient_full?.occupation_full?.profesion }}
+        </div>
 
     </div>
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4" v-if="record.third_patient_full?.type_document !== 'AS'">
@@ -305,6 +309,7 @@ const showModalThirdAmbulanceBuddy = (value: any) => {
 const handleModalClose = () => {
     isThird.value = false;  // Cerrar la modal
     isThirdBuddy.value = false;  // Cerrar la modal
+    fetchRecord(record.value.id);  // Recargar el registro
 };
 
 

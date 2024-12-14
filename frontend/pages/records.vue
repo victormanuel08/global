@@ -37,7 +37,7 @@
                 <div class="flex items-center justify-center">
                   <span v-if="record.number_report || record.third_medic_full?.speciality_full?.code == 'AMB'"
                     title="Ambulancia"> 🚑 </span><span v-else title="Consultorio Medico"> 🏥 </span><span>{{
-                      formatDateYYYYMMDD(record.date_time) }}</span>
+                      (record.date_time_format) }}</span>
                 </div>
 
               </td>

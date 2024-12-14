@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex flex-row-1 gap-4 justify-center">
+    <div class="flex flex-row-1 gap-4 justify-center" v-if="pagerecord && !iframeError">
       <div>
         <UButton style="width: 80px; white-space: normal; text-align: right;" class="rounded-full" variant="soft" @click="downloadReport">
           Descargar

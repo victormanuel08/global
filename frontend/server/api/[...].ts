@@ -1,24 +1,23 @@
 import type { H3Event, HTTPMethod } from "h3";
 import { FetchError } from "ofetch";
-//const API_URL = "http://api.globalsafeips.com.co"
-const API_URL = "http://localhost:8000"
-
+const API_URL = "http://api.globalsafeips.com.co"
+//const API_URL = "http://localhost:8000"
 
 export default defineEventHandler(async (event) => {
     const route = event.context.params?._;
     const query = getQuery(event);
     const method: HTTPMethod = event.method;
     const requestHeaders = getHeaders(event);
-    const token = getCookie(event, "token")
-
+    const token = getCookie(event, "token");
+    const refreshToken = getCookie(event, "refresh_token");
 
     const headers = {
         "Content-Type": requestHeaders["content-type"] || "application/json",
         "Accept": "application/json",
-    } as any
+    } as any;
 
-    if(token) {
-        headers["Authorization"] = `Bearer ${token}`
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
     }
 
     const reqOpts: Record<string, unknown> = {
@@ -27,29 +26,51 @@ export default defineEventHandler(async (event) => {
         query,
     };
 
-
-
     if (["POST", "PUT", "PATCH"].includes(method)) {
         if (headers["Content-Type"] === "application/json") {
           reqOpts.body = await readBody(event);
         } else {
           reqOpts.body = await readRawBody(event, false);
         }
-      }
+    }
 
     try {
         let url = `${API_URL}/${route}/`;
-        console.log("Request", url, headers)
+        console.log("Request", url, headers);
         const response = await $fetch(url, reqOpts);
-        // console.log("Response", response)   
         return response;
     } catch (error) {
-        console.log("Error", error)
+        console.log("Error", error);
         if (error instanceof FetchError) {
             setResponseStatus(event, error.statusCode);
+            if (error.statusCode === 401 && refreshToken) {
+                // Si el token ha expirado, intenta refrescarlo
+                const refreshed = await refreshAccessToken(refreshToken);
+                if (refreshed) {
+                    console.log("Token renovado exitosamente"); // Log cuando se renueva el token
+                    // Reintenta la solicitud con el nuevo token
+                    headers["Authorization"] = `Bearer ${refreshed.accessToken}`;
+                    const retryResponse = await $fetch(url, reqOpts);
+                    return retryResponse;
+                }
+            }
             return error.data;
         }
         setResponseStatus(event, 500);
         return { error: JSON.stringify(error) };
     }
 });
+
+const refreshAccessToken = async (refreshToken: string) => {
+    try {
+        const response = await $fetch('/api/auth/refresh', {
+            method: 'POST',
+            body: { refreshToken },
+        });
+        console.log("Refresh token enviado, respuesta:", response); // Log del intento de refrescar el token
+        return response;
+    } catch (error) {
+        console.error("Error al renovar token:", error);
+        return null;
+    }
+};

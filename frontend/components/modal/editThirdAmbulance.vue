@@ -79,11 +79,13 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Profesion:</label>
-                            <UInput  v-model="newThirdSelectedProfesion" />
+                            <UInput v-model="newThirdSelectedProfesion" />
                         </div>
                     </div>
 
                 </div>
+
+
                 <div v-if="!thirdSelected?.id">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Direccion:</label>
@@ -91,28 +93,17 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 gap-2 md:grid-cols-2 mt-4" v-if="newThirdDocument?.id !== 'NI'">
-                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'"  >
+                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
                         <label class="block text-sm font-medium text-gray-700">Especialidad:</label>
                         <SelectSpecialities v-model="thirdSelected.speciality_full"
                             @change="saveItem(thirdSelected.id, 'speciality', thirdSelected.speciality_full.id)" />
                     </div>
-                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'" >
+                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
                         <label class="block text-sm font-medium text-gray-700">T.P.:</label>
                         <UInput v-model="thirdSelected.tp"
                             @change="saveItem(thirdSelected.id, 'tp', thirdSelected.tp)" />
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Telefono:</label>
-                        <UInput v-model="newThirdSelectedPhone" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Zona:</label>
-                        <SelectChoice :choiceType="'ZONE_CHOICES'" v-model="newthirdSelectedZone_full" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Ciudad actual:</label>
-                        <SelectCities v-model="newThirdSelectedCity_full" />
-                    </div>
+
                 </div>
 
 
@@ -133,114 +124,154 @@
             <div class="grid grid-cols-2 gap-4 md:grid-cols-2 m-4"
                 v-if="thirdSelected?.id > 0 && thirdSelected?.nit !== '222222222222'">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Tipo:</label>
-                    <SelectChoice :choiceType="'TYPE_CHOICES'" v-model="thirdSelected.type_full"
-                        @change="saveItem(thirdSelected.id, 'type', thirdSelected.type_full.id)" />
+                    <label class="block text-sm font-medium text-gray-700">Telfono:</label>
+                    <UInput v-model="thirdSelected.phone"
+                        @change="saveItem(thirdSelected.id, 'phone', thirdSelected.phone)" />
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Zona:</label>
+                    <SelectChoice :choiceType="'ZONE_CHOICES'" v-model="thirdSelected.zone_full"
+                        @change="saveItem(thirdSelected.id, 'zone', thirdSelected.zone_full.id)" />
+
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Ciudad:</label>
+                    <SelectCities v-model="thirdSelected.city_full"
+                        @change="saveItem(thirdSelected.id, 'city', thirdSelected.city_full.id)" />
+                </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Estado:</label>
+                        <SelectChoice :choiceType="'STATUS_CHOICES'" v-model="thirdSelected.status_full"
+                            @change="saveItem(thirdSelected.id, 'status', thirdSelected.status_full.id)" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha Nacimiento:</label>
+                        <UInput type="date" v-model="thirdSelected.date_birth"
+                            @change="saveItem(thirdSelected.id, 'date_birth', thirdSelected.date_birth)" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tipo:</label>
+                        <SelectChoice :choiceType="'TYPE_CHOICES'" v-model="thirdSelected.type_full"
+                            @change="saveItem(thirdSelected.id, 'type', thirdSelected.type_full.id)" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Ocupacion:</label>
+                        <SelectChoice :choiceType="'OCCUPATION_CHOICES'" v-model="thirdSelected.occupation_full"
+                            @change="saveItem(thirdSelected.id, 'occupation', thirdSelected.occupation_full.id)" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Profesion:</label>
+                        <UInput v-model="thirdSelected.profesion"
+                            @change="saveItem(thirdSelected.id, 'profesion', thirdSelected.profesion)" />
+                    </div>
 
 
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:grid-cols-2 m-4"
+                    v-if="thirdSelected?.id > 0 && thirdSelected?.type_document !== 'NI' && thirdSelected?.type_document !== 'AS'">
+                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
+                        <label class="block text-sm font-medium text-gray-700">Especialidad:</label>
+                        <SelectSpecialities v-model="thirdSelected.speciality_full"
+                            @change="saveItem(thirdSelected.id, 'speciality', thirdSelected.speciality_full.id)" />
+                    </div>
+                    <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
+                        <label class="block text-sm font-medium text-gray-700">T.P.:</label>
+                        <UInput v-model="thirdSelected.tp"
+                            @change="saveItem(thirdSelected.id, 'tp', thirdSelected.tp)" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Sexo:</label>
+                        <SelectChoice :choiceType="'SEX_CHOICES'" v-model="thirdSelected.sex_full"
+                            @change="saveItem(thirdSelected.id, 'sex', thirdSelected.sex_full.id)" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Ciudad Natal:</label>
+                        <SelectCities v-model="thirdSelected.city_birth_full"
+                            @change="saveItem(thirdSelected.id, 'city_birth', thirdSelected.city_birth_full.id)" />
+                    </div>
+
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tipo Sangre:</label>
+                        <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="thirdSelected.blood_full"
+                            @change="saveItem(thirdSelected.id, 'blood_type', thirdSelected.blood_full.id)" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Etnia:</label>
+                        <SelectChoice :choiceType="'ETNIAS_CHOICES'" v-model="thirdSelected.etnia_full"
+                            @change="saveItem(thirdSelected.id, 'ethnicity', thirdSelected.etnia_full.id)" />
+                    </div>
+
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Vehiculo:</label>
+                        <SelectVehicle v-model="thirdSelected.vehicle_full"
+                            @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)" />
+                    </div>
+
+
+
+                </div>
+                <div class="mt-4" v-if="thirdSelected.sex_full?.id === 'F' && thirdSelected?.id > 0">
+                    <h3>Maternidad</h3>
+                    <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Periodo de Lactancia:</label>
+                            <SelectChoice :choiceType="'MATERNITY_CHOICES'" v-model="thirdSelected.maternity_full"
+                                @change="saveItem(thirdSelected.id, 'maternity_breasfeeding', thirdSelected.maternity_full.id)" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Complementaria:</label>
+                            <SelectChoice :choiceType="'MATERNITY_COMPLEMENTARY_CHOICES'"
+                                v-model="thirdSelected.maternity_complementary_full"
+                                @change="saveItem(thirdSelected.id, 'maternity_breasfeeding_complementary', thirdSelected.maternity_complementary_full.id)" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Extendida:</label>
+                            <SelectChoice :choiceType="'MATERNITY_EXTEND_CHOICES'"
+                                v-model="thirdSelected.maternity_extend_full"
+                                @change="saveItem(thirdSelected.id, 'maternity_breasfeeding_extend', thirdSelected.maternity_extend_full.id)" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Embarazo:</label>
+                            <SelectChoice :choiceType="'MATERNITY_PREGNANCY_CHOICES'"
+                                v-model="thirdSelected.maternity_pregnancy_full"
+                                @change="saveItem(thirdSelected.id, 'maternity_pregnancy', thirdSelected.maternity_pregnancy_full.id)" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Violencia:</label>
+                            <SelectChoice :choiceType="'MATERNITY_VIOLANCE_CHOICES'"
+                                v-model="thirdSelected.maternity_violance_full"
+                                @change="saveItem(thirdSelected.id, 'maternity_violence', thirdSelected.maternity_violance_full.id)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-1 m-4"
+                    v-if="thirdSelected?.id > 0 && thirdSelected?.nit !== '222222222222'">
+                    <div v-if="thirdSelected?.type_document != 'NI'">
+                        <label>
+                            {{ newthirdSelectedPolices?.length || 0 }} Planes Complemtarios de Salud:
+                        </label>
+                        <SelectInsuranceMulti v-model="newthirdSelectedPolices" :third="thirdSelected.id"
+                            @change="saveItems(thirdSelected.id, newthirdSelectedPolices)" :placeholder="'Paquetes'">
+                        </SelectInsuranceMulti>
+
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Correo:</label>
+                        <UInput v-model="thirdSelected.email"
+                            @change="saveItem(thirdSelected.id, 'email', thirdSelected.email)" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Direccion:</label>
+                        <UInput v-model="thirdSelected.address"
+                            @change="saveItem(thirdSelected.id, 'address', thirdSelected.address)" />
+                    </div>
+                </div>
             </div>
-            <div class="grid grid-cols-2 gap-4 md:grid-cols-2 m-4"
-                v-if="thirdSelected?.id > 0 && thirdSelected?.type_document !== 'NI' && thirdSelected?.type_document !== 'AS'">
-                <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
-                    <label class="block text-sm font-medium text-gray-700">Especialidad:</label>
-                    <SelectSpecialities v-model="thirdSelected.speciality_full"
-                        @change="saveItem(thirdSelected.id, 'speciality', thirdSelected.speciality_full.id)" />
-                </div>
-                <div v-if="thirdSelected.type_full?.id === 'M' || props.typeT === 'M'">
-                    <label class="block text-sm font-medium text-gray-700">T.P.:</label>
-                    <UInput v-model="thirdSelected.tp" @change="saveItem(thirdSelected.id, 'tp', thirdSelected.tp)" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Sexo:</label>
-                    <SelectChoice :choiceType="'SEX_CHOICES'" v-model="thirdSelected.sex_full"
-                        @change="saveItem(thirdSelected.id, 'sex', thirdSelected.sex_full.id)" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Ciudad Natal:</label>
-                    <SelectCities v-model="thirdSelected.city_birth_full"
-                        @change="saveItem(thirdSelected.id, 'city_birth', thirdSelected.city_birth_full.id)" />
-                </div>
-
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Tipo Sangre:</label>
-                    <SelectChoice :choiceType="'BLOOD_CHOICES'" v-model="thirdSelected.blood_full"
-                        @change="saveItem(thirdSelected.id, 'blood_type', thirdSelected.blood_full.id)" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Etnia:</label>
-                    <SelectChoice :choiceType="'ETNIAS_CHOICES'" v-model="thirdSelected.etnia_full"
-                        @change="saveItem(thirdSelected.id, 'ethnicity', thirdSelected.etnia_full.id)" />
-                </div>
-
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Vehiculo:</label>
-                    <SelectVehicle v-model="thirdSelected.vehicle_full"
-                        @change="saveItem(thirdSelected.id, 'vehicle', thirdSelected.vehicle_full.id)" />
-                </div>
-
-
-
-            </div>
-            <div class="mt-4" v-if="thirdSelected.sex_full?.id === 'F' && thirdSelected?.id > 0">
-                <h3>Maternidad</h3>
-                <div class="grid grid-cols-3 gap-4 md:grid-cols-3">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Periodo de Lactancia:</label>
-                        <SelectChoice :choiceType="'MATERNITY_CHOICES'" v-model="thirdSelected.maternity_full"
-                            @change="saveItem(thirdSelected.id, 'maternity_breasfeeding', thirdSelected.maternity_full.id)" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Complementaria:</label>
-                        <SelectChoice :choiceType="'MATERNITY_COMPLEMENTARY_CHOICES'"
-                            v-model="thirdSelected.maternity_complementary_full"
-                            @change="saveItem(thirdSelected.id, 'maternity_breasfeeding_complementary', thirdSelected.maternity_complementary_full.id)" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Extendida:</label>
-                        <SelectChoice :choiceType="'MATERNITY_EXTEND_CHOICES'"
-                            v-model="thirdSelected.maternity_extend_full"
-                            @change="saveItem(thirdSelected.id, 'maternity_breasfeeding_extend', thirdSelected.maternity_extend_full.id)" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Embarazo:</label>
-                        <SelectChoice :choiceType="'MATERNITY_PREGNANCY_CHOICES'"
-                            v-model="thirdSelected.maternity_pregnancy_full"
-                            @change="saveItem(thirdSelected.id, 'maternity_pregnancy', thirdSelected.maternity_pregnancy_full.id)" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Violencia:</label>
-                        <SelectChoice :choiceType="'MATERNITY_VIOLANCE_CHOICES'"
-                            v-model="thirdSelected.maternity_violance_full"
-                            @change="saveItem(thirdSelected.id, 'maternity_violence', thirdSelected.maternity_violance_full.id)" />
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-1 m-4"
-                v-if="thirdSelected?.id > 0 && thirdSelected?.nit !== '222222222222'">
-                <div v-if="thirdSelected?.type_document != 'NI'">
-                    <label>
-                        {{ newthirdSelectedPolices?.length || 0 }} Planes Complemtarios de Salud:
-                    </label>
-                    <SelectInsuranceMulti v-model="newthirdSelectedPolices" :third="thirdSelected.id"
-                        @change="saveItems(thirdSelected.id, newthirdSelectedPolices)" :placeholder="'Paquetes'">
-                    </SelectInsuranceMulti>
-
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Correo:</label>
-                    <UInput v-model="thirdSelected.email"
-                        @change="saveItem(thirdSelected.id, 'email', thirdSelected.email)" />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Direccion:</label>
-                    <UInput v-model="thirdSelected.address"
-                        @change="saveItem(thirdSelected.id, 'address', thirdSelected.address)" />
-                </div>
-            </div>
-        </div>
+      
     </UModal>
 
 </template>
@@ -266,12 +297,12 @@ const isPolice = ref(false)
 const newThirdSelectedStatus_full = ref({})
 const newThirdSelectedDate_birth = ref('')
 const newThirdSelectedOccupation_full = ref({})
-const newThirdSelectedAddress =  ref('')
-const newThirdSelectedPhone =  ref('')
+const newThirdSelectedAddress = ref('')
+const newThirdSelectedPhone = ref('')
 const newthirdSelectedZone_full = ref({})
 const newThirdSelectedCity_full = ref({})
-const newThirdSelectedEmail =  ref('')
-const newThirdSelectedProfesion =  ref('')
+const newThirdSelectedEmail = ref('')
+const newThirdSelectedProfesion = ref('')
 const emit = defineEmits();
 
 const showModalPolice = () => {
@@ -432,12 +463,12 @@ const createNewThird = async () => {
     });
 
     if (consult.results.length > 0) {
-   
+
         toast.add({ title: `El tercero ya existe` });
-            // Emitir el tercero creado y cerrar la modal
+        // Emitir el tercero creado y cerrar la modal
         emit('thirdCreated', consult.results[0]);  // Emitir el tercero creado
         emit('update:isThird', false);   // Cerrar la modal
-        
+
     }
     if (newThirdSelectedDate_birth.value === '' && newThirdDocument.value.id !== 'NI') {
         alert('La fecha de nacimiento no puede estar vacia');
@@ -459,7 +490,7 @@ const createNewThird = async () => {
             type: newThirdType.value.id,
             blood_type: newThirdBlood.value.id,
             sex: newThirdSex.value.id,
-            status: newThirdSelectedStatus_full.value.id,            
+            status: newThirdSelectedStatus_full.value.id,
             occupation: newThirdSelectedOccupation_full.value.id,
             profesion: newThirdSelectedProfesion.value,
             address: newThirdSelectedAddress.value,

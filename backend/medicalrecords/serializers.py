@@ -4,6 +4,8 @@ from medicalrecords.serializers import *
 from .models import Thirds
 from datetime import datetime, timedelta
 from users.models import User
+import pytz
+from datetime import datetime
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -179,10 +181,18 @@ class RecordSerializer(serializers.ModelSerializer):
     # service_full = ServiceSerializer(source = 'service', read_only=True)
     fee_full = FeeSerializer(source = 'fee', read_only=True)
     records_details = serializers.SerializerMethodField()
-   
+    #crear un date time formateado basado en date_time
+    date_time_format = serializers.SerializerMethodField()
+       
     class Meta:
         model = Records
         fields = '__all__'  
+    
+    def get_date_time_format(self, obj):        
+        bogota_tz = pytz.timezone('America/Bogota')        
+        date_time_bogota = obj.date_time.astimezone(bogota_tz)       
+        return date_time_bogota.strftime('%Y-%m-%d %I:%M:%S %p') 
+  
         
     def get_records_details(self, obj):
         records_details = Records_details.objects.filter(record=obj)

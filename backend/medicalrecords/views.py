@@ -4,6 +4,8 @@ from utils.pdf import render_to_pdf
 from .models import *
 from .serializers import *
 from .models import *
+from datetime import timedelta
+from django.utils import timezone
 from rest_framework import viewsets
 
 from django.db.models.signals import pre_save
@@ -78,12 +80,40 @@ class VehicleViewSet(viewsets.ModelViewSet):
     search_fields = ['plate', 'brand','vehicle_type','third_driver__nit','third_driver__name','third_driver__second_name','third_driver__last_name','third_driver__second_last_name']
     filterset_fields=['plate', 'brand','vehicle_type','third_driver__nit','third_driver__name','third_driver__second_name','third_driver__last_name','third_driver__second_last_name']
 
+
+
+
 class AccidentViewSet(viewsets.ModelViewSet):
-    queryset = Accidents.objects.order_by('-date_time') # entrega el primer registro , osea el mas reciente
-    
+    queryset = Accidents.objects.order_by('-date_time')  # Los accidentes más recientes
     serializer_class = AccidentSerializer
-    search_fields = ['date_time','external_cause','half','vehicle_type']
-    filterset_fields=['date_time','external_cause','half','vehicle_type']
+    search_fields = ['date_time', 'external_cause', 'half', 'vehicle_type']
+    filterset_fields = ['date_time', 'external_cause', 'half', 'vehicle_type']
+
+    # Acción personalizada para obtener los accidentes de las últimas 3 horas
+    @action(detail=False, methods=['get'])
+    def last_3_hours(self, request):
+        # Calcular la hora actual menos 3 horas
+        three_hours_ago = timezone.now() - timedelta(hours=3)
+        
+        # Filtrar los accidentes ocurridos en las últimas 3 horas
+        accidents_last_3_hours = Accidents.objects.filter(date_time__gte=three_hours_ago)
+        
+        # Serializar los accidentes y devolver la respuesta
+        serializer = self.get_serializer(accidents_last_3_hours, many=True)
+        return Response(serializer.data)
+
+    # Acción personalizada para obtener todos los accidentes (sin filtros de tiempo)
+    @action(detail=False, methods=['get'])
+    def allday(self, request):
+        # Obtener todos los accidentes del día actual
+        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        accidents_today = Accidents.objects.filter(date_time__gte=today_start)
+        
+        # Serializar los accidentes y devolver la respuesta
+        serializer = self.get_serializer(accidents_today, many=True)
+        return Response(serializer.data)
+
+
     
 class ValuesViewSet(viewsets.ModelViewSet):
     queryset = Values.objects.all()
@@ -134,7 +164,7 @@ class DiagnosisViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'code', 'description', 'extra']
    
 class RecordViewSet(viewsets.ModelViewSet):
-    queryset = Records.objects.all()
+    queryset = Records.objects.all().order_by('-date_time')  # Los registros más recientes
     serializer_class = RecordSerializer
     
     search_fields = ['date_time','third_patient__nit','third_patient__name','third_patient__second_name','third_patient__last_name','third_patient__second_last_name','third_medic__nit','third_medic__name','third_medic__second_name','third_medic__last_name','third_medic__second_last_name','diagnosis__name','diagnosis__description','number_report']

@@ -17,4 +17,5 @@ export default defineNuxtConfig({
     }
   },
   compatibilityDate: "2024-07-22",
+  middleware: ['authExpiration'], // Asegúrate de que el nombre del middleware sea correcto
 })

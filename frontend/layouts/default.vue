@@ -74,6 +74,7 @@
       <slot></slot>
     </div>
   </div>
+  <ModalGlobal v-if="showModal" />
 </template>
 
 <script setup lang="ts">
@@ -81,6 +82,9 @@ import { ref, computed } from 'vue';
 import { useCookie, useRouter } from 'nuxt/app';
 import { jwtDecode } from 'jwt-decode';
 import { _hidden } from '#tailwind-config/theme/aria';
+
+
+const showModal = ref(false);
 
 const authUserStorage = useAuthUserStorage();
 const authTokensStorage = useAuthTokensStorage();
