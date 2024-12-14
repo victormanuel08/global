@@ -273,10 +273,11 @@ const fetchRecord = async (q: any) => {
 }
 
 onMounted(async () => {
-    await fetchProps();
+    
     record.value = props.calendarEvent;
     if (props.calendarEvent) {
         await fetchRecord(props.calendarEvent.id);
+        //await fetchProps();
     }
 });
 
