@@ -180,6 +180,7 @@ class RecordSerializer(serializers.ModelSerializer):
     vehicle_full = VehicleSerializer(source = 'vehicle', read_only=True)
     # service_full = ServiceSerializer(source = 'service', read_only=True)
     fee_full = FeeSerializer(source = 'fee', read_only=True)
+    city_full = CitySerializer(source = 'cities', read_only=True)
     records_details = serializers.SerializerMethodField()
     #crear un date time formateado basado en date_time
     date_time_format = serializers.SerializerMethodField()

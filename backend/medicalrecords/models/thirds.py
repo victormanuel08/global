@@ -94,7 +94,7 @@ STATUS_CHOICES = (
 )
 
 OCCUPATION_CHOICES = (
-    ('E', 'Empleado'),
+    ('M', 'Empleado'),
     ('I', 'Independiente'),
     ('D', 'Desempleado'),
     ('P', 'Pensionado'),

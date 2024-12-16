@@ -267,9 +267,26 @@ const fetchRecord = async (q: any) => {
     if (!q) return
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
+    record.value.third_patient_full.type_full = await getCHOICE(response.third_patient_full.type_full, 'TYPE_CHOICES')
+
     record.value.priority_full = await getCHOICE(response.priority, 'PRIORITY_CHOICES')
     record.value.external_cause_full = await getCHOICE(response.external_cause, 'EXTERNAL_CAUSE_CHOICES')
     record.value.relationship_full = await getCHOICE(response.relationship, 'RELATIONSHIP_CHOICES')
+    record.value.third_patient_full.type_full = await getCHOICE(record.value.third_patient_full.type_full, 'TYPE_CHOICES')
+    record.value.third_patient_full.sex_full = await getCHOICE(record.value.third_patient_full.sex_full, "SEX_CHOICES")
+    record.value.third_patient_full.blood_full = await getCHOICE(record.value.third_patient_full.blood_type, "BLOOD_CHOICES")
+    record.value.third_patient_full.etnia_full = await getCHOICE(record.value.third_patient_full.etnia_full, "ETNIAS_CHOICES")
+    record.value.third_patient_full.zone_full = await getCHOICE(record.value.third_patient_full.zone_full, "ZONE_CHOICES")
+    record.value.third_patient_full.occupation_full = await getCHOICE(record.value.third_patient_full.occupation_full, "OCCUPATION_CHOICES")
+    record.value.third_patient_full.maternity_full = await getCHOICE(record.value.third_patient_full.maternity_breasfeeding, "MATERNITY_CHOICES")
+    record.value.third_patient_full.maternity_complementary_full = await getCHOICE(record.value.third_patient_full.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
+    record.value.third_patient_full.maternity_extend_full = await getCHOICE(record.value.third_patient_full.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")
+    record.value.third_patient_full.maternity_pregnancy_full = await getCHOICE(record.value.third_patient_full.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
+    record.value.third_patient_full.maternity_violance_full = await getCHOICE(record.value.third_patient_full.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
+    record.value.third_patient_full.type_document_full = await getCHOICE(record.value.third_patient_full.type_document, "TYPE_DOCUMENT_CHOICES")
+ 
+    
+
 }
 
 onMounted(async () => {
@@ -277,8 +294,11 @@ onMounted(async () => {
     record.value = props.calendarEvent;
     if (props.calendarEvent) {
         await fetchRecord(props.calendarEvent.id);
-        //await fetchProps();
+       
+    }else{
+        fetchRecord(record.value.id); 
     }
+    
 });
 
 watch(() => props.calendarEvent, async (newVal) => {
@@ -290,7 +310,7 @@ watch(() => props.calendarEvent, async (newVal) => {
 
 watch(record, (newRecord) => {
     // Si el record cambia, actualiza los `choices`
-    fetchProps();
+    //fetchProps();
 });
 
 
@@ -332,12 +352,12 @@ const handleThirdCreated = (newThird: any) => {
 
 const fetchProps = async () => {
 
-    props.calendarEvent.third_patient_full.type_full = await getCHOICE(props.calendarEvent.third_patient_full.type, 'TYPE_CHOICES')
-    props.calendarEvent.third_patient_full.sex_full = await getCHOICE(props.calendarEvent.third_patient_full.sex, "SEX_CHOICES")
+    props.calendarEvent.third_patient_full.type_full = await getCHOICE(props.calendarEvent.third_patient_full.type_full, 'TYPE_CHOICES')
+    props.calendarEvent.third_patient_full.sex_full = await getCHOICE(props.calendarEvent.third_patient_full.sex_full, "SEX_CHOICES")
     props.calendarEvent.third_patient_full.blood_full = await getCHOICE(props.calendarEvent.third_patient_full.blood_type, "BLOOD_CHOICES")
-    props.calendarEvent.third_patient_full.etnia_full = await getCHOICE(props.calendarEvent.third_patient_full.ethnicity, "ETNIAS_CHOICES")
-    props.calendarEvent.third_patient_full.zone_full = await getCHOICE(props.calendarEvent.third_patient_full.zone, "ZONE_CHOICES")
-    props.calendarEvent.third_patient_full.occupation_full = await getCHOICE(props.calendarEvent.third_patient_full.occupation, "OCCUPATION_CHOICES")
+    props.calendarEvent.third_patient_full.etnia_full = await getCHOICE(props.calendarEvent.third_patient_full.etnia_full, "ETNIAS_CHOICES")
+    props.calendarEvent.third_patient_full.zone_full = await getCHOICE(props.calendarEvent.third_patient_full.zone_full, "ZONE_CHOICES")
+    props.calendarEvent.third_patient_full.occupation_full = await getCHOICE(props.calendarEvent.third_patient_full.occupation_full, "OCCUPATION_CHOICES")
     props.calendarEvent.third_patient_full.maternity_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_breasfeeding, "MATERNITY_CHOICES")
     props.calendarEvent.third_patient_full.maternity_complementary_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_breasfeeding_complementary, "MATERNITY_COMPLEMENTARY_CHOICES")
     props.calendarEvent.third_patient_full.maternity_extend_full = await getCHOICE(props.calendarEvent.third_patient_full.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")

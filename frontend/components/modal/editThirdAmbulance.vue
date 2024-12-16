@@ -81,6 +81,10 @@
                             <label class="block text-sm font-medium text-gray-700">Profesion:</label>
                             <UInput v-model="newThirdSelectedProfesion" />
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Telefono:</label>
+                            <UInput v-model="newThirdSelectedPhone" />
+                        </div>
                     </div>
 
                 </div>

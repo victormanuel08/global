@@ -15,7 +15,15 @@
         </div>
 
         <!-- Coordenadas, Sugerencias, Dirección y Póliza -->
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ciudad:</label>
+                <SelectCities 
+                    v-model="record.city_full" 
+                    @change="saveItem(record.id, 'city', record.city_full.id)" 
+                    class="w-full"
+                />
+            </div>
             <!-- Coordenadas -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Coordenadas:</label>

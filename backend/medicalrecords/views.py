@@ -680,8 +680,8 @@ def sendemail(request):
             return Response({'error': 'No se encontró el registro de ambulancia'}, status=status.HTTP_404_NOT_FOUND)
         
         paciente = Thirds.objects.filter(nit=record.third_patient).first()
-        medico = Thirds.objects.filter(nit=record.third_medic).first()
-        auxiliar = Thirds.objects.filter(nit=record.third_medic_clinic).first()
+        auxiliar = Thirds.objects.filter(nit=record.third_medic).first()
+        medico = Thirds.objects.filter(nit=record.third_medic_clinic).first()
         conductor = Thirds.objects.filter(nit=record.third_driver).first()
         
         mensaje = f"""
