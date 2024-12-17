@@ -37,8 +37,8 @@
                 <img src="@/assets/img/body.png" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
                 <img src="@/assets/img/body.png" alt="Imagen" v-else />
                 <div class="grid-container">
-                    <div v-for="n in 192" :key="n" class="grid-item" @click="showRegion(n)">
-                      
+                    <div v-for="n in 768" :key="n" class="grid-item" @click="showRegion(n)">
+                      {{ n }}
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
                             <div class="square" v-if="injurie.point === n">
                                 <div class="circle">{{ index + 1 }}</div>
@@ -331,6 +331,7 @@ const deleteInjury = async (injuryToDelete: any) => {
 
 const showRegion = async (n: number) => {
     console.log('pointshowregion    1', n)
+    
     point.value = n
     record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', 'M');
     record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', 'M');
@@ -385,8 +386,8 @@ const saveServices = async () => {
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(12, 1fr); /* 12 columnas iguales */
-    grid-template-rows: repeat(16, 1fr); /* 16 filas iguales */
+    grid-template-columns: repeat(24, 0.5fr); /* 12 columnas iguales */
+    grid-template-rows: repeat(32, 0.5fr); /* 16 filas iguales */
     position: absolute;
     top: 0;
     left: 0;
@@ -396,10 +397,11 @@ const saveServices = async () => {
 
 .grid-item {
     position: relative; /* Necesario para usar elementos absolutos dentro */
-    /*border: 1px solid #ccc;  Para ver las celdas */
+    border: 1px solid #ccc;   /*Para ver las celdas */
     display: flex; /* Habilita la alineación del contenido */
     justify-content: center; /* Centra horizontalmente el contenido */
     align-items: center; /* Centra verticalmente el contenido */
+    font-size: xx-small;
 }
 
 .square {
