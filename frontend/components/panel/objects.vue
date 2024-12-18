@@ -75,7 +75,7 @@ const thirdSelected = ref<any>({})
 
 const showModalThird = (value: any) => {
     thirdSelected.value = null
-    console.log('showModalThird', thirdSelected)
+    //console.log('showModalThird', thirdSelected)
     isThird.value = true
 
 }
@@ -96,7 +96,7 @@ onMounted(() => {
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
-    console.log('RECORDobjets', record.value)
+    //console.log('RECORDobjets', record.value)
     record.value.relationship_obj_full = await getCHOICE(record.value.relationship_obj, 'RELATIONSHIP_CHOICES')
 }
 

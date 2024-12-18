@@ -48,7 +48,7 @@ const saveSystems = async () => {
       systems_review: record.value?.systems_review
     })
   });
-  console.log('Respuesta:', response);
+  //console.log('Respuesta:', response);
 };
 
 const fetchSystems = async () => {

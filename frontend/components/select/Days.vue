@@ -19,7 +19,7 @@ const loadOptions = () => {
     options.value = listDaysOptions(props.start, props.end)
 }
 loadOptions()
-console.log(options.value)
+//console.log(options.value)
 
 watch([ props.start, () => props.end],
     async ([ newStart, newEnd],

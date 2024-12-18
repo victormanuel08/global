@@ -147,7 +147,7 @@ watch(() => props.third, async (value: any) => {
     thirdSelected.value.maternity_extend_full = await getCHOICE(value.maternity_breasfeeding_extend, "MATERNITY_EXTEND_CHOICES")
     thirdSelected.value.maternity_pregnancy_full = await getCHOICE(value.maternity_pregnancy, "MATERNITY_PREGNANCY_CHOICES")
     thirdSelected.value.maternity_violance_full = await getCHOICE(value.maternity_violence, "MATERNITY_VIOLANCE_CHOICES")
-    console.log('watch1', thirdSelected.value)
+    //console.log('watch1', thirdSelected.value)
 })
 
 const autorized = ref(false)
@@ -161,7 +161,7 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
-    console.log('saveItem', response)
+    //console.log('saveItem', response)
 };
 
 </script>

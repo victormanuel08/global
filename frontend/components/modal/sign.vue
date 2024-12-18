@@ -83,7 +83,7 @@ export default {
       }
 
       if (signatureData) {
-        console.log('Firma guardada:', signatureData);
+        //console.log('Firma guardada:', signatureData);
 
         try {
           let payload, url;
@@ -102,12 +102,12 @@ export default {
             url = `api/records/${this.record.id}`;
           }
 
-          console.log('Payload:', payload);
+          //console.log('Payload:', payload);
           const response = await $fetch(url, {
             method: 'PATCH',
             body: JSON.stringify(payload),
           });
-          console.log('Respuesta de la API:', response);
+          //console.log('Respuesta de la API:', response);
 
           this.$emit('close', false);
         } catch (error) {

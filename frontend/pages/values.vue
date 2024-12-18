@@ -67,7 +67,7 @@
               <td :class="ui.td">
                 <div class="flex items-center justify-center">
                   <SelectChoice :choiceType="'VALUES_CHOICES'" v-model="newValuesType"
-                    class="border rounded p-1 w-36" @change="console.log(newValuesType)"/>
+                    class="border rounded p-1 w-36" />
                 </div>
               </td>
               <td :class="ui.td">
@@ -125,7 +125,6 @@ const fetchValues = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/values/");
 
-  console.log('fetchValues', values.value)
   toggleValues(new Date().toISOString())
 
 }

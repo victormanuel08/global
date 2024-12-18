@@ -277,7 +277,7 @@ const thirdSelected = ref<any>({})
 
 const showModalThird = (value: any) => {
 
-    console.log('showModalThird', thirdSelected)
+    //console.log('showModalThird', thirdSelected)
     isThird.value = true
   
 
@@ -313,7 +313,7 @@ const fetchProps = async () => {
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
-    console.log('RECORDobjets', record.value)
+    //console.log('RECORDobjets', record.value)
     record.value.half_full = await getCHOICE(record.value.half, 'HALF_CHOICES')
     record.value.condition_full = await getCHOICE(record.value.condition, 'TYPE_ACCIDENT_CHOICES')
     if (typeImg.value === 'imghd') {
@@ -345,7 +345,7 @@ const RegenerateHD = async (recordId: string) => {
                 'Content-Type': 'application/json',
             },
         });
-        console.log('Respuesta del servidor:', response);
+        //console.log('Respuesta del servidor:', response);
     } catch (error) {
         console.error('Error al procesar la imagen:', error);
     }
@@ -363,8 +363,8 @@ const handleModalClose = async (value: any) => {
     isPhoto.value = false
     //thirdSelected.value = {}
     isThird.value = false;  // Cerrar la modal
-    console.log('handleModalClose', thirdSelected)
-    console.log('handleModalClose', props.calendarEvent)
+    //console.log('handleModalClose', thirdSelected)
+    //console.log('handleModalClose', props.calendarEvent)
     await fetchRecord(props.calendarEvent?.id)
 
 
@@ -372,7 +372,7 @@ const handleModalClose = async (value: any) => {
 
 const handleThirdCreated = (newThird: any) => {
     createdThird.value = newThird; // Aquí puedes manejar el tercero creado (por ejemplo, mostrarlo en una lista)
-    console.log('Nuevo tercero creado:', createdThird.value);
+    //('Nuevo tercero creado:', createdThird.value);
     toast.add({ title: ` ${typeTT.value}` });
     if (typeTT.value == 'Medico') {
         record.value.third_medic_clinic_full = newThird;
@@ -407,14 +407,14 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 watch(isPhoto, (value) => {
-    console.log('isPhoto', isPhoto)
+    //console.log('isPhoto', isPhoto)
     if (!value) {
         fetchRecord(props.calendarEvent?.id)
     }
 });
 
 watch(isSing, (value) => {
-    console.log('isSing', isSing)
+    //console.log('isSing', isSing)
     if (!value) {
         fetchRecord(props.calendarEvent?.id)
     }

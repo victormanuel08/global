@@ -9,17 +9,17 @@ export const useAuthTokensStorage = createGlobalState(
 );
 
 watch(() => useAuthTokensStorage().accessToken.value, (value) => {
-  console.log('accessToken changed', value);
+
   const tokenCookie = useCookie('token');
   tokenCookie.value = value;
-  console.log('tokenCookieSTORE', tokenCookie.value);
+ 
 });
 
 watch(() => useAuthTokensStorage().refreshToken.value, (value) => {
-  console.log('refreshToken changed', value);
+ 
   const refreshTokenCookie = useCookie('refresh_token');
   refreshTokenCookie.value = value;
-  console.log('refreshTokenCookieSTORE', refreshTokenCookie.value);
+ 
 });
 
 export const useAuthUserStorage = createGlobalState(
@@ -38,7 +38,7 @@ export const refreshToken = async () => {
 
     // Almacena el nuevo token de acceso
     accessToken.value = response.access_token;
-    console.log('Token extendido con éxito');
+   
   } catch (e) {
     console.error('Error al refrescar el token:', e);
     useRouter().push('/'); // Si algo falla, redirige al login

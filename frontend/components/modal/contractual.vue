@@ -92,7 +92,7 @@ const police = ref({}as any)
 // police.value =   await getCHOICE(props.fee.policy_full?.type_police, 'TYPE_POLICE_CHOICES')
 
 watch(() => props.fee, async (newVal, oldVal) => {
-    console.log("PROPS", props.fee)
+    //console.log("PROPS", props.fee)
     if (props.fee.description==='Contrato SOAT') {
         return
     }else{
@@ -115,7 +115,7 @@ const recordsPolicy = async () => {
     records.value = response.results 
     //amount_records.value = records.value.map((record:any) => record.fee_full.amount).reduce((a:any, b:any) => a + b, 0);
     amount_records.value = records.value.map((record) => record.fee_full?.amount).map(Number).reduce((a, b) => a + b, 0);
-    console.log("RECORDSPOLICYS", records.value)  
+    //console.log("RECORDSPOLICYS", records.value)  
 }
 
 

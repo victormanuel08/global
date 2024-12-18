@@ -126,7 +126,7 @@ const sendEmail = async () => {
     // Maneja la respuesta del servidor
     if (response.ok) {
       const data = await response.json();
-      console.log('Respuesta del servidor:', data);
+      //console.log('Respuesta del servidor:', data);
       alert('Correo enviado correctamente');
     } else {
       console.error('Error al enviar el correo:', response.statusText);

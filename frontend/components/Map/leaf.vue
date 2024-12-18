@@ -127,7 +127,7 @@ const handleAddAccident = async () => {
 
     if (response.ok) {
       const newAccident = await response.json();
-      console.log('Accidente agregado:', newAccident);
+      //console.log('Accidente agregado:', newAccident);
 
       // Agregar el nuevo accidente al arreglo de accidentes
       accidents.value.push(newAccident);

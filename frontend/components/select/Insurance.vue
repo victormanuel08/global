@@ -68,7 +68,7 @@ const loader = async () => {
             method: 'GET',
             params: querySet.value
         });
-        console.log('responseIS FALSE', response);
+        //console.log('responseIS FALSE', response);
         for (const fee of response.results) {
             modelValue.value.services.push(fee);
             const especialidadExistente = uniqueSpecialities.find(
@@ -83,7 +83,7 @@ const loader = async () => {
         const feeResponse = await $fetch<any>(`/api/fees/?search&policy=${modelValue.value.id}`, {
             method: 'GET'
         });
-        console.log('feeResponseIS TRUEEEEE', feeResponse);
+        //console.log('feeResponseIS TRUEEEEE', feeResponse);
         for (const fee of feeResponse.results) {
             fee.service_full.amount = fee.amount;
             modelValue.value.services.push(fee.service_full);
@@ -99,7 +99,7 @@ const loader = async () => {
 
     modelValue.value.specialities = uniqueSpecialities;
 
-    console.log("dsdsdsdsds" + modelValue.value.description, modelValue.value);
+    //console.log("dsdsdsdsds" + modelValue.value.description, modelValue.value);
 };
 
 

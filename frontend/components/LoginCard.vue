@@ -56,7 +56,7 @@ const doLogin = async () => {
         loading.value = false
     } catch (error) {
         toast.add({ title: "Error en la autenticación" })
-        console.log(error)
+        //console.log(error)
         loading.value = false
     }
     authUserStorage.value = await $fetch(CURRENT_USER_PATH)

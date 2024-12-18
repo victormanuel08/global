@@ -524,7 +524,7 @@ const createNewThird = async () => {
 
 
 onMounted(async () => {
-    console.log('third?¿', thirdSelected.value)
+    //console.log('third?¿', thirdSelected.value)
     if (props.typeT === 'E' || props.typeT === 'C') {
         newThirdDocument.value = await getCHOICE('NI', 'TYPE_DOCUMENT_CHOICES')
     } else {

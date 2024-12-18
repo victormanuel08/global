@@ -120,7 +120,7 @@ const retrieveFromApi = async (q: any) => {
 }
 
 const saveServices = async () => {
-  console.log('Guardando', newServices.value + ' ' + procedures_others.value);
+  //console.log('Guardando', newServices.value + ' ' + procedures_others.value);
   if (newServices.value.find((element) => element === 16)) {
     checkedOthers.value = true
   } else {
@@ -137,7 +137,7 @@ const saveServices = async () => {
     })
   });
 
-  console.log('Respuesta:', response);
+  //console.log('Respuesta:', response);
 };
 
 const saveItem = async (index: number, field: string, value: string) => {

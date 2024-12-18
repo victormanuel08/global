@@ -24,7 +24,7 @@
   const extendSession = async () => {
     try {
       // Realiza una solicitud al backend para extender el token
-      console.log('Extendiendo sesión...');
+      //console.log('Extendiendo sesión...');
       await refreshToken();
       // Cierra el modal después de extender la sesión
       setShowModal(false);

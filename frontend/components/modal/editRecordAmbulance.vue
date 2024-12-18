@@ -55,7 +55,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-    console.log("onMountedce", props.calendarEvent);
+    //console.log("onMountedce", props.calendarEvent);
     creationPanelSelected.value = creationPanels["Third"];
     selectedPanel.value = "Third"; // Inicializamos con el panel actual
 });
@@ -91,7 +91,7 @@ function onChange(index: number) {
     const item = items[index];
     creationPanelSelected.value = creationPanels[item.panel];
     selectedPanel.value = item.panel;
-    console.log("onChange", creationPanelSelected.value.title);
+    //console.log("onChange", creationPanelSelected.value.title);
 }
 
 function onChangeDropdown() {

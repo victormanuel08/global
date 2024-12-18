@@ -187,7 +187,7 @@ const createRecordDetail = async () => {
 };
 const signedRecord = async () => {
     createRecordDetail()
-    console.log("NEW RECORD", newRecordDetail)    
+    //console.log("NEW RECORD", newRecordDetail)    
     isSing.value = true
 };
 

@@ -48,7 +48,7 @@ const createPolice = async () => {
         }
 
         newAmountTotal.value = valueSOAT.results[0].amount
-        console.log('newAmountTotal', newAmountTotal.value)
+        //console.log('newAmountTotal', newAmountTotal.value)
     }
     const response = await $fetch<any>('api/polices/', {
         method: 'POST',
@@ -64,7 +64,7 @@ const createPolice = async () => {
             date_end: newDateEnd.value,
         }
     })
-    console.log('PROPS', props)
+    //console.log('PROPS', props)
     const third = await $fetch<any>(`api/thirds/${props.third.id}`);
 
     third['policys'].push(response.id)

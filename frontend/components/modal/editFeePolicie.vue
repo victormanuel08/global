@@ -195,7 +195,7 @@ const uploadListFile = async (event: any) => {
 
     const file = fileInput.files[0];
     toast.add({ title: "Archivo seleccionado: " + file.name });
-    console.log("Archivo seleccionado:", file);
+    //console.log("Archivo seleccionado:", file);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -219,7 +219,7 @@ const uploadListFile = async (event: any) => {
         const text = e.target?.result as string;
         const lines = text.split('\n');
         for (const line of lines) {
-            console.log("line", line);
+            //console.log("line", line);
             //toast.add({ title: "line: " + line });
             // entidad,specialidad,service,polici,amount
             const [code, amount] = line.split(',');

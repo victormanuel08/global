@@ -147,10 +147,10 @@ if (props.calendarEvent) {
     }
 }
 
-console.log('calendarEvent', props.calendarEvent);
+//console.log('calendarEvent', props.calendarEvent);
 
 const showModalPolice = (value: any) => {
-    console.log('showModalThird', thirdSelected);
+    //console.log('showModalThird', thirdSelected);
     isPolice.value = true;
 };
 
@@ -213,7 +213,7 @@ const saveItem = async (index: number, field: string, value: string) => {
 };
 
 const savePolicyThird = async (index: number) => {
-    console.log('savePolicyThird', index, props.calendarEvent?.third_patient_full.id);
+    //console.log('savePolicyThird', index, props.calendarEvent?.third_patient_full.id);
 
     const policyarray = props.calendarEvent?.third_patient_full.policy.map((item: any) => item.id) || [];
     policyarray.push(index);
@@ -225,7 +225,7 @@ const savePolicyThird = async (index: number) => {
         }),
     });
 
-    console.log('Response:', response);
+    //console.log('Response:', response);
 };
 
 onMounted(() => {

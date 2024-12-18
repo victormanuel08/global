@@ -163,7 +163,7 @@ const createPolice = async () => {
             date_end: newDateEnd.value,
         }
     })
-    console.log('PROPS', props)
+    //console.log('PROPS', props)
     const third = await $fetch<any>(`api/thirds/${props.third.id}`);
 
     third['policys'].push(response.id)

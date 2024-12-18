@@ -209,7 +209,7 @@ const saveItem = async (index: number, field: string, value: string) => {
         user: value
       }
     });
-    console.log("hjhjhjh",response)
+
     if (response.results.length > 0 && response.results[0].id !== third.id) {
       
       toast.add({ title: "El usuario ya esta asignado" });
@@ -333,7 +333,7 @@ const uploadListFile = async (event: any) => {
 
   const file = fileInput.files[0];
   toast.add({ title: "Archivo seleccionado: " + file.name });
-  console.log("Archivo seleccionado:", file);
+ 
 
   const formData = new FormData();
   formData.append('file', file);
@@ -347,7 +347,7 @@ const uploadListFile = async (event: any) => {
     const text = e.target?.result as string;
     const lines = text.split('\n');
     for (const line of lines) {
-      console.log("line", line);
+   
       let [type_document, nit, name, second_name, last_name, second_last_name, date_birth, year_old, sex, email, phone, address, type, maternity_pregnancy, maternity_breasfeeding, maternity_breasfeeding_extend, maternity_breasfeeding_complementary, maternity_violence, ethnicity, blood_type, status, occupation, zone, allergies, pathologies, medications, liquids_foods, created_at, updated_at, city_id, city_birth_id, speciality_id, user_id, vehicle_id] = line.split(',');
       
       if (!email) {

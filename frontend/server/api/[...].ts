@@ -36,18 +36,18 @@ export default defineEventHandler(async (event) => {
 
     try {
         let url = `${API_URL}/${route}/`;
-        console.log("Request", url, headers);
+      
         const response = await $fetch(url, reqOpts);
         return response;
     } catch (error) {
-        console.log("Error", error);
+      
         if (error instanceof FetchError) {
             setResponseStatus(event, error.statusCode);
             if (error.statusCode === 401 && refreshToken) {
                 // Si el token ha expirado, intenta refrescarlo
                 const refreshed = await refreshAccessToken(refreshToken);
                 if (refreshed) {
-                    console.log("Token renovado exitosamente"); // Log cuando se renueva el token
+                 
                     // Reintenta la solicitud con el nuevo token
                     headers["Authorization"] = `Bearer ${refreshed.accessToken}`;
                     const retryResponse = await $fetch(url, reqOpts);
@@ -67,10 +67,10 @@ const refreshAccessToken = async (refreshToken: string) => {
             method: 'POST',
             body: { refreshToken },
         });
-        console.log("Refresh token enviado, respuesta:", response); // Log del intento de refrescar el token
+      
         return response;
     } catch (error) {
-        console.error("Error al renovar token:", error);
+       
         return null;
     }
 };

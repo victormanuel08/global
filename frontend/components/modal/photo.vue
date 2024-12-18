@@ -82,7 +82,7 @@ const takePhoto = () => {
 
 const saveImage = async (index: number, field: string, blob: Blob) => {
   try {
-    console.log("blob", blob);
+    //console.log("blob", blob);
     const file = new File([blob], 'HC-' + field + '-' + index + '.jpeg', { type: 'image/jpeg' });
     const formData = new FormData();
     formData.append(field, file);

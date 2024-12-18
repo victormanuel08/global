@@ -182,7 +182,7 @@ const getLocation = () => {
 }
 
 function getColorForPriority(priorityName: any) {
-    console.log('color', priorityName)
+    //console.log('color', priorityName)
     switch (priorityName) {
         case 'red':
             return 'red'; // Color para alta prioridad

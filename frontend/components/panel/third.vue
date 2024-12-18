@@ -3,7 +3,7 @@
         <div class="mr-2" v-if="record.third_medic_full?.speciality_full.code === 'AMB'">
             <label class="block text-sm font-medium text-gray-700">Prioridad:</label>
             <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
-                @change="saveItem(record.id, 'priority', record.priority_full.id), console.log(record.priority_full)"
+                @change="saveItem(record.id, 'priority', record.priority_full.id)"
                 :style="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'"
                 :color="record.priority_full?.id === 'R' ? 'background-color: red' : record.priority_full?.id === 'Y' ? 'background-color: yellow' : record.priority_full?.id === 'G' ? 'background-color: green' : record.priority_full?.id === 'W' ? 'background-color: white' : 'background-color: black'">
             </SelectChoice>
@@ -336,7 +336,7 @@ const handleModalClose = () => {
 
 const handleThirdCreated = (newThird: any) => {
   createdThird.value = newThird; // Aquí puedes manejar el tercero creado (por ejemplo, mostrarlo en una lista)
-  console.log('Nuevo tercero creado:', createdThird.value);
+  //console.log('Nuevo tercero creado:', createdThird.value);
   if (typeTT.value =='Paciente') {
     record.value.third_patient_full = newThird;
     saveItem(record.value.id, 'third_patient', newThird.id);

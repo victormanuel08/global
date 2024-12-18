@@ -49,7 +49,7 @@ const saveExams = async () => {
     general_exam: record.value?.general_exam
     })
   });
-  console.log('Respuesta:', response);
+  //console.log('Respuesta:', response);
 };
 
 const fetchExams = async () => {

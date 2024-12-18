@@ -282,7 +282,7 @@ const clear = () => {
 
 }
 watch(() => thirdSelected.type_full, async (newValue, oldValue) => {
-    console.log('new', newValue)
+    //console.log('new', newValue)
     if (newValue.id !== 'P' && newValue.id !== 'M') {
         typeTA.value = '';
     } else {
@@ -470,7 +470,7 @@ const createThird = async () => {
 
 
 onMounted(async () => {
-    console.log('third?¿', thirdSelected.value)
+    //console.log('third?¿', thirdSelected.value)
     if (props.typeT === 'E' || props.typeT === 'C') {
         newThirdDocument.value = await getCHOICE('NI', 'TYPE_DOCUMENT_CHOICES')
 

@@ -24,7 +24,7 @@ const search = async (q: string) => {
         }
     })
   
-    console.log('responseADRES', response)
+    //console.log('responseADRES', response)
     return response
 }
 </script>
