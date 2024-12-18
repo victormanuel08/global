@@ -67,7 +67,7 @@ export default defineNuxtRouteMiddleware((to) => {
   let decodedToken;
   try {
     decodedToken = jwtDecode(accessToken.value);
-    console.log("Tenemos token");
+    //console.log("Tenemos token");
     if (!decodedToken || !decodedToken.exp) {
       return navigateTo("/");
     }

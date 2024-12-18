@@ -101,7 +101,7 @@ export const getCHOICE = async (value: string, choices: string) => {
   }
 
   if (storedData) {
-    console.log("Datos encontrados, devolviendo:", storedData);
+   
     return JSON.parse(storedData);
   }
 
