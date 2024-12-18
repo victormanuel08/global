@@ -30,7 +30,7 @@ export default {
 
         // Puedes acceder a la firma como base64
         const signatureData = signaturePad.toDataURL();
-        console.log('Firma en base64:', signatureData);
+    
     },
     methods: {
         clearSignature() {
@@ -40,7 +40,7 @@ export default {
         saveSignature() {
             const signatureData = this.$refs.signatureCanvas.toDataURL('image/png');
             // Aquí puedes hacer algo con la firma guardada (por ejemplo, enviarla al servidor)
-            console.log('Firma guardada:', signatureData);
+        
         },
     },
 };

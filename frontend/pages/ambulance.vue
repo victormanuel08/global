@@ -16,9 +16,9 @@ const create = async (value: any) => {
                 
             },
         })
-        console.log('response', response)
+      
         recordObject.value = response
-        console.log('recordObject', recordObject.value)
+     
 }
 onMounted(() => {
   const message = confirm('¿Estás seguro de crear un Rgeistro de Ambulancia?')

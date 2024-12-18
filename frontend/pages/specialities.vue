@@ -103,7 +103,7 @@ const fetchSpecialities = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/specialities/");
 
-  console.log('fetchSpecialities', specialities.value)
+
 
 }
 

@@ -93,7 +93,7 @@ const fetchGeneralExams = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/general_exam/");
 
-  console.log('fetchGeneralExams', generalexams.value)
+
 
 }
 

@@ -76,13 +76,13 @@ const retrieveFromApi = async () => {
 
     // Si hay un tercero (props.third) y el tipo es 'SE', lo agregamos a los resultados
     if (props.third && props.thirdType === 'SE') {
-        console.log('props.thirdapi', props.third);
+     
         response.results.push(props.third);
     }
 
     // Asignamos los resultados a las opciones
     options.value = response.results;
-    console.log('optionsTQP', options.value);
+  
 };
 
 

@@ -39,7 +39,7 @@ const retrieveFromApi = async () => {
         });
 
         // Agrega el objeto vacío al principio de la lista
-        console.log('CITASASEGURADORA VIEJAS', response.results)
+    
         options.value = [
             {         
                 insurance: 0,       

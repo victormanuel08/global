@@ -28,7 +28,7 @@ export default {
         signaturePad.penColor = 'blue';
        
         const signatureData = signaturePad.toDataURL();
-        console.log('Firma en base64:', signatureData);
+     
     },
     methods: {
         clearSignature() {
@@ -38,7 +38,7 @@ export default {
         saveSignature() {
             const signatureData = this.$refs.signatureCanvas.toDataURL('image/png');
            
-            console.log('Firma guardada:', signatureData);
+          
         },
     },
 };

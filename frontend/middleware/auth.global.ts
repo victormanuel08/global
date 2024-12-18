@@ -82,7 +82,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
   // Si queda menos de 60 segundos, renovamos el token
   if (remainingTime < 300000) {
-    console.log("Token está por caducar, intentando renovarlo...");
+
 
     if (refreshToken.value) {
       $fetch("/api/auth/refresh", {
@@ -90,7 +90,7 @@ export default defineNuxtRouteMiddleware((to) => {
         body: { refreshToken: refreshToken.value },
       }).then((response) => {
         if (response.accessToken) {
-          console.log("Token renovado exitosamente."); // Log cuando se renueva el token
+        
           accessToken.value = response.accessToken;
           useCookie('token').value = response.accessToken;
         }
@@ -111,7 +111,7 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   if (expDT < nowDT) {
-    console.log("El token ha caducado, redirigiendo a login...");
+
     return navigateTo("/");
   }
 });

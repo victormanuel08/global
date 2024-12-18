@@ -98,7 +98,7 @@ const saveGroupPermissions = async (group: any) => {
         })
         saving.value = false
         toast.add({ title: 'Guardado' })
-        console.log('saveGroupPermissions', response)
+
         fetchGroups()
     } catch (e) {
         console.error(e)

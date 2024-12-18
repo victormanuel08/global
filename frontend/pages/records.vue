@@ -115,7 +115,7 @@ const fetchRecords = async () => {
     search: querySet,
     pending,
   } = usePaginatedFetch<any>("/api/records/");
-  console.log('fetchRecords', records.value)
+
   records.value = records.value.map((record: any) => {
     record.date_time = formatDateTime(record.date_time)
     return record
@@ -177,7 +177,7 @@ interface Record {
 }
 
 const showModalRecord = async (val: Record) => {
-  console.log('record', val)
+ 
   isAmbulance.value = false
   isMedicalOffice.value = false
   if (val.number_report || val.third_medic_full?.speciality_full?.code == 'AMB') {

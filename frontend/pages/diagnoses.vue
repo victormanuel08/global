@@ -108,7 +108,7 @@ const fetchDiagnoses = async () => {
     search,
     pending,
   } = usePaginatedFetch<any>("/api/diagnoses/");
-  console.log('fetchDiagnoses', diagnoses.value)
+
 }
 
 const deleteDiagnose = async (id: number) => {

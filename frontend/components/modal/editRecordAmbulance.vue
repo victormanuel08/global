@@ -98,7 +98,7 @@ function onChangeDropdown() {
     const panel = items.find((item) => item.panel === selectedPanel.value);
     if (panel) {
         creationPanelSelected.value = creationPanels[panel.panel];
-        console.log("onChangeDropdown", creationPanelSelected.value.title);
+        //console.log("onChangeDropdown", creationPanelSelected.value.title);
     }
 }
 

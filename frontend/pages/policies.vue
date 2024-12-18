@@ -259,7 +259,7 @@ const feePolicies = (policy: any) => {
   isFee.value = false
   policeObject.value = policy
   isFee.value = true
-  console.log('feePolicies', policy)
+ 
 }
 
 const ui = {
@@ -287,7 +287,7 @@ const uploadListFile = async (event: any) => {
 
   const file = fileInput.files[0];
   toast.add({ title: "Archivo seleccionado: " + file.name });
-  console.log("Archivo seleccionado:", file);
+
 
   const formData = new FormData();
   formData.append('file', file);
@@ -302,7 +302,7 @@ const uploadListFile = async (event: any) => {
     const text = e.target?.result as string;
     const lines = text.split('\n');
     for (const line of lines) {
-      console.log("line", line);
+
       //toast.add({ title: "line: " + line });
       // 13279115,NOMBREPOLIZA,2024-09-03,2024-09-03,EV,MP,1000000
       const [nit, description, name, date_start, date_end, fp, tp, amount] = line.split(',');
@@ -311,7 +311,7 @@ const uploadListFile = async (event: any) => {
       })
       toast.add({ title: "Nit: " + nit + " Descripcion: " + description + " Fecha Inicio: " + date_start + " Fecha Fin: " + date_end + " Forma de Pago: " + fp + " Tipo de Poliza: " + tp + " Monto: " + amount });
 
-      console.log("third_entity", third_entity.results[0]);
+ 
       const thirdEntityId = third_entity.results[0]?.id ?? 0;
       if (thirdEntityId === 0) {
         toast.add({ title: "No se ha encontrado la entidad con NIT: " + nit });
@@ -344,7 +344,7 @@ const uploadListFile = async (event: any) => {
       const polices: { results: any[] } = await $fetch(`api/polices/?third_entity=${thirdEntityId}&description=${description}&date_start=${date_start}&date_end=${date_end}`, {
         method: 'GET'
       })
-      console.log("polices", polices);
+
 
       const priceEditing = {
         third_entity: thirdEntityId,

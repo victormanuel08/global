@@ -22,7 +22,7 @@ export const formatDate = (date: string) => {
 }
 
 export const formatDateYYYYMMDD = (date: string): string => {
-  console.log(date);
+
   
   // Verificar si la fecha está en formato ISO
   if (date.includes('T')) {
@@ -92,12 +92,12 @@ export const getCHOICE = async (value: string, choices: string) => {
   const storageKey = `choices_${choices}_${value}`;
   let storedData = localStorage.getItem(storageKey);
 
-  console.log("Datos almacenados en localStorage:", storedData);
+
 
   if (!storedData) {
     const cookie = useCookie(storageKey);
     storedData = cookie.value ?? null;
-    console.log("Datos obtenidos de la cookie:", storedData);
+
   }
 
   if (storedData) {
@@ -106,7 +106,7 @@ export const getCHOICE = async (value: string, choices: string) => {
   }
 
   const response = await $fetch<any>(`api/api/choices/${choices}/${value}`);
-  console.log("Datos obtenidos de la API:", response);
+
 
   localStorage.setItem(storageKey, JSON.stringify(response));
   const cookie = useCookie(storageKey);

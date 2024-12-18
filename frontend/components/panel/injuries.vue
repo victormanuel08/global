@@ -139,7 +139,7 @@ const newRecordLiquidsFoods = ref('Niega líquidos y alimentos')
 
 const handleDiagnosesChange = (value: any) => {
     record.value.diagnosis_multi_full = value;
-    console.log('Valor seleccionado:', value);
+   
     // Aquí puedes llamar a viewDiagnosesSecondaries si es necesario // 
     viewDiagnosesSecondaries(record.value.id);
 };
@@ -162,7 +162,7 @@ const downloadImage = async () => {
 
 const saveImage = async (index: number, field: string, blob: Blob) => {
     try {
-        console.log("blob", blob)
+      
         const file = new File([blob], 'HC-Lesiones-' + index + '.png', { type: 'image/png' });
         const formData = new FormData();
         formData.append(field, file);
@@ -183,13 +183,13 @@ const saveImage = async (index: number, field: string, blob: Blob) => {
 const viewDiagnosesSecondaries = async (value: any) => {
     selectedDiagnoses.value = record.value.diagnosis_multi_full;
     const diagnosisIds = selectedDiagnoses.value.map(diagnosis => diagnosis.id);
-    console.log('diagnosisIds', diagnosisIds);
+ 
     try {
         const response = await $fetch(`api/records/${value}`, {
             method: 'PATCH', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ diagnosis_multiple: diagnosisIds }),
         });
-        console.log('Response:', response);
+     
     }
     catch (error) {
         console.error('Error al guardar los diagnósticos:', error);
@@ -228,7 +228,7 @@ const saveHistory = async () => {
 
 onMounted(() => {
     fetchRecord(props.calendarEvent?.id)
-    console.log('DMF', record.value.diagnosis_multi_full)
+  
     selectedDiagnoses.value = record.value.diagnosis_multi_full
     // handleDiagnosesChange(record.value.diagnosis_multi)
 });
@@ -242,7 +242,7 @@ type injurie = {
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
-    console.log('RECORDobjetsFEETRECORD', record.value)
+  
 
 
     record.value.body_part_full = await getCHOICE(record.value.body, 'BODY_PART_CHOICES')
@@ -289,34 +289,32 @@ const createListInjuries = async (body_part: any, body_part_side: any, injurie: 
     }
     if (body_part.id === 'MI' && body_part_side.id) {
         pointStart = await getCHOICE(body_part_side?.id, 'BODY_PART_SIDE_CHOICES');
-        console.log('pointStart1', pointStart)
+       
     } else {
         pointStart = await getCHOICE(body_part?.id, 'BODY_PART_CHOICES');
-        console.log('pointStart2', pointStart)
+     
     }
 
     if (!point) {
-        console.log('no point')
+     
         if (sex === 'F') {
             const valoresFemeninos = pointStart.female.split(',').map(Number);
             point = Math.min(...valoresFemeninos);
-            console.log('pointF', point)
+         
         } else if (sex === 'M') {
             const valoresMasculinos = pointStart.male.split(',').map(Number);
             point = Math.min(...valoresMasculinos);
-            console.log('pointM', point)
+           
         }
     }
     if (body_part_side.id) {
         listInjuries.value.push({ body_part: body_part_side, injurie: injurie, point: point });
         listBody.value.push(body_part_side.id);
-        console.log('body_part_side1', listInjuries.value)
-        console.log('body_part_side1', listBody.value)
+     
     } else {
         listInjuries.value.push({ body_part: body_part, injurie: injurie, point: point });
         listBody.value.push(body_part.id);
-        console.log('body_part_side2', listInjuries.value)
-        console.log('body_part_side2', listBody.value)
+      
     }
 
     cleanFields();
@@ -330,16 +328,12 @@ const deleteInjury = async (injuryToDelete: any) => {
 };
 
 const showRegion = async (n: number) => {
-    console.log('pointshowregion    1', n)
+   
     
     point.value = n
     record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', 'M');
     record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', 'M');
 
-    console.log('pointshowregion2', point.value)
-    console.log('injuries', listInjuries.value)
-    console.log('body_part_full', record.value.body_part_full)
-    console.log('body_part_side_full', record.value.body_part_side_full)
 
 }
 
@@ -364,7 +358,7 @@ const retrieveFromApi = async (q: any) => {
 }
 
 const saveServices = async () => {
-    console.log('Guardando', newServices.value + ' ' + procedures_others.value);
+  
     const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
         method: 'Patch',
         body: JSON.stringify({
@@ -372,7 +366,7 @@ const saveServices = async () => {
             procedures_others: procedures_others?.value
         })
     });
-    console.log('Respuesta:', response);
+   
 };
 
 </script>

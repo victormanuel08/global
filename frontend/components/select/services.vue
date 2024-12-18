@@ -19,7 +19,7 @@ type Props = {
 }
 
 const onMounted = async () => {
-    console.log('mounted', props)
+   
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -28,14 +28,12 @@ const props = withDefaults(defineProps<Props>(), {
     insurance: ''
 })
 
-console.log('stprops', props)
-console.log('isurance', props.insurance)
 
 const clickHandler = () => {
     retrieveFromApi()
 }
 const retrieveFromApi = async () => {
-    console.log('insurance', props.insurance);
+ 
     const queryParams: any = {
         search: query.value,
     };
@@ -56,8 +54,7 @@ const retrieveFromApi = async () => {
     });
 
     options.value = response.results;
-    console.log('optionsTQP', options.value);
-    console.log('insurance', props.insurance);
+   
 };
 
 

@@ -23,16 +23,16 @@ const create = async (value: any) => {
         third_driver: authUserStorage?.value?.third?.vehicle_full?.id,
       },
     });
-    console.log('response', response);
+   
 
     // Guardar el ID del último registro en el almacenamiento
     authUserStorage.value.lastRecord = response.id; // Guardamos el ID o la referencia del último registro
 
     // Actualizamos el objeto recordObject con el nuevo registro
     recordObject.value = response;
-    console.log('recordObject', recordObject.value);
+  
   } catch (error) {
-    console.error('Error al crear el registro:', error);
+   
   }
 };
 
@@ -43,7 +43,7 @@ const fetchLastRecord = () => {
 
 // Lógica al montar el componente
 onMounted(async () => {
-  console.log('store', authUserStorage?.value);
+ 
 
   // Verificamos si hay un último registro guardado en el almacenamiento
   const lastRecordId = fetchLastRecord();

@@ -43,7 +43,7 @@
                         v-model="newScheduledSpeciality" 
                       
                         class="border rounded p-1 w-64"
-                        @change="console.log(newScheduledSpeciality)">
+                        >
                     </SelectSpecialities>
                 </div>
                 <div v-if="newScheduledSpeciality.code === '012'">
@@ -182,7 +182,7 @@ const calendarOptions = computed(() => ({
         if (info.event.extendedProps.record) {
             newScheduledRecord.value = info.event.extendedProps.record;
             calendarEvent.value = info.event.extendedProps;
-            console.log('calendarEvent', calendarEvent.value)
+
         } else {
             selectedEventId.value = info.event.extendedProps.scheduled;
             newScheduledPatient.value = info.event.extendedProps.patient;

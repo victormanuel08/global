@@ -200,7 +200,7 @@ const deleteThird = async (id: number) => {
 
 const saveItem = async (index: number, field: string, value: string) => {
   const third = thirds.value[index];
-  console.log("value", value)
+
   third[field] = value;
   if (field === 'user' && value) {
     const response: { results: any[] } = await $fetch(`api/thirds/`, {

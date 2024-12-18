@@ -33,7 +33,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if (remainingTime <= 5 * 60 * 1000) {
       // Si quieres extender el token por 10 minutos más, realiza una petición para refrescar el token
       // Aquí agregas el código que actualiza el token.
-      console.log('Token cerca de expirar, extendiendo...');
+
       await refreshToken();  // Asegúrate de que este método existe en tu store o lógica de token
     }
 

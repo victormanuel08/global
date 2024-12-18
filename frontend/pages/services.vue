@@ -146,7 +146,7 @@ const fetchServices = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/services/");
 
-  console.log('fetchServcies', services.value)
+
 
 }
 
@@ -244,7 +244,7 @@ const uploadListFile = async (event: any) => {
 
   const file = fileInput.files[0];
   toast.add({ title: "Archivo seleccionado: " + file.name });
-  console.log("Archivo seleccionado:", file);
+
 
   const formData = new FormData();
   formData.append('file', file);
@@ -266,10 +266,10 @@ const uploadListFile = async (event: any) => {
     const text = e.target?.result as string;
     const lines = text.split('\n');
     for (const line of lines) {
-      console.log("line", line);
+
       toast.add({ title: "line: " + line });
       const [code, description,  pricesoat, priceparticular] = line.split(',');
-      console.log("code", code, "description", description, "pricesoat", pricesoat, "priceparticular", priceparticular);
+     
       if (newServiceSpeciality.value.id !== undefined) {
         toast.add({ title: "Actualizando Servicio: " + code });
         await updateServicesList(newServiceSpeciality.value.id, code, description, parseFloat(pricesoat), parseFloat(priceparticular));
@@ -307,7 +307,7 @@ const updateServicesList = async (speciality: number, code: string, description:
             method: 'GET'
         })
         toast.add({ title: `Actualizando precio para el código ${code}` })
-        console.log("SERVICES", services)
+ 
         const priceEditing = {
                 code: code,
                 description: description,

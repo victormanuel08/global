@@ -113,7 +113,7 @@ const fetchCities = async () => {
     pending,
   } = usePaginatedFetch<any>("/api/cities/");
 
-  console.log('fetchCities', cities.value)
+
 
 }
 

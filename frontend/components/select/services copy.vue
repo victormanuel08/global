@@ -23,7 +23,7 @@ filteredServices.length = 0;
 
 const loadOptions = async () => {
     filteredServices.length = 0;
-    console.log('LOAD OPTIONS',props);
+ 
     if (props.services) {
         for (const key in props.services) {
             if (Object.prototype.hasOwnProperty.call(props.services, key)) {
@@ -42,10 +42,10 @@ const loadOptions = async () => {
 const search = async (q: string) => {
    
     filteredServices.length = 0;
-    console.log('LOAD OPTIONSquery',props);
+   
     if (props.services) {    
         for (const key in props.services) {
-            console.log('KEY',key);
+          
             if (Object.prototype.hasOwnProperty.call(props.services, key)) {
                 if (props.services[key].speciality === props.specialities.id) {
                     filteredServices.push(props.services[key]);
@@ -54,7 +54,7 @@ const search = async (q: string) => {
         }       
         return filteredServices;
     } else {
-        console.log('NO VENGO DE PROPS');
+   
         const response = await $fetch<any>("api/services", {
             query: {
                 search: q

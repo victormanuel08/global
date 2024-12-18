@@ -55,7 +55,7 @@ const takePhoto = () => {
   );
   context.scale(1 / ratio, 1 / ratio);
   const data = canvas.toDataURL("image/png");
-  console.log(data);
+
   (imgEl.value as HTMLImageElement).setAttribute("src", data);
   taked.value = true;
   photob64.value = data;

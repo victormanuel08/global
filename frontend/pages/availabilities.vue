@@ -245,7 +245,7 @@ const saveItem = async (index: number, field: string, value: string) => {
       [field]: value,
     }),
   });
-  console.log('saveItem',response)
+ 
     fetchAvailabilities();
 };
 
@@ -267,7 +267,7 @@ const createAvailability = async () => {
   // Insertar registros para cada fecha
   for (const date of newAvailabilityDay.value.days.split(',')) {
     toast.add({title: 'Creando Cronograma', description: 'Por favor espere...'});
-    console.log('createAvailability',formatDateYYYYMMDD(date))
+ 
     const response = await $fetch('api/availabilities/', {
       method: 'POST',
       body: {        
@@ -293,7 +293,7 @@ onMounted(() => {
 })
 
 watch (newAvailabilityDay, async (newDay, oldDay) => {
-  console.log('newAvailabilityDay',newDay)
+ 
 })
 
 watch([newAvailabilityStartTime1, newAvailabilityEndTime1, newAvailabilityTime], async ([newStartTime, newEndTime, newTime], [oldStartTime, oldEndTime, oldTime]) => {
@@ -308,12 +308,12 @@ const ui = {
 }
 
 const calcQuota = (timestart: string, timeend: string, timeValue: number) => {
-  console.log('calcQuota',timestart, timeend, timeValue)
+ 
   const startTimeMinutes = parseInt(timestart.split(':')[0]) * 60;
   const endTimeMinutes = parseInt(timeend.split(':')[0]) * 60;
   const durationMinutes = endTimeMinutes - startTimeMinutes;
   const quota = durationMinutes / timeValue;
-  console.log('calcQuota',quota)
+ 
   newAvailabilityQuota.value = quota
   return quota
 };

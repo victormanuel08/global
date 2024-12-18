@@ -55,7 +55,7 @@ const search = async (q: string) => {
        
         return filteredServices;
     } else {
-        console.log('NO VENGO DE PROPS');
+      
         const response = await $fetch<any>("api/services", {
             query: {
                 search: q

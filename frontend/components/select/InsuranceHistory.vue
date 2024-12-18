@@ -35,14 +35,14 @@ const retrieveFromApi = async () => {
         confirmed: true,
         
     };
-    console.log('QUERY PARAMSHISTORY', queryParams)
+   
     try {
         const response = await $fetch<any>("api/scheduleds/", {
             query: queryParams,
         });
 
         // Agrega el objeto vacío al principio de la lista
-        console.log('CITASASEGURADORA VIEJAS', response.results)
+     
         options.value = [
            // {   insurance: 1,    concat: "Sin Aseguradora",            },            
             {   insurance: 0,  concat: "Nuevo Caso Terapia",        },

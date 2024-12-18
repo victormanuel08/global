@@ -109,7 +109,7 @@ const fetchScheduleds = async () => {
     search,
     pending,
   } = usePaginatedFetch<any>("/api/scheduleds/");
-  console.log('fetchRecords', scheduleds.value)
+
 }
 
 const deleteScheduled = async (id: number) => {
@@ -154,7 +154,7 @@ const addHistory =async (value: any) => {
  if (value.record) {
     alert('Esta Cita ya tiene Historia Medica')
     const response =await  $fetch(`api/records/${value.record}/`)
-    console.log('responseQ', response)
+
     recordObject.value = response
     isMedicalOffice.value = true
     return
