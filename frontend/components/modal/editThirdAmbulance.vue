@@ -30,6 +30,10 @@
                             <Label class="block text-sm font-medium text-gray-700">Genero:</label>
                             <SelectChoice :choiceType="'SEX_CHOICES'" v-model="newThirdSex" />
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Ciudad Residencia:</label>
+                            <SelectCities v-model="newThirdSelectedCity_full" />
+                        </div>
                     </div>
                     <div v-if="!thirdSelected?.id || props.typeTA === 'A'"
                         :class="newThirdDocument?.id === 'NI' ? 'grid grid-cols-1 gap-2 md:grid-cols-1' : 'grid grid-cols-1 gap-2 md:grid-cols-2'">
@@ -139,7 +143,7 @@
 
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Ciudad:</label>
+                    <label class="block text-sm font-medium text-gray-700">Ciudad Residencia:</label>
                     <SelectCities v-model="thirdSelected.city_full"
                         @change="saveItem(thirdSelected.id, 'city', thirdSelected.city_full.id)" />
                 </div>

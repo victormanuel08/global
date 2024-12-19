@@ -116,7 +116,7 @@
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700">Profesion: </label>
-            {{ record.third_patient_full?.occupation_full?.profesion }}
+            {{ record.third_patient_full?.profesion }}
         </div>
 
     </div>
@@ -267,12 +267,12 @@ const fetchRecord = async (q: any) => {
     if (!q) return
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
-    record.value.third_patient_full.type_full = await getCHOICE(response.third_patient_full.type_full, 'TYPE_CHOICES')
 
+    record.value.third_patient_full.type_full = await getCHOICE(record.value.third_patient_full.type_full, 'TYPE_CHOICES')
     record.value.priority_full = await getCHOICE(response.priority, 'PRIORITY_CHOICES')
     record.value.external_cause_full = await getCHOICE(response.external_cause, 'EXTERNAL_CAUSE_CHOICES')
     record.value.relationship_full = await getCHOICE(response.relationship, 'RELATIONSHIP_CHOICES')
-    record.value.third_patient_full.type_full = await getCHOICE(record.value.third_patient_full.type_full, 'TYPE_CHOICES')
+   
     record.value.third_patient_full.sex_full = await getCHOICE(record.value.third_patient_full.sex_full, "SEX_CHOICES")
     record.value.third_patient_full.blood_full = await getCHOICE(record.value.third_patient_full.blood_type, "BLOOD_CHOICES")
     record.value.third_patient_full.etnia_full = await getCHOICE(record.value.third_patient_full.etnia_full, "ETNIAS_CHOICES")

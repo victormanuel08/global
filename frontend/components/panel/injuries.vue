@@ -36,9 +36,10 @@
             <div class="grid-container2" style="width: 450px; height: 500px; position: relative;">
                 <img src="@/assets/img/body.png" alt="Imagen" v-if="record.third_patient_full?.sex !== 'F'" />
                 <img src="@/assets/img/body.png" alt="Imagen" v-else />
-                <div class="grid-container">
-                    <div v-for="n in 768" :key="n" class="grid-item" @click="showRegion(n)">
-                      {{ n }}
+                <div class="grid-container" :class="{ transparent: isSaving }">
+                    <div v-for="n in 768" :key="n" class="grid-item" :class="{ hideContent: isSaving }"
+                        @click="showRegion(n)">
+                        {{ n }}
                         <div v-for="(injurie, index) in listInjuries" :key="injurie.id">
                             <div class="square" v-if="injurie.point === n">
                                 <div class="circle">{{ index + 1 }}</div>
@@ -120,6 +121,9 @@
 
 <script lang="ts" setup>
 import html2canvas from 'html2canvas';
+import Swal from 'sweetalert2';
+
+const toast = useToast();
 const newInjurie = ref('')
 const listInjuries = ref([] as injurie[])
 const listInjuries2 = ref([] as any[])
@@ -127,6 +131,8 @@ const listBody = ref([] as any[])
 const point = ref(0)
 const procedures_others = ref('')
 const newServices = ref([] as number[]);
+
+const isSaving = ref(false);
 
 const selectedDiagnoses = ref<{ id: number }[]>([]);
 
@@ -139,7 +145,7 @@ const newRecordLiquidsFoods = ref('Niega líquidos y alimentos')
 
 const handleDiagnosesChange = (value: any) => {
     record.value.diagnosis_multi_full = value;
-   
+
     // Aquí puedes llamar a viewDiagnosesSecondaries si es necesario // 
     viewDiagnosesSecondaries(record.value.id);
 };
@@ -162,7 +168,7 @@ const downloadImage = async () => {
 
 const saveImage = async (index: number, field: string, blob: Blob) => {
     try {
-      
+
         const file = new File([blob], 'HC-Lesiones-' + index + '.png', { type: 'image/png' });
         const formData = new FormData();
         formData.append(field, file);
@@ -176,20 +182,21 @@ const saveImage = async (index: number, field: string, blob: Blob) => {
         });
 
     } catch (error) {
-        console.error('Error en la solicitud al servidor:', error);
+        //console.error('Error en la solicitud al servidor:', error);
+        toast.add({ title: 'Error', description: 'Error al guardar la imagen'});
     }
 };
 
 const viewDiagnosesSecondaries = async (value: any) => {
     selectedDiagnoses.value = record.value.diagnosis_multi_full;
     const diagnosisIds = selectedDiagnoses.value.map(diagnosis => diagnosis.id);
- 
+
     try {
         const response = await $fetch(`api/records/${value}`, {
             method: 'PATCH', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ diagnosis_multiple: diagnosisIds }),
         });
-     
+
     }
     catch (error) {
         console.error('Error al guardar los diagnósticos:', error);
@@ -228,7 +235,7 @@ const saveHistory = async () => {
 
 onMounted(() => {
     fetchRecord(props.calendarEvent?.id)
-  
+
     selectedDiagnoses.value = record.value.diagnosis_multi_full
     // handleDiagnosesChange(record.value.diagnosis_multi)
 });
@@ -242,7 +249,7 @@ type injurie = {
 const fetchRecord = async (q: any) => {
     const response = await $fetch<any>("api/records/" + q)
     record.value = response
-  
+
 
 
     record.value.body_part_full = await getCHOICE(record.value.body, 'BODY_PART_CHOICES')
@@ -253,26 +260,56 @@ const fetchRecord = async (q: any) => {
 
 }
 
-const saveInjuries = async (index: number, injuries: object[], body: any, injuries2: object[]) => {
+const saveInjuries = async (
+  index: number,
+  injuries: object[],
+  body: any,
+  injuries2: object[]
+) => {
+  try {
+    // Cambiar el estado para activar las clases
+    isSaving.value = true;
 
-    let newConcatInjuries = '';
-
+    // Procesar las lesiones
+    let newConcatInjuries = "";
     for (const injury of injuries) {
-        newConcatInjuries += `${injury.body_part.name}  ${injury.injurie}\n`;
-
+      newConcatInjuries += `${injury.body_part.name}  ${injury.injurie}\n`;
     }
 
+    // Guardar los datos en el servidor
     const response = await $fetch(`api/records/${index}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-            body: body,
-            injuries: newConcatInjuries,
-            list_injuries: JSON.stringify(injuries)
-        }),
+      method: "PATCH",
+      body: JSON.stringify({
+        body: body,
+        injuries: newConcatInjuries,
+        list_injuries: JSON.stringify(injuries),
+      }),
     });
-    fetchRecord(props.calendarEvent?.id);
-    alert('Lesiones guardadas correctamente')
+
+    // Simular el tiempo de guardado si es necesario
+    await fetchRecord(props.calendarEvent?.id);
+
+    Swal.fire({
+    title: '¡Éxito!',
+    text: 'Lesiones guardadas correctamente',
+    icon: 'success',
+    confirmButtonText: 'Aceptar'
+    });
     downloadImage();
+  } catch (error) {
+    //console.error("Error al guardar las lesiones:", error);
+    
+    
+    Swal.fire({
+    title: '¡Érror!',
+    text: 'Hubo un problema al guardar las lesiones',
+    icon: 'error',
+    confirmButtonText: 'Aceptar'
+    });
+  } finally {
+    // Restaurar el estado al finalizar
+    isSaving.value = false;
+  }
 };
 
 const cleanFields = async () => {
@@ -285,40 +322,46 @@ const cleanFields = async () => {
 const createListInjuries = async (body_part: any, body_part_side: any, injurie: string, point: number, sex: string) => {
     let pointStart
     if (body_part.id === 'MI' && !body_part_side.id) {
-        return alert('Seleccione una parte del cuerpo')
+        return toast.add({ title: 'Error', description: 'Debe seleccionar un miembro inferior' });
     }
     if (body_part.id === 'MI' && body_part_side.id) {
         pointStart = await getCHOICE(body_part_side?.id, 'BODY_PART_SIDE_CHOICES');
-       
+
     } else {
         pointStart = await getCHOICE(body_part?.id, 'BODY_PART_CHOICES');
-     
+
     }
 
     if (!point) {
-     
+
         if (sex === 'F') {
             const valoresFemeninos = pointStart.female.split(',').map(Number);
             point = Math.min(...valoresFemeninos);
-         
+
         } else if (sex === 'M') {
             const valoresMasculinos = pointStart.male.split(',').map(Number);
             point = Math.min(...valoresMasculinos);
-           
+
         }
     }
     if (body_part_side.id) {
         listInjuries.value.push({ body_part: body_part_side, injurie: injurie, point: point });
         listBody.value.push(body_part_side.id);
-     
+
     } else {
         listInjuries.value.push({ body_part: body_part, injurie: injurie, point: point });
         listBody.value.push(body_part.id);
-      
+
     }
 
     cleanFields();
-    alert('Lesion agregada correctamente, recuerde grabar usando el boton salvar para guardar los cambios')
+  
+    Swal.fire({
+    title: '¡Éxito!',
+    text: 'Lesión agregada correctamente, recuerde grabar usando el botón salvar para guardar los cambios',
+    icon: 'success',
+    confirmButtonText: 'Aceptar'
+    });
 };
 
 
@@ -328,8 +371,8 @@ const deleteInjury = async (injuryToDelete: any) => {
 };
 
 const showRegion = async (n: number) => {
-   
-    
+
+
     point.value = n
     record.value.body_part_full = await getBODYPART(n, 'BODY_PART_CHOICES', 'M');
     record.value.body_part_side_full = await getBODYPART(n, 'BODY_PART_SIDE_CHOICES', 'M');
@@ -358,7 +401,7 @@ const retrieveFromApi = async (q: any) => {
 }
 
 const saveServices = async () => {
-  
+
     const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
         method: 'Patch',
         body: JSON.stringify({
@@ -366,64 +409,65 @@ const saveServices = async () => {
             procedures_others: procedures_others?.value
         })
     });
-   
+
 };
 
 </script>
 
 <style>
-
-.image-container {
-    width: 200px;
-    height: auto;
-}
-
+/* Estilo por defecto de la cuadrícula */
 .grid-container {
-    display: grid;
-    grid-template-columns: repeat(24, 0.5fr); /* 12 columnas iguales */
-    grid-template-rows: repeat(32, 0.5fr); /* 16 filas iguales */
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  display: grid;
+  grid-template-columns: repeat(24, 0.5fr);
+  grid-template-rows: repeat(32, 0.5fr);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .grid-item {
-    position: relative; /* Necesario para usar elementos absolutos dentro */
-    border: 1px solid #ccc;   /*Para ver las celdas */
-    display: flex; /* Habilita la alineación del contenido */
-    justify-content: center; /* Centra horizontalmente el contenido */
-    align-items: center; /* Centra verticalmente el contenido */
-    font-size: xx-small;
+  position: relative;
+  border: 1px solid #ccc; /* Borde visible */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: xx-small;
+}
+
+/* Clase para hacer transparente el texto y ocultar el borde */
+.grid-container.transparent .grid-item {
+  border: none; /* Quita el borde */
+}
+
+.grid-item.hideContent {
+  color: transparent; /* Hace el texto invisible */
 }
 
 .square {
-    width: 50%; /* Ajusta el tamaño del cuadrado */
-    height: 50%; /* Ajusta el tamaño del cuadrado */
-    position: relative; /* Posición relativa para contener elementos absolutos */
-    display: flex; /* Habilita alineación dentro del cuadrado */
-    justify-content: center; /* Centra horizontalmente el contenido */
-    align-items: center; /* Centra verticalmente el contenido */
-    border: 1px solid #ccc; /* Para depuración */
+  width: 50%;
+  height: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
 }
 
 .circle {
-    position: absolute;
-    top: 50%; /* Posiciona verticalmente en el centro */
-    left: 50%; /* Posiciona horizontalmente en el centro */
-    transform: translate(-100%, -50%); /* Ajusta el centro real */
-    width: 20px; /* Tamaño del círculo */
-    height: 20px;
-    background-color: #d41616; /* Color del círculo */
-    border-radius: 50%; /* Hacerlo circular */
-    color: #f9f9f9; /* Color del texto */
-    font-weight: bold; /* Grosor del texto */
-    display: flex; /* Centra el texto dentro del círculo */
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-100%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: #d41616;
+  border-radius: 50%;
+  color: #f9f9f9;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
-
-
 </style>

@@ -127,6 +127,7 @@ const isPolice = ref<boolean>(false);
 const thirdSelected = ref<any>({});
 const detail = ref(false);
 const isSing = ref(false);
+const toast = useToast();
 
 type location = {
     latitude: number;
@@ -185,7 +186,8 @@ const getLocation = () => {
                 };
             },
             (error) => {
-                console.error('Error al obtener la ubicación:', error.message);
+                //console.error('Error al obtener la ubicación:', error.message);
+                toast.add({title: 'Error al obtener la ubicación ', description: error.message})
             }
         );
     } else {

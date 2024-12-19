@@ -129,6 +129,7 @@ const props = defineProps({
 const Location = ref({}as location)
 const coordinates = ref("")
 const addressOption = ref<any>({})
+const toast = useToast()
 
 type location = {
   latitude:number
@@ -173,7 +174,8 @@ const getLocation = () => {
                 };
             },
             (error) => {
-                console.error('Error al obtener la ubicación:', error.message);
+                //console.error('Error al obtener la ubicación:', error.message);
+                toast.add({title: 'Error al obtener la ubicación ', description: error.message})
             }
         );
     } else {

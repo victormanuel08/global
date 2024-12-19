@@ -22,7 +22,8 @@ export default function useGeoLocation() {
         } catch (err) {
             if (err instanceof Error) {
                 // 'err' es de tipo 'Error'
-                console.error('Error al obtener la ubicación:', err.message);
+                //console.error('Error al obtener la ubicación:', err.message);
+                //toast.add({title: 'Error al obtener la ubicación ', description: err.message})
             } else {
                 console.error('Error desconocido:', err);
             }

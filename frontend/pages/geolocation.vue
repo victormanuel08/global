@@ -20,6 +20,8 @@ onMounted(() => {
   getLocation()
 
 })
+
+const toast = useToast()
 const Location = ref({}as location)
 const address = ref<any>()
 
@@ -39,7 +41,8 @@ const getLocation = async () => {
                 };
             },
             (error) => {
-                console.error('Error al obtener la ubicación:', error.message);
+                //console.error('Error al obtener la ubicación:', error.message);
+                toast.add({title: 'Error al obtener la ubicación ', description: error.message})
             }           
         );
    

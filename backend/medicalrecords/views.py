@@ -15,6 +15,9 @@ import requests
 from django.core.mail import EmailMessage
 from rest_framework.decorators import api_view, action
 from django.views.decorators.csrf import csrf_exempt
+ 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache 
 
 from django_filters import rest_framework as filters
 
@@ -35,6 +38,9 @@ logger = logging.getLogger(__name__)
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from users.models import User  # Importa el modelo de usuario predeterminado de Django
+
+
+
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Services.objects.all().order_by('speciality__description', 'description')
@@ -510,11 +516,11 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(date=date)
 
         return queryset
-    
+
+@method_decorator(never_cache, name='dispatch')
 class RecordListView(ListView):
     context_object_name = "records"
 
-    # Definir un mapping para modelos y plantillas
     TEMPLATE_MAPPING = {
         "ambulancia": (Records, "record_list.html"),
         "thirds": (Thirds, "thirds_list.html"),
@@ -524,145 +530,147 @@ class RecordListView(ListView):
     def get_queryset(self):
         template_type = self.kwargs.get("template_type")
         template_id = self.kwargs.get("template_id")
-
-        # Validar el tipo de plantilla y obtener modelo/plantilla
-        model, template_name = self.TEMPLATE_MAPPING.get(
-            template_type, (Records, "default_list.html")
-        )
+        model, template_name = self.TEMPLATE_MAPPING.get(template_type, (Records, "default_list.html"))
         self.template_name = template_name
 
-        # Realizar la consulta con el modelo correspondiente
         if template_type == "medicamnetos":
-            return model.objects.filter(record=template_id)  # Relación con `record`
+            return model.objects.filter(record=template_id)
         return model.objects.filter(id=template_id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         template_id = self.kwargs.get("template_id")
         record = Records.objects.filter(id=template_id).first()
-        
+
         if record:
-            try:
-                # Función para verificar si el campo de imagen tiene archivo adjunto
-                def get_image_url(field):
-                    if field and hasattr(field, 'name') and field.name:
-                        return field.url
-                    return 'records/HCBASIC.jpeg'  # Imagen por defecto
+            def get_image_url(field):
+                if field and hasattr(field, 'name') and field.name:
+                    return field.url
+                return 'records/HCBASIC.jpeg'
 
-                # Actualización de imágenes
-                context.update({
-                    "imgcc": get_image_url(record.imghd),
-                    "imgso": get_image_url(record.imgso),
-                    "imgtp": get_image_url(record.imgtp),
-                    "imgic": get_image_url(record.imgic),
-                    "imglc": get_image_url(record.imglc),
-                    "imgls": get_image_url(record.imgls),  # Verificar imgls correctamente
-                })
+            context.update({
+                "imgcc": get_image_url(record.imghd),
+                "imgso": get_image_url(record.imgso),
+                "imgtp": get_image_url(record.imgtp),
+                "imgic": get_image_url(record.imgic),
+                "imglc": get_image_url(record.imglc),
+                "imgls": get_image_url(record.imgls),
+            })
 
-                # Verificar y registrar los valores de glasgow
-                glasgow_ro = int(record.glasgow_ro or 0)
-                glasgow_rv = int(record.glasgow_rv or 0)
-                glasgow_rm = int(record.glasgow_rm or 0)
-                record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
+            glasgow_ro = int(record.glasgow_ro or 0)
+            glasgow_rv = int(record.glasgow_rv or 0)
+            glasgow_rm = int(record.glasgow_rm or 0)
+            record.glassgow_total = glasgow_ro + glasgow_rv + glasgow_rm
 
-                # Agregar los medicamentos al contexto
-                medicaments = MedicamentsRecords.objects.filter(record=record)
-                context['medicaments'] = medicaments
+            medicaments = MedicamentsRecords.objects.filter(record=record)
+            context['medicaments'] = medicaments
 
-            except (TypeError, ValueError) as e:
-                return HttpResponse("No está totalmente diligenciado", status=400)
-        
         context["document"] = record
         return context
 
-
+@method_decorator(never_cache, name='dispatch')
 class RecordPdf(RecordListView, View):
     def get(self, request, *args, **kwargs):
         try:
-            # Obtener el ID de la plantilla y el tipo de plantilla
             template_id = kwargs.get('template_id')
-            template_type = request.GET.get('template_type', 'ambulancia')  # Usar 'ambulancia' como valor predeterminado si no se proporciona
-
-            # Obtener el contexto con el queryset
+            template_type = request.GET.get('template_type', 'ambulancia')
             self.object_list = self.get_queryset()
             context = self.get_context_data(object_list=self.object_list)
 
-            # Validar si el contexto devuelve un error
             if isinstance(context, HttpResponse):
                 return context
 
-            # Lógica para manejar diferentes tipos de plantillas
-            if template_type == 'medicamentos':
-                # Obtener la lista de medicamentos asociados al registro
-                medicaments = MedicamentsRecords.objects.filter(record=template_id)
-                context['medicaments'] = medicaments
-
-            elif template_type == 'ambulancia':
-                # Obtener el registro de ambulancia
-                record = Records.objects.filter(id=template_id).first()
-                if not record:
-                    # Si no se encuentra el registro, generar un error
-                    return HttpResponse("Registro no encontrado", status=404)
-                context['document'] = record
-
-            # Generar el PDF
             pdf = render_to_pdf(self.template_name, context)
             if not pdf:
                 return HttpResponse("Error al generar el PDF", status=500)
 
-            # Preparar la respuesta con el PDF generado
             response = HttpResponse(pdf, content_type="application/pdf")
-            response["Content-Disposition"] = f'attachment; filename="report-{template_type}.pdf"'
+            response["Content-Disposition"] = 'inline; filename="report.pdf"'  # Cambiar a 'attachment' si deseas forzar la descarga
+            response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response["Pragma"] = "no-cache"
             return response
 
         except Exception as e:
-            # Manejar cualquier otra excepción
             return HttpResponse(f"Error al procesar la solicitud: {e}", status=500)
 
 
 class GeocodeView(APIView):
     def get(self, request, *args, **kwargs):
         coordinates_str = request.query_params.get("coordinates")
+
+        # Validación inicial de las coordenadas
+        if not coordinates_str:
+            return Response({"error": "Faltan las coordenadas en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             lat, lng = map(float, coordinates_str.split(","))
         except ValueError:
-            return Response({"error": "Coordenadas inválidas"}, status=400)
+            return Response({"error": "Coordenadas inválidas. Asegúrate de que el formato sea 'lat,lng'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # URLs de las APIs
         api_key = settings.DISTANCE_MATRIX_API_KEY
         distance_matrix_url = f"https://api-v2.distancematrix.ai/maps/api/geocode/json?latlng={lat},{lng}&key={api_key}"
         nominatim_url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}&zoom=18&addressdetails=1"
-        headers = { 'User-Agent': 'GLOBALSAFEIPS/1.0 (ambulancia.globalsafe@gmail.com)' }
+        headers = {'User-Agent': 'GLOBALSAFEIPS/1.0 (ambulancia.globalsafe@gmail.com)'}
+
         response_data = []
+
+        # Llamada a la API de Distance Matrix
         try:
             distance_matrix_response = requests.get(distance_matrix_url)
+            distance_matrix_response.raise_for_status()
             distance_matrix_data = distance_matrix_response.json()
-            response_data.append({
-                "formatted_address": distance_matrix_data["result"][0]["formatted_address"],
-                "address_components": distance_matrix_data["result"][0]["address_components"],
-            })
-            print(f"DistanciaMatriz: {distance_matrix_data['result'][0]['formatted_address']}")
-        except requests.RequestException as e:           
-            pass
+
+            # Validar que los datos tengan la estructura esperada
+            if "result" in distance_matrix_data and len(distance_matrix_data["result"]) > 0:
+                result = distance_matrix_data["result"][0]
+                response_data.append({
+                    "formatted_address": result.get("formatted_address", "No disponible"),
+                    "address_components": result.get("address_components", []),
+                })
+                print(f"DistanceMatrix: {result.get('formatted_address')}")
+            else:
+                print("DistanceMatrix: Respuesta vacía o sin resultados.")
+        except requests.RequestException as e:
+            print(f"Error al llamar a DistanceMatrix API: {e}")
+        except KeyError:
+            print("Error procesando los datos de DistanceMatrix: Estructura inesperada en el JSON.")
+
+        # Llamada a la API de Nominatim
         try:
             nominatim_response = requests.get(nominatim_url, headers=headers)
+            nominatim_response.raise_for_status()
             nominatim_data = nominatim_response.json()
-            response_data.append({
-                "formatted_address": nominatim_data["display_name"],
-                "address_components": {
-                    "road": nominatim_data["address"]["road"],
-                    "neighbourhood": nominatim_data["address"]["neighbourhood"],
-                    "city_district": nominatim_data["address"]["city_district"],
-                    "city": nominatim_data["address"]["city"],
-                    "county": nominatim_data["address"]["county"],
-                   
-                    "postcode": nominatim_data["address"]["postcode"],
-                    "country": nominatim_data["address"]["country"],
-                },
-            })
-            print(f"Nominatim: {nominatim_data['display_name']}")
-        except requests.RequestException as e:           
-            pass
-        return Response(response_data)
-    
+
+            # Validar la estructura del JSON
+            if "display_name" in nominatim_data and "address" in nominatim_data:
+                address = nominatim_data["address"]
+                response_data.append({
+                    "formatted_address": nominatim_data["display_name"],
+                    "address_components": {
+                        "road": address.get("road", "No disponible"),
+                        "neighbourhood": address.get("neighbourhood", "No disponible"),
+                        "city_district": address.get("city_district", "No disponible"),
+                        "city": address.get("city", "No disponible"),
+                        "county": address.get("county", "No disponible"),
+                        "postcode": address.get("postcode", "No disponible"),
+                        "country": address.get("country", "No disponible"),
+                    },
+                })
+                print(f"Nominatim: {nominatim_data['display_name']}")
+            else:
+                print("Nominatim: Respuesta vacía o sin resultados.")
+        except requests.RequestException as e:
+            print(f"Error al llamar a Nominatim API: {e}")
+        except KeyError:
+            print("Error procesando los datos de Nominatim: Estructura inesperada en el JSON.")
+
+        # Responder con los datos recolectados
+        if not response_data:
+            return Response({"error": "No se pudo obtener información de las APIs."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
     
 @api_view(['POST'])
 @csrf_exempt
@@ -711,7 +719,10 @@ def sendemail(request):
     else:
         return Response({'error': 'Tipo de template no reconocido'}, status=status.HTTP_400_BAD_REQUEST)
     
-    pdf = render_to_pdf(template_name, data)
+    pdf = render_to_pdf(template_name, data)  # render_to_pdf debe devolver un objeto tipo `bytes`
+    
+    if pdf is None:
+        return Response({'error': 'No se pudo generar el PDF'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     try:
         email = EmailMessage(
@@ -720,12 +731,11 @@ def sendemail(request):
             from_email='noreply@globalsafeips.com.co',
             to=list(emails),
         )
-        email.attach(f"{filename}.pdf", pdf.content, 'application/pdf')
+        email.attach(f"{filename}.pdf", pdf, 'application/pdf')  # Corrige el error
         email.send()
         return Response({'mensaje': 'Correo enviado correctamente'})
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 

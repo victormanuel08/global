@@ -1,41 +1,40 @@
-
-
-from io import BytesIO
-from django.template.loader import get_template
 from django.http import HttpResponse
+from django.views.generic import ListView, View
+from django.template.loader import get_template
+from io import BytesIO
 from xhtml2pdf import pisa
-from django.conf import settings
 import os
+from django.conf import settings
+
 
 def link_callback(uri, rel):
     """
-    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-    resources
+    Convierte URIs de HTML a rutas absolutas del sistema para que xhtml2pdf pueda acceder a los recursos.
     """
-    sUrl = settings.STATIC_URL      # Typically /static/
-    sRoot = settings.STATIC_ROOT    # Typically /home/userX/project_static/
-    mUrl = settings.MEDIA_URL       # Typically /media/
-    mRoot = settings.MEDIA_ROOT     # Typically /home/userX/project_media/
+    sUrl = settings.STATIC_URL
+    sRoot = settings.STATIC_ROOT
+    mUrl = settings.MEDIA_URL
+    mRoot = settings.MEDIA_ROOT
 
     if uri.startswith(mUrl):
         path = os.path.join(mRoot, uri.replace(mUrl, ""))
     elif uri.startswith(sUrl):
         path = os.path.join(sRoot, uri.replace(sUrl, ""))
     else:
-        return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+        return uri
 
-    # make sure that file exists
     if not os.path.isfile(path):
-        raise Exception(
-            'media URI must start with %s or %s' % (sUrl, mUrl)
-        )
+        raise Exception(f"No se encontró el archivo: {path}")
     return path
 
 def render_to_pdf(template_src, context_dict):
+    """
+    Renderiza una plantilla HTML a un archivo PDF.
+    """
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result, link_callback=link_callback)
     if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
+        return result.getvalue()
     return None

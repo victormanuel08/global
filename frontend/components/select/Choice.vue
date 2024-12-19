@@ -66,7 +66,7 @@ const fetchChoices = async () => {
   try {
     const response = await $fetch<any>('api/api/choices/');
     const { 
-            TYPE_CHOICES,
+            //TYPE_CHOICES,
             BLOOD_CHOICES,
             MATERNITY_CHOICES,
             MATERNITY_COMPLEMENTARY_CHOICES,
@@ -102,7 +102,7 @@ const fetchChoices = async () => {
         name: item[1],
       }));
     };
-    choices.TYPE_CHOICES = mapToChoice(TYPE_CHOICES);
+    //choices.TYPE_CHOICES = mapToChoice(TYPE_CHOICES);
     choices.BLOOD_CHOICES = mapToChoice(BLOOD_CHOICES);
     choices.MATERNITY_CHOICES = mapToChoice(MATERNITY_CHOICES);
     choices.MATERNITY_COMPLEMENTARY_CHOICES = mapToChoice(MATERNITY_COMPLEMENTARY_CHOICES);

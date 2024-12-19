@@ -31,6 +31,8 @@ const props = defineProps({
 const record = ref({} as any);
 const pagerecord = ref('');
 const iframeError = ref(false); // Nueva propiedad para manejar el error del iframe
+import Swal from 'sweetalert2';
+const toast = useToast();
 
 // Cuando se monta el componente, obtenemos el registro
 onMounted(() => {
@@ -55,11 +57,14 @@ const fetchRecord = async (q: any) => {
     }
 
     // Si la respuesta del PDF es correcta, actualiza la URL del iframe
-    pagerecord.value = 'api/api/pdf/ambulancia/' + record.value.id;
+    //pagerecord.value = 'api/api/pdf/ambulancia/' + record.value.id;
+    pagerecord.value = 'api/api/pdf/ambulancia/' + record.value.id + '?t=' + new Date().getTime();
+
     iframeError.value = false; // Si todo está bien, no hay error en el iframe
 
   } catch (error) {
     console.error('Error al obtener el registro o el PDF:', error);
+    toast.add({ title:  'Hubo un error al obtener el registro o el PDF' });
     pagerecord.value = ''; // Asegúrate de que pagerecord esté vacío en caso de error
     iframeError.value = true; // Marca que hubo un error al obtener el archivo PDF
   }
@@ -76,8 +81,9 @@ const downloadReport = async () => {
     });
 
     if (!response.ok) {
-      console.error('Error al descargar el archivo:', response.statusText);
-      alert('Error al generar el PDF: ' + response.statusText);
+    
+      toast.add({ title: 'Error al generar el PDF' });
+ 
       return;
     }
 
@@ -95,8 +101,8 @@ const downloadReport = async () => {
       window.URL.revokeObjectURL(link.href);
     }, 250);
   } catch (error) {
-    console.error('Error en la descarga:', error);
-    alert('Hubo un error al intentar descargar el reporte. Revisa la consola para más detalles.');
+
+    toast.add({ title: 'Error al descargar el PDF' });
   }
 };
 
@@ -105,7 +111,8 @@ const sendEmail = async () => {
   try {
     // Verifica que el registro tenga un ID válido
     if (!record.value || !record.value.id) {
-      alert('No se encontró un registro válido para enviar el correo.');
+
+      toast.add({ title: 'No se encontró un registro válido para enviar el correo.' });
       return;
     }
 
@@ -127,14 +134,18 @@ const sendEmail = async () => {
     if (response.ok) {
       const data = await response.json();
       //console.log('Respuesta del servidor:', data);
-      alert('Correo enviado correctamente');
+      Swal.fire({
+        title: 'Correo enviado',
+        text: 'El correo se envió correctamente.',
+        icon: 'success',
+      });
+  
     } else {
-      console.error('Error al enviar el correo:', response.statusText);
-      alert('Error al enviar el correo: ' + response.statusText);
+      toast.add({ title: 'Error al enviar el correo' });
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error);
-    alert('Ocurrió un error al enviar el correo. Revisa la consola para más detalles.');
+
+    toast.add({ title: 'Error al enviar el correo' });
   }
 };
 </script>

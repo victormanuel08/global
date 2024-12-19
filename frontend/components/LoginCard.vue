@@ -39,29 +39,36 @@ const loading = ref(false)
 
 
 const doLogin = async () => {
-    loading.value = true
+    loading.value = true;
     try {
+        // Realiza la solicitud para obtener los tokens
         const response = await $fetch('/api/auth/token/', {
             method: 'POST',
-            body: loginData.value
-        }) as any
-        authTokensStorage.accessToken.value = response.access
-        // refreshCookie('token')
+            body: loginData.value,
+        }) as any;
 
-        const decoded = jwtDecode(response.access);
-        
-        toast.add({ title: "Autenticación Exitosa" })
-        router.push('/home')
+        // Guarda el token de acceso
+        authTokensStorage.accessToken.value = response.access;
 
-        loading.value = false
+        // Configura el encabezado de autorización para las solicitudes autenticadas
+        const headers = {
+            Authorization: `Bearer ${authTokensStorage.accessToken.value}`,
+        };
+
+        // Obtiene los datos del usuario actual usando el token
+        authUserStorage.value = await $fetch(CURRENT_USER_PATH, { headers });
+
+        // Notifica éxito y redirige
+        toast.add({ title: "Autenticación Exitosa" });
+        router.push('/home');
     } catch (error) {
-        toast.add({ title: "Error en la autenticación" })
-        //console.log(error)
-        loading.value = false
+        // Maneja errores
+        toast.add({ title: "Error en la autenticación" });
+        console.error(error);
+    } finally {
+        loading.value = false;
     }
-    authUserStorage.value = await $fetch(CURRENT_USER_PATH)
-
-}
+};
 
 </script>
 
