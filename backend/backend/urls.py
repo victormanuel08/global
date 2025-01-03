@@ -59,7 +59,7 @@ urlpatterns = [
     path('api/choices/<str:choice_type>/<str:choice_id>/', SearchChoiceAPIView.as_view(), name='search-choice'),
     path('api/choices/<str:choice_type>/<str:choice_id>/<str:sex>/', SearchBodyAPIView.as_view(), name='search-choice'), 
     path('records/<int:pk>/records_details/', RecordDetailsOnlyViewSet.as_view({'get': 'retrieve'}), name='record-details'),
-    path('auth/users/<int:pk>/set_password/', views.SetPasswordView.as_view(), name='set_password'),  # Agrega esta línea
+    path('auth/users/<int:pk>/set_password/', views.SetPasswordView.as_view(), name='set_password'), 
     path('', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
