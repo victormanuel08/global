@@ -103,7 +103,9 @@ BODY_PART_CHOICES = (
     ('MU', 'Muñeca','386,393,394,400,405,407',''),
     ('MA', 'Mano','409,410,433,434,457,458,417,418,441,465,423,424,447,448,471,472,430,431,432,454,455,479',''),
    
-    ('MI', 'Miembro Inferior','378,379,380,402,403,404,426,427,428,436,437,438,439,460,461,462,463,484,485,486,487,508,509,510,533,534,557,558,580,581,582,604,605,606,607,628,629,630,631,652,653,654,677,678,701,702,725,726,748,749,750,751',''),
+   
+   # LISTA UNIDA DE BODY_PART_SIDE_CHOICES
+    ('MI', 'Miembro Inferior','378,379,380,402,403,404,426,427,428,436,437,438,439,460,461,462,463,484,485,486,487,508,509,510,533,534,557,558,580,581,582,604,605,606,607,628,629,630,631,652,653,654,677,678,701,702,725,726,748,749,750,751,450,451,452,453,474,475,476,477,498,499,500,522,523,524,546,547,548,570,571,572,594,595,596,618,619,620,642,643,644,666,667,668,690,691,692,618,619,620,642,643,644,666,667,668,690,691,692,739,740,762,763,764','')
     
 )
 
@@ -559,7 +561,7 @@ class Records(models.Model):
     body= ArrayField(models.CharField(max_length=300), blank=True,  null=True)  
     body_side= ArrayField(models.CharField(max_length=300), blank=True, null=True)
     injuries = models.CharField(max_length=300,null=True, blank=True)    
-    list_injuries =  models.CharField(max_length=500,null=True, blank=True)    
+    list_injuries =  models.CharField(max_length=5000,null=True, blank=True) 
     service =models.ManyToManyField(Services, null=True, blank=True)
     total_services = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     policy=models.ForeignKey('Policy', on_delete=models.PROTECT, null=True, blank=True)
