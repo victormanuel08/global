@@ -241,9 +241,9 @@ const setPassword = async (id: number) => {
 
   // Si el usuario no canceló y proporcionó una contraseña
   if (newPassword) {
-    // Enviar la nueva contraseña al endpoint
+    // Enviar la nueva contraseña al endpoint  user.id
     try {
-      const response = await $fetch(`api/thirds/${id}/set_password/`, {
+      const response = await $fetch(`api/auth/users/${id}/set_password/`, {
         method: 'PATCH',
         body: {
           new_password: newPassword  // Usar la contraseña proporcionada
