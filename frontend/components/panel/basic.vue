@@ -5,74 +5,49 @@
         <!-- Motivo Servicio -->
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">Motivo Servicio:</label>
-            <UTextarea 
-                v-model="record.reason_consultation" 
-                variant="outline" 
-                placeholder="Motivo de la Consulta"
-                @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)" 
-                class="w-full"
-            />
+            <UTextarea v-model="record.reason_consultation" variant="outline" placeholder="Motivo de la Consulta"
+                @change="saveItem(record.id, 'reason_consultation', record.reason_consultation)" class="w-full" />
         </div>
 
         <!-- Coordenadas, Sugerencias, Dirección y Póliza -->
         <div class="grid grid-cols-1 gap-6 md:grid-cols-5">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Ciudad:</label>
-                <SelectCities 
-                    v-model="record.city_full" 
-                    @change="saveItem(record.id, 'city', record.city_full.id)" 
-                    class="w-full"
-                />
+                <SelectCities v-model="record.city_full" @change="saveItem(record.id, 'city', record.city_full.id)"
+                    class="w-full" />
             </div>
             <!-- Coordenadas -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Coordenadas:</label>
-                <UInput 
-                    type="text" 
-                    :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude" 
-                    readonly 
-                    class="w-full"
-                />
+                <UInput type="text" :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude"
+                    readonly class="w-full" />
             </div>
 
             <!-- Sugerencias -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Sugerencias:</label>
-                <SelectAddress 
-                    :coordinates="coordinates" 
-                    v-model="addressOption" 
-                    @change="validate(record.id)" 
-                    class="w-full"
-                />
+                <SelectAddress :coordinates="coordinates" v-model="addressOption" @change="validate(record.address)"
+                    class="w-full" />
             </div>
 
             <!-- Dirección -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Dirección:</label>
-                <UInput 
-                    variant="outline" 
-                    v-model="record.address" 
-                    @change="saveItem(record.id, 'address', record.address)" 
-                    class="w-full"
-                />
+                <UInput variant="outline" v-model="record.address"
+                    @change="saveItem(record.id, 'address', record.address)" class="w-full" />
             </div>
 
             <!-- Póliza -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Póliza: 
-                    <span 
-                        class="text-blue-500 cursor-pointer hover:underline" 
+                    Póliza:
+                    <span class="text-blue-500 cursor-pointer hover:underline"
                         @click="typeT = 'E'; showModalPolice('')">➕
                     </span>
                 </label>
-                <SelectInsurance 
-                    v-model="record.policy_full" 
-                    :third="record.third_patient_full?.id" 
-                    @change="handlePolicyChange" 
-                    :placeholder="'Aseguradora-Póliza-Fecha Inicio-Fecha Fin'" 
-                    class="w-full"
-                />
+                <SelectInsurance v-model="record.policy_full" :third="record.third_patient_full?.id"
+                    @change="handlePolicyChange" :placeholder="'Aseguradora-Póliza-Fecha Inicio-Fecha Fin'"
+                    class="w-full" />
             </div>
         </div>
 
@@ -81,39 +56,27 @@
             <!-- Prioridad -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Prioridad:</label>
-                <SelectChoice 
-                    :choiceType="'PRIORITY_CHOICES'" 
-                    v-model="record.priority_full" 
-                    @change="saveItem(record.id, 'priority', record.priority_full?.id)" 
-                    :style="getPriorityStyle(record.priority_full?.id)" 
-                    class="w-full"
-                />
+                <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
+                    @change="saveItem(record.id, 'priority', record.priority_full?.id)"
+                    :style="getPriorityStyle(record.priority_full?.id)" class="w-full" />
             </div>
 
             <!-- Condición Accidentado -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Condición Accidentado:</label>
-                <SelectChoice 
-                    :choiceType="'TYPE_ACCIDENT_CHOICES'" 
-                    v-model="record.condition_full" 
-                    @change="saveItem(record.id, 'condition', record.condition_full.id)" 
-                    class="w-full"
-                />
+                <SelectChoice :choiceType="'TYPE_ACCIDENT_CHOICES'" v-model="record.condition_full"
+                    @change="saveItem(record.id, 'condition', record.condition_full.id)" class="w-full" />
             </div>
         </div>
     </div>
 
     <!-- Modal Póliza -->
-    <ModalNewPolice 
-        :third="record.third_patient_full" 
-        :typeT="'C'" 
-        @close="handleModalClose" 
-        v-model="isPolice" 
-    />
+    <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, watch } from 'vue';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     calendarEvent: Object,
@@ -128,6 +91,7 @@ const thirdSelected = ref<any>({});
 const detail = ref(false);
 const isSing = ref(false);
 const toast = useToast();
+
 
 type location = {
     latitude: number;
@@ -163,18 +127,43 @@ watch(Location, async (newLocation, oldLocation) => {
     }
 });
 
-const validate = (value: any) => {
-    if (record.value.address === '') {
-        record.value.address = addressOption.value.formatted_address;
-    } else {
-        if (confirm('El campo ya tiene una dirección previa guardada. ¿Desea guardar la dirección sugerida?')) {
+const validate = async (value: any) => {
+    try {
+        // Verifica si `value` no es null, undefined ni vacío
+
+
+        // Asegúrate de que el `Swal.fire` se ejecuta
+        const result = await Swal.fire({
+            title: 'Confirmar acción',
+            text: '¿Desea guardar la dirección sugerida?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'No, mantener la actual',
+        });
+
+        // Si el usuario confirma
+        if (result.isConfirmed) {
             record.value.address = addressOption.value.formatted_address;
-        }
+
+            saveItem(value, 'address', record.value.address);
+            saveItem(props.calendarEvent?.id, 'latitude', Location.value.latitude);
+            saveItem(props.calendarEvent?.id, 'longitude', Location.value.longitude);
+
+            Swal.fire(
+                'Actualizado',
+                'La dirección sugerida ha sido guardada.',
+                'success'
+            );
+        } 
+
+
+    } catch (error: any) {
+        // Si ocurre algún error, lo mostramos en el toast
+        toast.add({ title: 'Error al guardar la dirección sugerida', description: error.message });
     }
-    saveItem(value, 'address', record.value.address);
-    saveItem(props.calendarEvent?.id, 'latitude', Location.value.latitude);
-    saveItem(props.calendarEvent?.id, 'longitude', Location.value.longitude);
 };
+
 
 const getLocation = () => {
     if (navigator.geolocation) {
@@ -187,11 +176,11 @@ const getLocation = () => {
             },
             (error) => {
                 //console.error('Error al obtener la ubicación:', error.message);
-                toast.add({title: 'Error al obtener la ubicación ', description: error.message})
+                toast.add({ title: 'Error al obtener la ubicación ', description: error.message })
             }
         );
     } else {
-        console.error('Geolocalización no está disponible en este navegador.');
+
     }
 };
 

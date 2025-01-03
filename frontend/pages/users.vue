@@ -75,6 +75,7 @@
             </td>
             <td :class="ui.td">
               <div class="flex items-center justify-center">
+                <span @click="setPassword(user.id)" :class="ui.span" >🔑</span>
                 <span @click="toggleUserGroups(user.id)" :class="ui.span">🔍</span>
                 <span @click="deleteUser(user.id)" :class="ui.span">🗑️</span>
               </div>
@@ -106,6 +107,8 @@
 </template>
 
 <script setup lang="ts">
+
+import Swal from 'sweetalert2';
 // Estado
 const newUserUsername = ref('');
 const newUserActive = ref(false);
@@ -116,6 +119,7 @@ const showUserGroups = ref(false);
 const selectedUserId = ref<number | null>(null);
 const groupSelected = ref<number[]>([]);
 const toast = useToast();
+
 
 const { data: users, pagination, search, refresh } = usePaginatedFetch<any>('/api/auth/users/');
 
@@ -216,6 +220,47 @@ onMounted(() => {
   fetchUsers();
   fetchGroups();
 });
+
+
+const setPassword = async (id: number) => {
+  // Mostrar un input usando SweetAlert2
+  const { value: newPassword } = await Swal.fire({
+    title: 'Establecer nueva contraseña',
+    input: 'password',  // Tipo de input para una contraseña
+    inputLabel: 'Ingresa la nueva contraseña',
+    inputPlaceholder: 'Contraseña',
+    showCancelButton: true,
+    confirmButtonText: 'Establecer',
+    cancelButtonText: 'Cancelar',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Por favor ingresa una contraseña'; // Validación para asegurarse de que no esté vacío
+      }
+    }
+  });
+
+  // Si el usuario no canceló y proporcionó una contraseña
+  if (newPassword) {
+    // Enviar la nueva contraseña al endpoint
+    try {
+      const response = await $fetch(`api/thirds/${id}/set_password/`, {
+        method: 'PATCH',
+        body: {
+          new_password: newPassword  // Usar la contraseña proporcionada
+        }
+      });
+
+      if (response) {
+        // Mostrar un mensaje de éxito con SweetAlert2
+        Swal.fire('Contraseña establecida', 'La contraseña se ha actualizado correctamente.', 'success');
+      }
+    } catch (error) {
+      // Mostrar un mensaje de error si algo salió mal
+      Swal.fire('Error', 'Hubo un problema al establecer la contraseña.', 'error');
+    }
+  }
+};
+
 
 // Estilos
 const ui = {

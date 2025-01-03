@@ -109,7 +109,7 @@ ZONE_CHOICES = (
 
 
     
-# Create your models here.
+# Create your models here. 
 class Thirds(models.Model):
     id = models.AutoField(primary_key=True)
     type_document = models.CharField(max_length=2, choices=TYPE_DOCUMENT_CHOICES, null=True, blank=True, default='CC')

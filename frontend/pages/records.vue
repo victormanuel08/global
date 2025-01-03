@@ -217,8 +217,7 @@ onMounted(async () => {
   while (!authUserStorage.value?.third?.id) {
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-  console.log('authUserStorage en onMounted:', authUserStorage.value.third.id); // Revisión en onMounted
-  console.log('Tipo de authUserStorage:', authUserStorage);
+
   addUser();
   isLoading.value = false;
 

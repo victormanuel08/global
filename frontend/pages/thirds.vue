@@ -69,6 +69,7 @@
               </td>
               <td :class="ui.td" v-if="third.id != '2'">
                 <div class="flex items-center justify-center">
+                  <span @click="setPassword(third.user_full.id)" :class="ui.span" v-if="third.user_full?.id">🔑</span>
                   <span @click="signedThird(third)" :class="ui.span">🖊️</span>
                   <span @click="showModalThird(third)" :class="ui.span" v-if="third.id != '2'">📝</span>
                   <span @click="deleteThird(third.id)" :class="ui.span" v-if="third.id != '2'">🗑️</span>
@@ -128,7 +129,7 @@
 
 <script setup lang="ts">
 
-
+import Swal from 'sweetalert2';
 
 
 
@@ -545,6 +546,48 @@ const signedThird = (value: any) => {
   third.value = value.id
   isSing.value = true
 }
+
+
+
+const setPassword = async (id: number) => {
+  // Mostrar un input usando SweetAlert2
+  const { value: newPassword } = await Swal.fire({
+    title: 'Establecer nueva contraseña',
+    input: 'password',  // Tipo de input para una contraseña
+    inputLabel: 'Ingresa la nueva contraseña',
+    inputPlaceholder: 'Contraseña',
+    showCancelButton: true,
+    confirmButtonText: 'Establecer',
+    cancelButtonText: 'Cancelar',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Por favor ingresa una contraseña'; // Validación para asegurarse de que no esté vacío
+      }
+    }
+  });
+
+  // Si el usuario no canceló y proporcionó una contraseña
+  if (newPassword) {
+    // Enviar la nueva contraseña al endpoint
+    try {
+      const response = await $fetch(`api/thirds/${id}/set_password/`, {
+        method: 'PATCH',
+        body: {
+          new_password: newPassword  // Usar la contraseña proporcionada
+        }
+      });
+
+      if (response) {
+        // Mostrar un mensaje de éxito con SweetAlert2
+        Swal.fire('Contraseña establecida', 'La contraseña se ha actualizado correctamente.', 'success');
+      }
+    } catch (error) {
+      // Mostrar un mensaje de error si algo salió mal
+      Swal.fire('Error', 'Hubo un problema al establecer la contraseña.', 'error');
+    }
+  }
+};
+
 
 
 </script>

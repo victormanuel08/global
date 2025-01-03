@@ -183,7 +183,7 @@ const saveImage = async (index: number, field: string, blob: Blob) => {
 
     } catch (error) {
         //console.error('Error en la solicitud al servidor:', error);
-        toast.add({ title: 'Error', description: 'Error al guardar la imagen'});
+        toast.add({ title: 'Error', description: 'Error al guardar la imagen' });
     }
 };
 
@@ -212,15 +212,41 @@ const props = defineProps({
 
 const saveHistory = async () => {
     try {
+        const body: { allergies?: string; pathologies?: string; medications?: string; liquids_foods?: string } = {};
+        // Combinar los antecedentes actuales con los nuevos y si no hay, no enviar nada solo envia lo que se modifica
+        if (record?.value.third_patient_full?.allergies || newRecordAllergies?.value) {
+            body.allergies = [
+                record?.value.third_patient_full?.allergies,
+                newRecordAllergies?.value
+            ].filter(Boolean).join('. ');
+        }
+
+        if (record?.value.third_patient_full?.pathologies || newRecordPathologies?.value) {
+            body.pathologies = [
+                record?.value.third_patient_full?.pathologies,
+                newRecordPathologies?.value
+            ].filter(Boolean).join('. ');
+        }
+
+        if (record?.value.third_patient_full?.medications || newRecordMedications?.value) {
+            body.medications = [
+                record?.value.third_patient_full?.medications,
+                newRecordMedications?.value
+            ].filter(Boolean).join('. ');
+        }
+
+        if (record?.value.third_patient_full?.liquids_foods || newRecordLiquidsFoods?.value) {
+            body.liquids_foods = [
+                record?.value.third_patient_full?.liquids_foods,
+                newRecordLiquidsFoods?.value
+            ].filter(Boolean).join('. ');
+        }
+
         const response = await $fetch(`api/thirds/${record.value.third_patient_full.id}`, {
             method: 'PATCH',
-            body: JSON.stringify({
-                allergies: record?.value.third_patient_full?.allergies + '. ' + newRecordAllergies?.value,
-                pathologies: record?.value.third_patient_full?.pathologies + '. ' + newRecordPathologies?.value,
-                medications: record?.value.third_patient_full?.medications + '. ' + newRecordMedications?.value,
-                liquids_foods: record?.value.third_patient_full?.liquids_foods + '. ' + newRecordLiquidsFoods?.value
-            })
+            body: JSON.stringify(body),
         });
+
         fetchRecord(record.value.id);
         if (response) {
             newRecordAllergies.value = '';
@@ -261,55 +287,55 @@ const fetchRecord = async (q: any) => {
 }
 
 const saveInjuries = async (
-  index: number,
-  injuries: object[],
-  body: any,
-  injuries2: object[]
+    index: number,
+    injuries: object[],
+    body: any,
+    injuries2: object[]
 ) => {
-  try {
-    // Cambiar el estado para activar las clases
-    isSaving.value = true;
+    try {
+        // Cambiar el estado para activar las clases
+        isSaving.value = true;
 
-    // Procesar las lesiones
-    let newConcatInjuries = "";
-    for (const injury of injuries) {
-      newConcatInjuries += `${injury.body_part.name}  ${injury.injurie}\n`;
+        // Procesar las lesiones
+        let newConcatInjuries = "";
+        for (const injury of injuries) {
+            newConcatInjuries += `${injury.body_part.name}  ${injury.injurie}\n`;
+        }
+
+        // Guardar los datos en el servidor
+        const response = await $fetch(`api/records/${index}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                body: body,
+                injuries: newConcatInjuries,
+                list_injuries: JSON.stringify(injuries),
+            }),
+        });
+
+        // Simular el tiempo de guardado si es necesario
+        await fetchRecord(props.calendarEvent?.id);
+
+        Swal.fire({
+            title: '¡Éxito!',
+            text: 'Lesiones guardadas correctamente',
+            icon: 'success',
+            confirmButtonText: 'Aceptar'
+        });
+        downloadImage();
+    } catch (error) {
+        //console.error("Error al guardar las lesiones:", error);
+
+
+        Swal.fire({
+            title: '¡Érror!',
+            text: 'Hubo un problema al guardar las lesiones',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+        });
+    } finally {
+        // Restaurar el estado al finalizar
+        isSaving.value = false;
     }
-
-    // Guardar los datos en el servidor
-    const response = await $fetch(`api/records/${index}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        body: body,
-        injuries: newConcatInjuries,
-        list_injuries: JSON.stringify(injuries),
-      }),
-    });
-
-    // Simular el tiempo de guardado si es necesario
-    await fetchRecord(props.calendarEvent?.id);
-
-    Swal.fire({
-    title: '¡Éxito!',
-    text: 'Lesiones guardadas correctamente',
-    icon: 'success',
-    confirmButtonText: 'Aceptar'
-    });
-    downloadImage();
-  } catch (error) {
-    //console.error("Error al guardar las lesiones:", error);
-    
-    
-    Swal.fire({
-    title: '¡Érror!',
-    text: 'Hubo un problema al guardar las lesiones',
-    icon: 'error',
-    confirmButtonText: 'Aceptar'
-    });
-  } finally {
-    // Restaurar el estado al finalizar
-    isSaving.value = false;
-  }
 };
 
 const cleanFields = async () => {
@@ -355,12 +381,12 @@ const createListInjuries = async (body_part: any, body_part_side: any, injurie: 
     }
 
     cleanFields();
-  
+
     Swal.fire({
-    title: '¡Éxito!',
-    text: 'Lesión agregada correctamente, recuerde grabar usando el botón salvar para guardar los cambios',
-    icon: 'success',
-    confirmButtonText: 'Aceptar'
+        title: '¡Éxito!',
+        text: 'Lesión agregada correctamente, recuerde grabar usando el botón salvar para guardar los cambios',
+        icon: 'success',
+        confirmButtonText: 'Aceptar'
     });
 };
 
@@ -417,57 +443,60 @@ const saveServices = async () => {
 <style>
 /* Estilo por defecto de la cuadrícula */
 .grid-container {
-  display: grid;
-  grid-template-columns: repeat(24, 0.5fr);
-  grid-template-rows: repeat(32, 0.5fr);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+    display: grid;
+    grid-template-columns: repeat(24, 0.5fr);
+    grid-template-rows: repeat(32, 0.5fr);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .grid-item {
-  position: relative;
-  border: 1px solid #ccc; /* Borde visible */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: xx-small;
+    position: relative;
+    border: 1px solid #ccc;
+    /* Borde visible */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: xx-small;
 }
 
 /* Clase para hacer transparente el texto y ocultar el borde */
 .grid-container.transparent .grid-item {
-  border: none; /* Quita el borde */
+    border: none;
+    /* Quita el borde */
 }
 
 .grid-item.hideContent {
-  color: transparent; /* Hace el texto invisible */
+    color: transparent;
+    /* Hace el texto invisible */
 }
 
 .square {
-  width: 50%;
-  height: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #ccc;
+    width: 50%;
+    height: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
 }
 
 .circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-100%, -50%);
-  width: 20px;
-  height: 20px;
-  background-color: #d41616;
-  border-radius: 50%;
-  color: #f9f9f9;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-100%, -50%);
+    width: 20px;
+    height: 20px;
+    background-color: #d41616;
+    border-radius: 50%;
+    color: #f9f9f9;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
