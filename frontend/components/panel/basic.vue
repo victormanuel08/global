@@ -16,18 +16,25 @@
                 <SelectCities v-model="record.city_full" @change="saveItem(record.id, 'city', record.city_full.id)"
                     class="w-full" />
             </div>
+
             <!-- Coordenadas -->
-            <div class="col-span-full md:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Coordenadas:</label>
-                <UInput type="text" :value="'Latitud: ' + Location.latitude + ', Longitud: ' + Location.longitude"
-                    readonly class="w-full" />
+            <div v-show="manualCoords" class="col-span-full md:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Coordenadas (Manual):</label>
+                <UInput type="text" v-model="manualCoordinates" @input="handleManualCoordinateChange"
+                     class="w-full" placeholder="Latitud, Longitud" />
+            </div>
+
+            <!-- Checkbox para coordenadas manuales -->
+            <div class="mb-6">
+                <input type="checkbox" id="manualCoords" v-model="manualCoords" />
+                <label for="manualCoords" class="ml-2 text-sm font-medium text-gray-700">Usar coordenadas manuales</label>
             </div>
 
             <!-- Sugerencias -->
             <div class="col-span-full md:col-span-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Sugerencias:</label>
-                <SelectAddress :coordinates="coordinates" v-model="addressOption" @change="validate(record.address)"
-                    class="w-full" />
+                <SelectAddress :coordinates="manualCoords ? manualCoordinates : coordinates" v-model="addressOption"
+                    @change="validate(record.address)" class="w-full" />
             </div>
 
             <!-- Dirección -->
@@ -51,27 +58,9 @@
             </div>
         </div>
 
-        <!-- Campos Ocultos -->
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-4 mt-6" v-if="false">
-            <!-- Prioridad -->
-            <div class="col-span-full md:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Prioridad:</label>
-                <SelectChoice :choiceType="'PRIORITY_CHOICES'" v-model="record.priority_full"
-                    @change="saveItem(record.id, 'priority', record.priority_full?.id)"
-                    :style="getPriorityStyle(record.priority_full?.id)" class="w-full" />
-            </div>
-
-            <!-- Condición Accidentado -->
-            <div class="col-span-full md:col-span-1">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Condición Accidentado:</label>
-                <SelectChoice :choiceType="'TYPE_ACCIDENT_CHOICES'" v-model="record.condition_full"
-                    @change="saveItem(record.id, 'condition', record.condition_full.id)" class="w-full" />
-            </div>
-        </div>
+        <!-- Modal Póliza -->
+        <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
     </div>
-
-    <!-- Modal Póliza -->
-    <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
 </template>
 
 <script lang="ts" setup>
@@ -85,13 +74,14 @@ const props = defineProps({
 const record = ref({} as Record);
 const Location = ref({} as location);
 const coordinates = ref("");
+const manualCoordinates = ref("");  // Coordenadas manuales
 const addressOption = ref<any>({});
+const manualCoords = ref(false);  // Estado para el checkbox de coordenadas manuales
 const isPolice = ref<boolean>(false);
 const thirdSelected = ref<any>({});
 const detail = ref(false);
 const isSing = ref(false);
 const toast = useToast();
-
 
 type location = {
     latitude: number;
@@ -112,27 +102,23 @@ if (props.calendarEvent) {
     }
 }
 
-//console.log('calendarEvent', props.calendarEvent);
-
+// Mostrar el modal de la póliza
 const showModalPolice = (value: any) => {
-    //console.log('showModalThird', thirdSelected);
     isPolice.value = true;
 };
 
 const address = ref<any>();
 
+// Vigilar las coordenadas
 watch(Location, async (newLocation, oldLocation) => {
     if (newLocation.latitude && newLocation.longitude) {
         coordinates.value = newLocation.latitude + ', ' + newLocation.longitude;
     }
 });
 
+// Validar y guardar la dirección sugerida
 const validate = async (value: any) => {
     try {
-        // Verifica si `value` no es null, undefined ni vacío
-
-
-        // Asegúrate de que el `Swal.fire` se ejecuta
         const result = await Swal.fire({
             title: 'Confirmar acción',
             text: '¿Desea guardar la dirección sugerida?',
@@ -142,11 +128,10 @@ const validate = async (value: any) => {
             cancelButtonText: 'No, mantener la actual',
         });
 
-        // Si el usuario confirma
         if (result.isConfirmed) {
             record.value.address = addressOption.value.formatted_address;
 
-            saveItem(value, 'address', record.value.address);
+            saveItem(props.calendarEvent?.id, 'address', record.value.address);
             saveItem(props.calendarEvent?.id, 'latitude', Location.value.latitude);
             saveItem(props.calendarEvent?.id, 'longitude', Location.value.longitude);
 
@@ -156,15 +141,12 @@ const validate = async (value: any) => {
                 'success'
             );
         } 
-
-
     } catch (error: any) {
-        // Si ocurre algún error, lo mostramos en el toast
         toast.add({ title: 'Error al guardar la dirección sugerida', description: error.message });
     }
 };
 
-
+// Obtener ubicación actual
 const getLocation = () => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -175,25 +157,73 @@ const getLocation = () => {
                 };
             },
             (error) => {
-                //console.error('Error al obtener la ubicación:', error.message);
-                toast.add({ title: 'Error al obtener la ubicación ', description: error.message })
+                toast.add({ title: 'Error al obtener la ubicación', description: error.message })
             }
         );
-    } else {
-
     }
 };
 
-const signedRecord = async () => {
-    isSing.value = true;
+// Activar el uso de coordenadas manuales
+const handleManualCoordsChange = () => {
+    // Cuando el checkbox cambie, simplemente no realizamos ninguna acción, solo mostrar u ocultar el campo
+    if (!manualCoords.value) {
+        manualCoordinates.value = "";  // Limpiamos las coordenadas cuando el checkbox es desmarcado
+    }
 };
 
-const handleModalClose = async (value: any) => {
-    isSing.value = false;
-    const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}`);
-    record.value.third_medic_full = response.third_medic_full
+// Detectar el cambio en el campo de coordenadas manuales
+const handleManualCoordinateChange = async () => {
+    const result = await Swal.fire({
+        title: '¿Usar coordenadas manuales?',
+        text: '¿Desea utilizar las coordenadas que ha ingresado manualmente?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, usar',
+        cancelButtonText: 'No, mantener coordenadas automáticas',
+    });
+
+    if (result.isConfirmed) {
+        saveCoordinates();
+    }
 };
 
+// Guardar las coordenadas manuales en el modelo
+const saveCoordinates = async () => {
+    const [lat, lng] = manualCoordinates.value.split(",").map(Number);
+
+    // Asignar las coordenadas al modelo
+    record.value.latitude = lat;
+    record.value.longitude = lng;
+
+    // Llamar a la función para guardar en el backend
+    await saveItem(record.value.id, 'latitude', lat);
+    await saveItem(record.value.id, 'longitude', lng);
+
+    // También cargar la dirección correspondiente si las coordenadas son válidas
+    loadAddressFromCoordinates(manualCoordinates.value);
+};
+
+// Cargar dirección desde las coordenadas
+const loadAddressFromCoordinates = async (coords: string) => {
+    const [lat, lng] = coords.split(",").map(Number);
+
+    // Hacer la solicitud a la API para obtener la dirección
+    const response: { address: string, length: number } = await $fetch(`api/geocode/?coordinates=${lat},+${lng}`);
+
+    // Verificar si la respuesta contiene una dirección válida
+    if (response.length > 0) {
+        addressOption.value = response.address;  // Actualizar el select de direcciones
+
+        // Actualizar latitude y longitude en el backend usando saveItem
+        await saveItem(record.value.id, 'latitude', lat);
+        await saveItem(record.value.id, 'longitude', lng);
+    } else {
+        toast.add({ title: 'No se encontró la dirección', description: 'No se pudo obtener la dirección para estas coordenadas.' });
+    }
+};
+
+
+// Guardar item
 const saveItem = async (index: number, field: string, value: string) => {
     const response = await $fetch(`api/records/${index}`, {
         method: 'PATCH',
@@ -203,25 +233,21 @@ const saveItem = async (index: number, field: string, value: string) => {
     });
 };
 
-const savePolicyThird = async (index: number) => {
-    //console.log('savePolicyThird', index, props.calendarEvent?.third_patient_full.id);
+// Cambiar póliza
+const handlePolicyChange = (value: any) => {
+    record.value.policy_full = value;
+    saveItem(record.value.id, 'policy', value.id);
+};
 
-    const policyarray = props.calendarEvent?.third_patient_full.policy.map((item: any) => item.id) || [];
-    policyarray.push(index);
-
-    const response = await $fetch(`api/thirds/${props.calendarEvent?.third_patient_full.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-            policy: policyarray,
-        }),
-    });
-
-    //console.log('Response:', response);
+// Cerrar modal
+const handleModalClose = async (value: any) => {
+    isSing.value = false;
+    const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}`);
+    record.value.third_medic_full = response.third_medic_full
 };
 
 onMounted(() => {
     getLocation();
-
     record.value = props.calendarEvent as Record;
     if (props.calendarEvent.policy_full) {
         record.value.policy_full = {
@@ -234,9 +260,4 @@ onMounted(() => {
         };
     }
 });
-
-const handlePolicyChange = (value: any) => {
-    record.value.policy_full = value;
-    saveItem(record.value.id, 'policy', value.id);
-};
 </script>

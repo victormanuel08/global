@@ -15,7 +15,13 @@
         <h2>Las imagenes no seran mostradas en la previsualizacion</h2>
       </div>
       <div v-if="pagerecord && !iframeError">
-        <iframe :src="pagerecord" width="100%" height="600px" />
+        <div v-if =" props.calendarEvent?.external_cause==='TA' " >
+
+        </div>
+        <div v-else>
+          <iframe :src="pagerecord" width="100%" height="600px" />
+        </div>
+       
       </div>
       <div v-else>
         <p>El documento no está disponible. Por favor, inténtalo de nuevo más tarde, asegúrate de guardar las Lesiones Adecuadamente.</p>
@@ -25,6 +31,8 @@
 </template>
 
 <script lang="ts" setup>
+
+// && props.calendarEvent?.imglc && imgtp &&" 
 const props = defineProps({
   calendarEvent: Object,
 });

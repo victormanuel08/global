@@ -189,7 +189,14 @@ const validate = async () => {
             newDateStart.value = getCurrentDate()
             newDateEnd.value = formatDateYYYYMMDD('2050-12-31')
 
-        } else {
+        } else if (newTypePolice.value.id === "AD") {
+            const responseentity = await $fetch<any>('api/thirds/14')               
+            newThirdEntity.value = responseentity            
+            newDescriptionNumber.value = '901037916-1'
+            newDateStart.value = getCurrentDate()
+            newDateEnd.value = formatDateYYYYMMDD('2050-12-31')
+        
+        }else {
             alert('Solo puede crear polizas Particular y Soat')
             newTypePolice.value = ''
             newThirdEntity.value = ''

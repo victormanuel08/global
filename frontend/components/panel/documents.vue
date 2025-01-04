@@ -120,15 +120,16 @@
                 <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imgic" v-if="record.imgic"
                     @click="imgPreview(record.imgic)" />
             </div>
-            <!--
+          
             <div class="border rounded p-1 m-2">
                 <button @click="photoRecord('imghd')">
-                    📷 Huella
+                    📷 ACCIDENTE
                 </button>
                 <NuxtImg sizes="100vw sm:50vw md:100px" :src="record.imghd" v-if="record.imghd"
                     @click="imgPreview(record.imghd)" />
             
             </div>
+              <!--
             <div class="border rounded p-1 m-2">
                 <button @click="RegenerateHD(record.id)">
                     📷 Huella P.
@@ -276,21 +277,13 @@ const toast = useToast()
 const thirdSelected = ref<any>({})
 
 const showModalThird = (value: any) => {
-
-    //console.log('showModalThird', thirdSelected)
     isThird.value = true
-  
-
 }
 
 const imgPreview = (value: any) => {
     imgRoute.value = value
     isPreview.value = true
 }
-
-
-
-
 const props = defineProps({
     calendarEvent: Object,
 })
@@ -304,8 +297,6 @@ onMounted(() => {
 
 
 const fetchProps = async () => {
-
-
     props.calendarEvent.condition_full = await getCHOICE(props.calendarEvent.condition, 'TYPE_ACCIDENT_CHOICES')
 
 }
