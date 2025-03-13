@@ -38,6 +38,7 @@ export default defineEventHandler(async (event) => {
         let url = `${API_URL}/${route}/`;
       
         const response = await $fetch(url, reqOpts);
+        
         return response;
     } catch (error) {
       

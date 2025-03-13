@@ -59,7 +59,7 @@
         </div>
 
         <!-- Modal Póliza -->
-        <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="handleModalClose" v-model="isPolice" />
+        <ModalNewPolice :third="record.third_patient_full" :typeT="'C'" @close="isPolice = false" v-model="isPolice" />
     </div>
 </template>
 
@@ -231,6 +231,11 @@ const saveItem = async (index: number, field: string, value: string) => {
             [field]: value,
         }),
     });
+    if (response) {
+        toast.add({ title: 'Guardado', description: 'El registro ha sido actualizado correctamente.' });
+        console.log('response', response);
+    }
+
 };
 
 // Cambiar póliza

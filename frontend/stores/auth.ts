@@ -41,6 +41,6 @@ export const refreshToken = async () => {
    
   } catch (e) {
     console.error('Error al refrescar el token:', e);
-    useRouter().push('/'); // Si algo falla, redirige al login
+    useRouter().push('/'); // Si algo falla, redirige al loginfdf
   }
 };

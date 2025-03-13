@@ -52,8 +52,13 @@
 import { jwtDecode } from "jwt-decode";
 import { useCookie } from 'nuxt/app';
 
+const publicRoutes = [
+  "/",
+  "/home"
+];
+
 export default defineNuxtRouteMiddleware((to) => {
-  if (to.path === "/") {
+  if (publicRoutes.includes(to.path)) {
     return;
   }
 
@@ -80,8 +85,10 @@ export default defineNuxtRouteMiddleware((to) => {
   const nowDT = new Date();
   const remainingTime = expDT.getTime() - nowDT.getTime();
 
+
+  const RENOVAR_ANTES_DE_EXPIRAR = 24 * 60 * 60 * 1000; // 28,800,000 ms
   // Si queda menos de 60 segundos, renovamos el token
-  if (remainingTime < 300000) {
+  if (remainingTime < RENOVAR_ANTES_DE_EXPIRAR) {
 
 
     if (refreshToken.value) {
