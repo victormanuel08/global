@@ -671,71 +671,78 @@ class GeocodeView(APIView):
 
         return Response(response_data, status=status.HTTP_200_OK)
 
+def get_name(obj):
+    """ Devuelve el nombre completo si el objeto existe, de lo contrario, 'No registrado'. """
+    return f"{obj.name} {obj.last_name}" if obj else "No registrado"
     
 @api_view(['POST'])
 @csrf_exempt
 def sendemail(request):
-    template_id = request.data.get('id', None)
-    template_type = request.data.get('type', 'ambulancia')  # Por defecto, "ambulancia"
-    emails = Values.objects.filter(type_values='ED').values_list('val', flat=True)
-    
+    template_id = request.POST.get('id') or request.data.get('id')
+    template_type = request.POST.get('type', 'ambulancia') or request.data.get('type', 'ambulancia')
+
     if not template_id:
         return Response({'error': 'ID del template no proporcionado'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+    emails = list(Values.objects.filter(type_values='ED').values_list('val', flat=True))
+    if not emails:
+        return Response({'error': 'No hay correos electrónicos configurados'}, status=status.HTTP_400_BAD_REQUEST)
+
     if template_type == 'ambulancia':
         record = Records.objects.filter(id=template_id).first()
         if not record:
             return Response({'error': 'No se encontró el registro de ambulancia'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         paciente = Thirds.objects.filter(nit=record.third_patient).first()
         auxiliar = Thirds.objects.filter(nit=record.third_medic).first()
         medico = Thirds.objects.filter(nit=record.third_medic_clinic).first()
         conductor = Thirds.objects.filter(nit=record.third_driver).first()
-        
+
         mensaje = f"""
-        **Paciente:** {paciente.name} {paciente.last_name}
-        **Médico:** {medico.name} {medico.last_name}
-        **Auxiliar:** {auxiliar.name} {auxiliar.last_name}
-        **Conductor:** {conductor.name} {conductor.last_name}
+        **Paciente:** {get_name(paciente)}
+        **Médico:** {get_name(medico)}
+        **Auxiliar:** {get_name(auxiliar)}
+        **Conductor:** {get_name(conductor)}
         """
-        filename = f"GATA-HC-{paciente.nit}"
+        filename = f"GATA-HC-{paciente.nit if paciente else 'UNKNOWN'}"
         template_name = "record_list.html"
         data = {'document': record}
-    
+
     elif template_type == 'medicamentos':
         record = Records.objects.filter(id=template_id).first()
         medicamentos = MedicamentsRecords.objects.filter(record=template_id)
+
         if not medicamentos.exists():
             return Response({'error': 'No se encontraron medicamentos asociados'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         mensaje = f"Se encontraron {medicamentos.count()} medicamentos asociados al registro."
         for med in medicamentos:
             mensaje += f"\n- {med.service.description} ({med.quantity}) - {med.dose} vía {med.route}"
-        
+
         filename = f"GATA-MEDS-{template_id}"
         template_name = "medicamentos_list.html"
         data = {'document': record, 'medicamentos': medicamentos}
-    
+
     else:
         return Response({'error': 'Tipo de template no reconocido'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    pdf = render_to_pdf(template_name, data)  # render_to_pdf debe devolver un objeto tipo `bytes`
-    
-    if pdf is None:
+
+    pdf = render_to_pdf(template_name, data)
+    if not pdf:
         return Response({'error': 'No se pudo generar el PDF'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     try:
         email = EmailMessage(
             subject=f'Reporte {template_type.capitalize()} {filename}',
             body=mensaje,
             from_email='noreply@globalsafeips.com.co',
-            to=list(emails),
+            to=emails,
         )
-        email.attach(f"{filename}.pdf", pdf, 'application/pdf')  # Corrige el error
+        email.attach(f"{filename}.pdf", pdf, 'application/pdf')
         email.send()
         return Response({'mensaje': 'Correo enviado correctamente'})
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        logger.error(f"Error al enviar el correo: {str(e)}")
+        return Response({'error': 'Error al enviar el correo'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
