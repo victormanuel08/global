@@ -1,7 +1,11 @@
 <template>
-    <UModal>
+    <UModal preventClose>
         <div class="border rounded m-4 ">
             <div class=" m-4 ">
+                <button @click="$emit('update:isThird', false)"
+                    class="absolute top-5 right-5 text-red-600 text-2xl font-bold hover:scale-110 transition-transform">
+                    ❌
+                </button>
                 <span :onClick="clear">🧹</span>
                 <div v-if="thirdSelected?.id > 0">
                     <h3><strong>Nombre:</strong> {{ thirdSelected?.name }} {{ thirdSelected?.second_name }} {{

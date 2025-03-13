@@ -68,7 +68,7 @@ const props = defineProps({
   calendarEvent: Object,
 })
 
-const glasgow = ref<any>(0)
+const glasgow = ref(0)
 const checkedOthers = ref(false)
 
 interface Services {
@@ -78,112 +78,85 @@ interface Services {
   speciality: number;
   amount_particular: number;
   amount_soat: number;
-
 }
 
-const services = ref([] as Services[]);
-const newServices = ref([] as number[]);
-const record = ref({} as any)
+const services = ref<Services[]>([]);
+const newServices = ref<number[]>([]);
+const record = ref<any>({})
 const procedures_others = ref('')
+const qq = ref<number | null>(null)
+const query = ref('');
 
-
-onMounted(() => {
-  fetchServices();
-  fetchRecord(props.calendarEvent?.id)
-  retrieveFromApi(props.calendarEvent?.id);
-  glasgow.value = parseInt(record.value.glasgow_ro) + parseInt(record.value.glasgow_rv) + parseInt(record.value.glasgow_rm);
-
+onMounted(async () => {
+  await fetchServices();
+  if (props.calendarEvent?.id) {
+    await fetchRecord(props.calendarEvent.id);
+    await retrieveFromApi(props.calendarEvent.id);
+  }
 });
 
-const qq = ref()
+const retrieveFromApi = async (id: number) => {
+  qq.value = id;
+  const response = await $fetch<any>(`api/records/${id}`);
+  record.value = response;
+  await updateRecordChoices(response);
+  calculateGlasgow();
+};
 
-const retrieveFromApi = async (q: any) => {
+const updateRecordChoices = async (response: any) => {
+  record.value.priority_full = await getCHOICE(response.priority, 'PRIORITY_CHOICES');
+  record.value.external_cause_full = await getCHOICE(response.external_cause, 'EXTERNAL_CAUSE_CHOICES');
+  record.value.glasgow_ro_full = await getCHOICE(response.glasgow_ro, 'GLASGOW_RO_CHOICES');
+  record.value.glasgow_rv_full = await getCHOICE(response.glasgow_rv, 'GLASGOW_RV_CHOICES');
+  record.value.glasgow_rm_full = await getCHOICE(response.glasgow_rm, 'GLASGOW_RM_CHOICES');
+};
 
-  if (typeof q === 'number') {
-    qq.value = q
-  } else {
-    qq.value = q.id
-  }
+const calculateGlasgow = () => {
+  glasgow.value = (Number(record.value.glasgow_ro_full?.id) || 0) + 
+                  (Number(record.value.glasgow_rv_full?.id) || 0) + 
+                  (Number(record.value.glasgow_rm_full?.id) || 0);
+};
 
-
-  const response = await $fetch<any>("api/records/" + qq.value)
-  record.value = response
-
-  glasgow.value = parseInt(record.value.glasgow_ro) + parseInt(record.value.glasgow_rv) + parseInt(record.value.glasgow_rm)
-  record.value.priority_full = await getCHOICE(response.priority, 'PRIORITY_CHOICES')
-  record.value.external_cause_full = await getCHOICE(response.external_cause, 'EXTERNAL_CAUSE_CHOICES')
-  record.value.glasgow_ro_full = await getCHOICE(response.glasgow_ro, 'GLASGOW_RO_CHOICES')
-  record.value.glasgow_rv_full = await getCHOICE(response.glasgow_rv, 'GLASGOW_RV_CHOICES')
-  record.value.glasgow_rm_full = await getCHOICE(response.glasgow_rm, 'GLASGOW_RM_CHOICES')
-  //record.value.condition_full = await getCHOICE(record.value.condition, 'TYPE_ACCIDENT_CHOICES')
-
-}
 
 const saveServices = async () => {
-  //console.log('Guardando', newServices.value + ' ' + procedures_others.value);
-  if (newServices.value.find((element) => element === 16)) {
-    checkedOthers.value = true
-  } else {
-    checkedOthers.value = false
+  checkedOthers.value = newServices.value.includes(16) || procedures_others.value.length > 0;
+  if (checkedOthers.value && !newServices.value.includes(16)) {
+    newServices.value.push(16);
   }
-  if (procedures_others.value.length > 0) {
-    newServices.value = [...newServices.value, 16]
-  }
-  const response = await $fetch<any>(`api/records/${props.calendarEvent?.id}/`, {
-    method: 'Patch',
-    body: JSON.stringify({
-      service: newServices?.value,
-      procedures_others: procedures_others?.value
-    })
-  });
-
-  //console.log('Respuesta:', response);
-};
-
-const saveItem = async (index: number, field: string, value: string) => {
-
-  const response = await $fetch(`api/records/${index}`, {
+  await $fetch(`api/records/${props.calendarEvent?.id}/`, {
     method: 'PATCH',
     body: JSON.stringify({
-      [field]: value,
-    }),
+      service: newServices.value,
+      procedures_others: procedures_others.value
+    })
   });
-  if (field === 'glasgow_ro' || field === 'glasgow_rv' || field === 'glasgow_rm') {
-    glasgow.value = parseInt(record.value.glasgow_ro_full?.id) + parseInt(record.value.glasgow_rv_full?.id) + parseInt(record.value.glasgow_rm_full?.id)
-  }
-
-  retrieveFromApi(index)
-  //fetchRecord(props.calendarEvent?.id)
 };
 
-const query = ref('');
+const saveItem = async (index: number, field: string, value: string | number) => {
+  await $fetch(`api/records/${index}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ [field]: value }),
+  });
+  if (["glasgow_ro", "glasgow_rv", "glasgow_rm"].includes(field)) {
+    await retrieveFromApi(index);
+  }
+};
 
 const fetchServices = async () => {
   const queryParams = {
     search: query.value,
     speciality: props.calendarEvent?.third_medic_full?.speciality_full?.id,
-  }
-
-  const response = await $fetch<any>('api/services/', {
-    query: queryParams
-  });
+  };
+  const response = await $fetch<any>('api/services/', { query: queryParams });
   services.value = response.results;
   newServices.value = props.calendarEvent?.procedures || [];
-  if (newServices.value.find((element) => element === 16)) {
-    checkedOthers.value = true
-  } else {
-    checkedOthers.value = false
-  }
+  checkedOthers.value = newServices.value.includes(16);
 };
 
-
-const fetchRecord = async (q: any) => {
-  const response = await $fetch<any>("api/records/" + q)
-  record.value = response
+const fetchRecord = async (id: number) => {
+  const response = await $fetch<any>(`api/records/${id}`);
+  record.value = response;
   newServices.value = record.value.service || [];
   procedures_others.value = record.value.procedures_others || '';
-}
-
+};
 </script>
-
-<style></style>

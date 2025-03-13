@@ -1,8 +1,11 @@
 <template>
-    <UModal>
+    <UModal preventClose>
         <div class="border rounded m-4 " v-if="!isVehicle">
             <div class=" m-4 ">
-
+                <button @click="$emit('close', false)"
+                    class="absolute top-5 right-5 text-red-600 text-2xl font-bold hover:scale-110 transition-transform">
+                    ❌
+                </button>
 
                 <h3>Crear Poliza {{ newTypePolice.name }} {{ props.typeT }}</h3>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4">
@@ -52,7 +55,11 @@
 
         <div class="border rounded m-4 " v-if="isVehicle">
             <div class="m-4">
-                <span @click="isVehicle = false">⏪</span>
+               
+                <button @click="isVehicle = false"
+                    class="absolute top-5 right-5 text-red-600 text-2xl font-bold hover:scale-110 transition-transform">
+                    ❌
+                </button>
                 <h3>Crear Vehículo</h3>
                 <div class="grid grid-cols-2 gap-2 md:grid-cols-2 mt-4">
                     <div class="m-2">

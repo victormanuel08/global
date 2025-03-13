@@ -9,7 +9,7 @@ pip install djangorestframework
 pip install -r requirements.txt
 
 Crear Proyecto Django:
-django-admin startproject inventario_project
+django-admin startproject gamero_payment_management
 
 Agregar App:
 python manage.py startapp inventario

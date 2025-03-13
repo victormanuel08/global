@@ -47,19 +47,20 @@ urlpatterns = [
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
     path('geocode/', GeocodeView.as_view(), name='geocode'),
-    path('sendemail/',sendemail, name='sendemail'),
+   
     path('processimage/',ImageProcessingView.as_view(), name='processimage'),
 
     path('kc/', views.kc, name='kc'),
-
+    path('sendemail/',sendemail, name='sendemail'),
     path('api/pdf/<str:template_type>/<str:template_id>/', views.RecordListView.as_view(), name='template-pdf'),
     path('api/printpdf/<str:template_type>/<int:template_id>/', views.RecordPdf.as_view(), name='print-pdf'),
+    path('auth/users/<int:pk>/set_password/', views.SetPasswordView.as_view(), name='set_password'), 
     # path('api/choices/', ChoicesAPIView.as_view(), name='choices-api'),
     path('api/choices/', ChoicesAPIView.as_view(), name='choices-list'),
     path('api/choices/<str:choice_type>/<str:choice_id>/', SearchChoiceAPIView.as_view(), name='search-choice'),
     path('api/choices/<str:choice_type>/<str:choice_id>/<str:sex>/', SearchBodyAPIView.as_view(), name='search-choice'), 
     path('records/<int:pk>/records_details/', RecordDetailsOnlyViewSet.as_view({'get': 'retrieve'}), name='record-details'),
-    path('auth/users/<int:pk>/set_password/', views.SetPasswordView.as_view(), name='set_password'), 
+    
     path('', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
