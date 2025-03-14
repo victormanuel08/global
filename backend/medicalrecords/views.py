@@ -675,6 +675,7 @@ def get_name(obj):
     """ Devuelve el nombre completo si el objeto existe, de lo contrario, 'No registrado'. """
     return f"{obj.name} {obj.last_name}" if obj else "No registrado"
     
+#ACA SOLCUION EMAIL
 @api_view(['POST'])
 @csrf_exempt
 def sendemail(request):
